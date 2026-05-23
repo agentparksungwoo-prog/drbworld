@@ -478,6 +478,7 @@ window.showResetModal=target=>{
   document.getElementById('reset-modal').classList.add('show');
 };
 window.hideResetModal=()=>document.getElementById('reset-modal').classList.remove('show');
+let resetTarget='responses';
 window.confirmReset=async()=>{await remove(ref(db,resetTarget));hideResetModal();};
 
 const avg=a=>{const v=a.filter(x=>x>0);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
