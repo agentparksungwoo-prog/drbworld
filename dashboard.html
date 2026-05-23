@@ -491,7 +491,17 @@ const timeAgo=ts=>{if(!ts)return'—';const d=Math.floor((Date.now()-ts)/1000);i
 
 /* 구성원 의견 실시간 */
 onValue(ref(db,'responses'),snap=>{
-  const data=snap.val();if(!data){setText('total-count',0);return;}
+  const data=snap.val();
+  if(!data){
+    setText('total-count',0);setText('avg-a1','—');setText('avg-b1','—');setText('last-time','—');
+    setText('a1-avg-disp','—');setText('b1-avg-disp','—');
+    for(let i=1;i<=5;i++){setBar(`a1-bar-${i}`,0);setText(`a1-cnt-${i}`,0);setBar(`b1-bar-${i}`,0);setText(`b1-cnt-${i}`,0);}
+    ['a','b','c','d','e'].forEach(k=>{setBar(`bar-a2${k}`,0);setText(`avg-a2${k}`,'—');});
+    ['a','b','c','d'].forEach(k=>{setBar(`bar-b2${k}`,0);setText(`avg-b2${k}`,'—');});
+    renderList('list-a1-low',[]);renderList('list-a3',[]);renderList('list-b3',[]);renderList('list-b4',[]);
+    [0,1,2,3,4].forEach(i=>{setBar(`vbar-a${i}`,0);setText(`vcnt-a${i}`,0);setText(`vpct-a${i}`,'0%');setBar(`vbar-b${i}`,0);setText(`vcnt-b${i}`,0);setText(`vpct-b${i}`,'0%');});
+    return;
+  }
   const rs=Object.values(data);const n=rs.length;setText('total-count',n);
   const a1v=rs.map(r=>r.a1).filter(Boolean);const a1a=avg(a1v);setText('a1-avg-disp',a1a?a1a.toFixed(1):'—');setText('avg-a1',a1a?a1a.toFixed(1):'—');
   for(let i=1;i<=5;i++){const c=a1v.filter(v=>v===i).length;setBar(`a1-bar-${i}`,n>0?c/n*100:0);setText(`a1-cnt-${i}`,c);}
