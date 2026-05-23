@@ -151,7 +151,16 @@ body{
 .vote-cnt{font-size:16px;font-weight:700;color:var(--w-title);min-width:22px;text-align:right;}
 .vote-pct{font-size:13px;color:var(--w-small);min-width:36px;text-align:right;}
 
-/* ── MODAL ── */
+/* QR 모달 */
+.qr-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;}
+.qr-modal-overlay.show{display:flex;}
+.qr-modal-box{background:rgba(255,255,255,0.97);border-radius:24px;padding:2.5rem 2.5rem 2rem;max-width:340px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.4);animation:fadeUp 0.22s ease;}
+.qr-title{font-size:18px;font-weight:700;color:#1A3522;margin-bottom:6px;letter-spacing:-0.02em;}
+.qr-sub{font-size:13px;color:#5A7A64;margin-bottom:1.5rem;line-height:1.6;}
+.qr-img{width:200px;height:200px;margin:0 auto 1.25rem;display:block;border-radius:12px;}
+.qr-url{font-size:12px;color:#7A9A85;word-break:break-all;margin-bottom:1.5rem;line-height:1.5;}
+.qr-close{background:#1A3522;color:#fff;border:none;border-radius:99px;padding:10px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.qr-close:hover{background:#2D5C3A;}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;}
 .modal-overlay.show{display:flex;}
 .modal-box{background:rgba(10,25,14,0.92);border:1px solid var(--line);border-radius:20px;padding:2.75rem;max-width:380px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.5);animation:fadeUp 0.22s ease;}
@@ -194,6 +203,7 @@ body{
     </div>
     <div class="header-right">
       <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+      <button class="reset-btn" onclick="showQR()">설문 QR</button>
       <button class="reset-btn" onclick="showResetModal('responses')">구성원 의견 초기화</button>
       <button class="reset-btn" onclick="showResetModal('discussion')">자유토론 초기화</button>
     </div>
@@ -423,6 +433,17 @@ body{
 </div>
 </div>
 
+<!-- QR 모달 -->
+<div class="qr-modal-overlay" id="qr-modal">
+  <div class="qr-modal-box">
+    <div class="qr-title">설문 QR 코드</div>
+    <div class="qr-sub">폰 카메라로 스캔하면<br>설문지로 바로 연결됩니다</div>
+    <img class="qr-img" id="qr-img" src="" alt="QR코드">
+    <div class="qr-url">https://agentparksungwoo-prog.github.io/drbworld/survey.html</div>
+    <button class="qr-close" onclick="hideQR()">닫기</button>
+  </div>
+</div>
+
 <div class="modal-overlay" id="reset-modal">
   <div class="modal-box">
     <div class="modal-title" id="modal-title">초기화할까요?</div>
@@ -440,7 +461,15 @@ const app=initializeApp(cfg);const db=getDatabase(app);
 window.switchPage=i=>{document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',i===j));document.querySelectorAll('.nav-tab').forEach((t,j)=>t.classList.toggle('active',i===j));};
 window.showSlide=i=>{document.querySelectorAll('.slide').forEach((s,j)=>s.classList.toggle('active',i===j));document.querySelectorAll('.slide-btn').forEach((b,j)=>b.classList.toggle('active',i===j));};
 
-let resetTarget='responses';
+/* QR 코드 */
+const SURVEY_URL = 'https://agentparksungwoo-prog.github.io/drbworld/survey.html';
+window.showQR = () => {
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=10&data=${encodeURIComponent(SURVEY_URL)}`;
+  document.getElementById('qr-img').src = qrSrc;
+  document.getElementById('qr-modal').classList.add('show');
+};
+window.hideQR = () => document.getElementById('qr-modal').classList.remove('show');
+document.getElementById('qr-modal').addEventListener('click', e=>{ if(e.target===e.currentTarget) hideQR(); });
 window.showResetModal=target=>{
   resetTarget=target;
   const label=target==='responses'?'구성원 의견':'자유토론';
