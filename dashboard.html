@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>협업의 두 가지 조건</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --white-text:#FFFFFF;
+  --w-title:rgba(255,255,255,0.92);
+  --w-body:rgba(255,255,255,0.96);
+  --w-small:rgba(255,255,255,0.93);
+  --w-hint:rgba(255,255,255,0.80);
+  --w-muted:var(--w-hint);
+  --white-30:rgba(255,255,255,0.30);
+  --white-15:rgba(255,255,255,0.15);
+  --white-08:rgba(255,255,255,0.08);
+  --line:rgba(255,255,255,0.28);
+  --line-soft:rgba(255,255,255,0.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans KR',-apple-system,sans-serif;
+  color:var(--w-title);
+  min-height:100vh;
+  /* 실제 배포시 아래 background-image를 원하는 숲 사진 URL로 교체하세요 */
+  background:
+    linear-gradient(160deg,
+      rgba(8,28,14,0.55) 0%,
+      rgba(12,38,18,0.40) 40%,
+      rgba(6,24,12,0.48) 100%),
+    url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=90") center/cover no-repeat fixed;
+  background-color:#0a1e0e;
+}
+
+/* ── HEADER : 완전 투명, 텍스트만 ── */
+.header{
+  padding:1.75rem 2.5rem 1.5rem;
+  border-bottom:1px solid var(--line);
+}
+.header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
+.header-title{font-size:26px;font-weight:700;color:var(--w-title);letter-spacing:-0.025em;text-shadow:0 1px 12px rgba(0,0,0,0.4);}
+.header-sub{font-size:13px;color:var(--w-body);margin-top:3px;font-weight:300;letter-spacing:0.04em;}
+.header-right{display:flex;align-items:center;gap:10px;}
+
+.live-badge{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:99px;padding:6px 16px;font-size:13px;color:var(--w-body);font-weight:400;}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#7AE89A;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.reset-btn{background:transparent;border:1px solid var(--line);border-radius:99px;padding:6px 18px;font-size:13px;color:var(--w-body);font-weight:400;cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.reset-btn:hover{border-color:var(--w-small);color:var(--w-title);}
+
+/* ── NAV : 투명 ── */
+.nav-wrap{border-bottom:1px solid var(--line);position:sticky;top:0;z-index:100;}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;}
+.nav-tab{flex-shrink:0;padding:15px 32px;font-size:15px;font-weight:400;color:var(--w-small);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;letter-spacing:0.01em;}
+.nav-tab:hover{color:var(--w-body);}
+.nav-tab.active{color:var(--w-title);border-bottom-color:rgba(255,255,255,0.7);font-weight:500;}
+
+.page{display:none;}.page.active{display:block;}
+.container{max-width:1100px;margin:0 auto;padding:2.5rem 2rem 5rem;}
+
+/* ── SLIDE BUTTONS ── */
+.slide-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem;}
+.slide-btn{padding:7px 18px;font-size:13px;font-weight:400;border:1px solid var(--line);border-radius:99px;background:transparent;color:var(--w-small);cursor:pointer;transition:all 0.2s;font-family:inherit;letter-spacing:0.01em;}
+.slide-btn.active{border-color:var(--w-body);color:var(--w-title);font-weight:500;}
+.slide-btn:hover:not(.active){border-color:var(--w-hint);color:var(--w-body);}
+
+.slide{display:none;}.slide.active{display:block;}
+
+/* ── SLIDE CONTENT : 배경 없음 ── */
+.slide-wrap{padding:0;}
+.slide-label{font-size:11px;font-weight:500;color:var(--w-small);letter-spacing:0.16em;text-transform:uppercase;margin-bottom:12px;}
+.slide-title{font-size:36px;font-weight:700;color:var(--w-title);margin-bottom:14px;line-height:1.25;letter-spacing:-0.025em;text-shadow:0 2px 16px rgba(0,0,0,0.35);}
+.slide-sub{font-size:16px;color:var(--w-body);margin-bottom:2.5rem;line-height:1.8;font-weight:400;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:2rem;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.75rem;margin-bottom:2rem;}
+
+/* 카드 대신 구분선만 */
+.item-block{padding:0 0 1.5rem 0;border-bottom:1px solid var(--line-soft);}
+.item-block:last-child{border-bottom:none;padding-bottom:0;}
+.item-tag{display:inline-block;font-size:11px;font-weight:500;color:var(--w-small);border:1px solid var(--line);padding:2px 12px;border-radius:99px;margin-bottom:10px;letter-spacing:0.06em;}
+.item-title{font-size:17px;font-weight:600;color:var(--w-title);margin-bottom:8px;text-shadow:0 1px 8px rgba(0,0,0,0.3);}
+.item-body{font-size:14px;color:var(--w-body);line-height:1.75;font-weight:300;}
+
+.sep{height:1px;background:var(--line-soft);margin:2rem 0;}
+
+.flow-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.flow-box{border:1px solid rgba(255,255,255,0.55);border-radius:10px;padding:9px 18px;font-size:14px;font-weight:500;color:var(--w-body);}
+.flow-wrong{border-color:rgba(255,140,140,0.8);color:rgba(255,170,170,1);}
+.flow-right{border-color:rgba(140,230,170,0.8);color:rgba(170,255,200,1);}
+.flow-arrow{color:var(--w-body);font-size:18px;font-weight:600;}
+
+.quote-line{border-left:2px solid rgba(255,255,255,0.5);padding:10px 0 10px 20px;font-size:15px;color:var(--w-body);font-style:italic;line-height:1.85;margin:1.5rem 0;font-weight:400;}
+
+.vs-wrap{display:flex;gap:2.5rem;margin-bottom:2rem;}
+.vs-col{flex:1;}
+.vs-head{font-size:12px;font-weight:700;color:var(--w-small);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.35);}
+.vs-body{font-size:14px;color:var(--w-body);line-height:1.95;font-weight:400;}
+
+.check-list{list-style:none;}
+.check-list li{font-size:14px;color:var(--w-body);padding:8px 0;border-bottom:1px solid var(--line-soft);display:flex;gap:12px;line-height:1.6;font-weight:400;}
+.check-list li:last-child{border-bottom:none;}
+.mk-g{color:rgba(160,240,190,1);font-weight:700;flex-shrink:0;}
+.mk-r{color:rgba(255,160,160,1);font-weight:700;flex-shrink:0;}
+
+/* ── DASHBOARD ── */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-bottom:3rem;}
+.stat-item{padding:0;}
+.stat-label{font-size:13px;color:var(--w-small);font-weight:600;margin-bottom:8px;letter-spacing:0.08em;text-transform:uppercase;}
+.stat-value{font-size:48px;font-weight:700;color:var(--w-title);line-height:1;letter-spacing:-0.03em;text-shadow:0 2px 16px rgba(0,0,0,0.3);}
+.stat-sub{font-size:14px;color:var(--w-small);margin-top:5px;font-weight:400;}
+
+.section-block{margin-bottom:3rem;}
+.sc-header{display:flex;align-items:center;gap:14px;margin-bottom:1.75rem;padding-bottom:1.25rem;border-bottom:1px solid var(--line);}
+.sc-title{font-size:22px;font-weight:600;color:var(--w-title);letter-spacing:-0.02em;text-shadow:0 1px 10px rgba(0,0,0,0.3);}
+.sc-desc{font-size:15px;color:var(--w-small);margin-left:4px;}
+
+.result-label{font-size:13px;font-weight:600;color:var(--w-small);margin-bottom:14px;letter-spacing:0.10em;text-transform:uppercase;}
+
+.avg-row{display:flex;align-items:baseline;gap:5px;margin-bottom:1.25rem;}
+.avg-num{font-size:56px;font-weight:700;color:var(--w-title);letter-spacing:-0.03em;line-height:1;text-shadow:0 2px 16px rgba(0,0,0,0.3);}
+.avg-den{font-size:20px;color:var(--w-small);font-weight:400;}
+
+.dist-row{display:flex;align-items:center;gap:12px;margin-bottom:9px;}
+.dist-lbl{font-size:15px;color:var(--w-small);min-width:18px;text-align:right;font-weight:500;}
+.dist-track{flex:1;height:6px;background:var(--white-15);border-radius:99px;overflow:hidden;}
+.dist-fill{height:100%;border-radius:99px;transition:width 0.6s ease;background:rgba(255,255,255,0.65);}
+.dist-cnt{font-size:14px;color:var(--w-small);min-width:22px;text-align:right;}
+
+.matrix-item{display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid var(--line-soft);}
+.matrix-item:last-child{border-bottom:none;}
+.matrix-name{font-size:15px;color:var(--w-body);min-width:210px;flex-shrink:0;font-weight:400;}
+.matrix-track{flex:1;height:6px;background:var(--white-15);border-radius:99px;overflow:hidden;}
+.matrix-fill{height:100%;border-radius:99px;transition:width 0.6s ease;background:rgba(255,255,255,0.65);}
+.matrix-val{font-size:17px;font-weight:600;color:var(--w-title);min-width:38px;text-align:right;}
+
+.open-list{max-height:260px;overflow-y:auto;}
+.open-item{padding:11px 0;border-bottom:1px solid var(--line-soft);font-size:15px;color:var(--w-body);line-height:1.7;font-weight:400;}
+.open-item:last-child{border-bottom:none;}
+.open-empty{font-size:15px;color:var(--w-hint);text-align:center;padding:1.5rem 0;}
+
+.vote-sect-label{font-size:13px;font-weight:700;color:var(--w-small);letter-spacing:0.10em;text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--line-soft);}
+.vote-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line-soft);}
+.vote-item:last-child{border-bottom:none;}
+.vote-name{font-size:15px;color:var(--w-body);flex:1;font-weight:400;line-height:1.5;}
+.vote-name small{display:block;font-size:13px;color:var(--w-small);margin-top:2px;}
+.vote-track{flex:0 0 110px;height:6px;background:var(--white-15);border-radius:99px;overflow:hidden;}
+.vote-fill{height:100%;border-radius:99px;transition:width 0.6s ease;background:var(--w-hint);}
+.vote-cnt{font-size:16px;font-weight:700;color:var(--w-title);min-width:22px;text-align:right;}
+.vote-pct{font-size:13px;color:var(--w-small);min-width:36px;text-align:right;}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:rgba(10,25,14,0.92);border:1px solid var(--line);border-radius:20px;padding:2.75rem;max-width:380px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.5);animation:fadeUp 0.22s ease;}
+@keyframes fadeUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-title{font-size:19px;font-weight:600;color:var(--w-title);margin-bottom:8px;}
+.modal-desc{font-size:14px;color:var(--w-body);line-height:1.8;margin-bottom:2rem;font-weight:300;}
+.modal-btns{display:flex;gap:10px;justify-content:center;}
+.modal-cancel{background:transparent;border:1px solid var(--line);border-radius:99px;padding:10px 24px;font-size:14px;color:var(--w-body);cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.modal-cancel:hover{border-color:var(--w-small);color:var(--w-title);}
+.modal-confirm{background:rgba(255,255,255,0.12);border:1px solid var(--white-30);border-radius:99px;padding:10px 24px;font-size:14px;color:var(--w-title);cursor:pointer;font-family:inherit;transition:all 0.2s;}
+.modal-confirm:hover{background:rgba(255,255,255,0.2);}
+
+.footer-note{font-size:13px;color:var(--w-hint);text-align:center;margin-top:3rem;}
+
+/* 자유토론 */
+.disc-item{padding:1.25rem 0;border-bottom:1px solid var(--line-soft);}
+.disc-item:last-child{border-bottom:none;}
+.disc-row{display:flex;align-items:baseline;gap:12px;}
+.disc-member{font-size:13px;font-weight:700;color:var(--w-small);white-space:nowrap;flex-shrink:0;}
+.disc-text{font-size:17px;color:var(--w-body);line-height:1.75;font-weight:400;}
+.disc-time{font-size:13px;color:var(--w-hint);margin-top:6px;}
+
+@media(max-width:720px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .two-col,.three-col{grid-template-columns:1fr;}
+  .vs-wrap{flex-direction:column;}
+  .vote-track{display:none;}
+  .matrix-name{min-width:130px;font-size:13px;}
+  .slide-title{font-size:26px;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-title">협업의 두 가지 조건</div>
+      <div class="header-sub">심리적 안전감과 공유</div>
+    </div>
+    <div class="header-right">
+      <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+      <button class="reset-btn" onclick="showResetModal('responses')">구성원 의견 초기화</button>
+      <button class="reset-btn" onclick="showResetModal('discussion')">자유토론 초기화</button>
+    </div>
+  </div>
+</div>
+
+<div class="nav-wrap">
+  <div class="nav-inner">
+    <div class="nav-tab active" onclick="switchPage(0)">협업이란?</div>
+    <div class="nav-tab" onclick="switchPage(1)">구성원 의견</div>
+    <div class="nav-tab" onclick="switchPage(2)">자유토론</div>
+  </div>
+</div>
+
+<!-- PAGE 0: Slides -->
+<div class="page active" id="page-0">
+<div class="container">
+  <div class="slide-nav">
+    <button class="slide-btn active" onclick="showSlide(0)">1. 핵심 주장</button>
+    <button class="slide-btn" onclick="showSlide(1)">2. 심리적 안전감</button>
+    <button class="slide-btn" onclick="showSlide(2)">3. 실패의 유형</button>
+    <button class="slide-btn" onclick="showSlide(3)">4. 공유의 조건</button>
+    <button class="slide-btn" onclick="showSlide(4)">5. 두 축의 관계</button>
+  </div>
+
+  <div class="slide active" id="s0"><div class="slide-wrap">
+    <div class="slide-label">핵심 주장</div>
+    <div class="slide-title">협업은 태도가 아니라<br>시스템의 문제다</div>
+    <div class="slide-sub">협업이 안 되는 이유는 사람들의 의지나 성향 때문이 아니다. 말이 흐를 수 없는 구조, 판단이 이어지지 않는 구조가 협업을 막는다.</div>
+    <div class="flow-row"><div class="flow-box">협업 부재</div><div class="flow-arrow">→</div><div class="flow-box">태도·의지 문제?</div><div class="flow-arrow">→</div><div class="flow-box flow-wrong">✕ &nbsp;오진단</div></div>
+    <div class="flow-row"><div class="flow-box">협업 부재</div><div class="flow-arrow">→</div><div class="flow-box">구조·설계 문제</div><div class="flow-arrow">→</div><div class="flow-box flow-right">✓ &nbsp;올바른 진단</div></div>
+    <div class="sep"></div>
+    <div class="two-col">
+      <div class="item-block"><div class="item-tag">조건 1</div><div class="item-title">— &nbsp;심리적 안전감</div><div class="item-body">협업이 <strong style="color:var(--w-title)">말로 시작될 수 있는</strong> 조건<br>질문·이견·실수·도움 요청이 부담 없이 가능한 상태</div></div>
+      <div class="item-block"><div class="item-tag">조건 2</div><div class="item-title">— &nbsp;공유</div><div class="item-body">협업이 <strong style="color:var(--w-title)">판단으로 이어지게 하는</strong> 조건<br>다음 사람의 판단을 도울 만큼의 맥락을 남기는 것</div></div>
+    </div>
+    <div class="item-body" style="color:var(--w-body);line-height:1.8">둘 중 하나만 빠져도 협업은 작동하지 않는다. 심리적 안전감이 없으면 공유할 정보 자체가 만들어지지 않고, 공유 약속이 없으면 어렵게 꺼낸 의견이 흩어져 다시 말할 동기가 사라진다.</div>
+  </div></div>
+
+  <div class="slide" id="s1"><div class="slide-wrap">
+    <div class="slide-label">심리적 안전감</div>
+    <div class="slide-title">편안함이 아니라<br>대인관계 리스크의 감소다</div>
+    <div class="slide-sub">Amy C. Edmondson의 정의 — 질문·반대·오류 인정·도움 요청·리스크 공유가 가능한 상태</div>
+    <div class="vs-wrap">
+      <div class="vs-col"><div class="vs-head">✕ &nbsp;심리적 안전감이 아닌 것</div><div class="vs-body">
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-r">✕</span><span>갈등이 없는 상태</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-r">✕</span><span>서로 좋은 사람이 되어주는 것</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-r">✕</span><span>무조건 공감해 주는 것</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-r">✕</span><span>성과 압박이 낮은 상태</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0"><span class="mk-r">✕</span><span>예의·침묵·눈치 보기</span></div>
+      </div></div>
+      <div class="vs-col"><div class="vs-head">✓ &nbsp;심리적 안전감의 실체</div><div class="vs-body">
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-g">✓</span><span>모르는 것을 편하게 질문</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-g">✓</span><span>다른 의견을 편하게 개진</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-g">✓</span><span>실수를 공개적으로 인정</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-g">✓</span><span>도움 요청에 부담이 없음</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0"><span class="mk-g">✓</span><span>리스크를 함께 공유</span></div>
+      </div></div>
+    </div>
+    <div class="quote-line">"지나친 예의, 정치적 배려, 침묵, 눈치 보기는 오히려 심리적 안전감을 낮추는 행동이다. 솔직한 이견과 질문이 사라진 자리에는 협업처럼 보이는 침묵만 남는다."</div>
+    <div class="item-title" style="margin-bottom:1rem">한국 조직에서 특히 중요한 이유</div>
+    <ul class="check-list">
+      <li><span class="mk-g">!</span>많은 문제는 이미 누군가 알고 있었던 문제다</li>
+      <li><span class="mk-g">!</span>말하는 비용이 너무 커서 침묵한 것이다</li>
+      <li><span class="mk-g">!</span>겉으로 갈등이 없어 보여도 중요한 정보와 이견은 사라지고 있다</li>
+    </ul>
+  </div></div>
+
+  <div class="slide" id="s2"><div class="slide-wrap">
+    <div class="slide-label">실패의 유형 구분</div>
+    <div class="slide-title">실패를 '허용'이 아니라<br>'유형별로 구분'해서 다뤄라</div>
+    <div class="slide-sub">Edmondson, 『옳은 실패』— 모든 실패가 같지 않다. 추궁이 반복되면 구성원은 '말하지 않는 것이 가장 안전하다'고 학습한다.</div>
+    <div class="three-col">
+      <div class="item-block"><div class="item-tag">유형 1</div><div class="item-title">기본적 실패</div><div class="item-body">부주의, 반복 실수, 명백한 절차 위반<br><br><span class="mk-r">→</span> &nbsp;줄여야 한다</div></div>
+      <div class="item-block"><div class="item-tag">유형 2</div><div class="item-title">복합적 실패</div><div class="item-body">시스템 복잡성, 환경 변화, 예측 어려운 상호작용<br><br><span style="color:rgba(255,220,120,1);font-weight:700">→</span> &nbsp;학습 데이터로</div></div>
+      <div class="item-block"><div class="item-tag">유형 3</div><div class="item-title">교훈적 실패</div><div class="item-body">새로운 시도, 실험, 탐색에서 발생<br><br><span class="mk-g">→</span> &nbsp;전략적으로 장려</div></div>
+    </div>
+    <div class="quote-line">Google Postmortem 원칙: "일이 잘못됐더라도, 관련된 모든 사람은 선한 의도를 갖고 있었고 그들이 가진 정보로 올바른 일을 했다고 가정한다."</div>
+    <div class="sep"></div>
+    <div class="two-col">
+      <div class="item-block"><div class="item-title" style="color:rgba(255,160,160,1)"><span class="mk-r">✕</span> &nbsp;비난 있는 회고</div><div class="item-body" style="margin-top:8px">"누가 그랬는가?" <span class="mk-r">→</span> 정보가 막히고, 침묵이 학습된다</div></div>
+      <div class="item-block"><div class="item-title"><span class="mk-g">✓</span> &nbsp;비난 없는 회고 (Blameless)</div><div class="item-body" style="margin-top:8px">"무슨 일이 일어났는가?" <span class="mk-g">→</span> 정보가 열리고, 다시 말하기 시작한다</div></div>
+    </div>
+  </div></div>
+
+  <div class="slide" id="s3"><div class="slide-wrap">
+    <div class="slide-label">공유의 조건</div>
+    <div class="slide-title">'많이'가 아니라<br>'판단을 도울 만큼'</div>
+    <div class="slide-sub">문제는 공유 자체가 아니라, 다음 사람의 판단을 도울 만큼의 맥락이 공유되지 않는 것이다.</div>
+    <div class="vs-wrap">
+      <div class="vs-col"><div class="vs-head">✕ &nbsp;안 되는 공유</div><div class="vs-body">
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-r">✕</span><span>결정 사항만 전달 → "따라야 할 명령"으로 받는다</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0"><span class="mk-r">✕</span><span>회의는 많지만 과정은 흩어짐 → 결국 다시 사람을 붙잡고 물어봐야 함</span></div>
+      </div></div>
+      <div class="vs-col"><div class="vs-head">✓ &nbsp;되는 공유</div><div class="vs-body">
+        <div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.12)"><span class="mk-g">✓</span><span>결정 + 맥락 함께 기록 → 다음 사람이 그 위에서 판단을 이어감</span></div>
+        <div style="display:flex;gap:10px;padding:5px 0"><span class="mk-g">✓</span><span>상황·의도·대안·우려 → 판단의 연속성이 만들어짐</span></div>
+      </div></div>
+    </div>
+    <div class="sep"></div>
+    <div class="item-title" style="margin-bottom:1.5rem">공유가 잘되는 조직의 3가지 운영 원칙</div>
+    <div class="three-col">
+      <div class="item-block"><div class="item-tag">원칙 1</div><div class="item-title">맥락 기록</div><div class="item-body"><span class="mk-g">→</span> &nbsp;결정 사항과 함께 상황·의도·과업·우려·조정 가능 부분을 남긴다</div></div>
+      <div class="item-block"><div class="item-tag">원칙 2</div><div class="item-title">복수 옵션 공유</div><div class="item-body"><span class="mk-g">→</span> &nbsp;충실도가 낮은 단계에서 여러 안을 동시에 꺼내 동료가 함께 고민하게 한다</div></div>
+      <div class="item-block"><div class="item-tag">원칙 3</div><div class="item-title">암묵 → 명시</div><div class="item-body"><span class="mk-g">→</span> &nbsp;회식·복도·사적 메신저에 머무는 결정을 공개 채널과 기록으로 끌어낸다</div></div>
+    </div>
+    <div class="quote-line">최종안을 다 만든 후 보여주면 받는 사람은 부담스러운 평가자가 된다. 여러 안을 펼쳐 보여주면 받는 사람은 중요한 협업 파트너가 된다.</div>
+  </div></div>
+
+  <div class="slide" id="s4"><div class="slide-wrap">
+    <div class="slide-label">두 축의 관계</div>
+    <div class="slide-title">두 조건은 서로를 키우거나<br>무너뜨린다</div>
+    <div class="slide-sub">둘은 분리된 두 가지가 아니다. 선순환이 되거나, 악순환이 된다.</div>
+    <div class="two-col">
+      <div class="item-block"><div class="item-title" style="margin-bottom:1rem"><span class="mk-g">↑</span> &nbsp;선순환</div><ul class="check-list"><li><span class="mk-g">→</span>안전감이 있으면 말이 나온다</li><li><span class="mk-g">→</span>말이 기록되면 판단이 이어진다</li><li><span class="mk-g">→</span>판단이 이어지면 다시 말할 동기가 생긴다</li></ul></div>
+      <div class="item-block"><div class="item-title" style="color:rgba(255,160,160,1);margin-bottom:1rem"><span class="mk-r">↓</span> &nbsp;악순환</div><ul class="check-list"><li><span class="mk-r">→</span>안전감이 없으면 의견을 꺼내지 않는다</li><li><span class="mk-r">→</span>의견이 없으면 공유할 정보가 없다</li><li><span class="mk-r">→</span>공유가 없으면 다시 말할 동기가 사라진다</li></ul></div>
+    </div>
+    <div class="sep"></div>
+    <div class="item-title" style="margin-bottom:1.5rem">협업이 안 된다고 느낄 때, 먼저 점검할 두 가지 질문</div>
+    <div class="item-block"><div class="item-tag">점검 1 — 심리적 안전감</div><div class="item-body" style="margin-top:8px"><span class="mk-g">?</span> &nbsp;우리 조직에서 모르는 것을 말하고 다른 의견을 내는 행위가 <strong style="color:var(--w-title)">비용이 너무 크지 않은가?</strong></div></div>
+    <div class="item-block" style="margin-top:1rem"><div class="item-tag">점검 2 — 공유</div><div class="item-body" style="margin-top:8px"><span class="mk-g">?</span> &nbsp;우리 조직에서 만들어진 결정과 의견이 <strong style="color:var(--w-title)">다음 사람의 판단을 도울 수 있을 만큼 기록되고 있는가?</strong></div></div>
+    <div class="quote-line" style="margin-top:1.5rem">"협업은 캠페인으로 만들어지지 않는다. 협업이 자연스럽게 일어나는 조직은 말이 흐를 수 있는 조건과 정보가 흐를 수 있는 조건을 함께 설계한 조직이다."</div>
+  </div></div>
+</div>
+</div>
+
+<!-- PAGE 1: Dashboard -->
+<div class="page" id="page-1">
+<div class="container">
+  <div class="stats-row">
+    <div class="stat-item"><div class="stat-label">총 응답 수</div><div class="stat-value" id="total-count">0</div><div class="stat-sub">명 참여</div></div>
+    <div class="stat-item"><div class="stat-label">심리적 안전감 평균</div><div class="stat-value" id="avg-a1">—</div><div class="stat-sub">/ 5점</div></div>
+    <div class="stat-item"><div class="stat-label">공유 수준 평균</div><div class="stat-value" id="avg-b1">—</div><div class="stat-sub">/ 5점</div></div>
+    <div class="stat-item"><div class="stat-label">최근 응답</div><div class="stat-value" style="font-size:22px;padding-top:8px" id="last-time">—</div><div class="stat-sub">전</div></div>
+  </div>
+
+  <div class="section-block">
+    <div class="sc-header"><div class="sc-title">A. 심리적 안전감</div></div>
+    <div class="result-label">A-1 전반 수준</div>
+    <div style="display:flex;gap:2.5rem;margin-bottom:1.75rem;align-items:flex-start">
+      <div class="avg-row"><div class="avg-num" id="a1-avg-disp">—</div><div class="avg-den">/5</div></div>
+      <div style="flex:1;padding-top:6px">
+        <div class="dist-row"><span class="dist-lbl">5</span><div class="dist-track"><div class="dist-fill" id="a1-bar-5"></div></div><span class="dist-cnt" id="a1-cnt-5">0</span></div>
+        <div class="dist-row"><span class="dist-lbl">4</span><div class="dist-track"><div class="dist-fill" id="a1-bar-4"></div></div><span class="dist-cnt" id="a1-cnt-4">0</span></div>
+        <div class="dist-row"><span class="dist-lbl">3</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,255,255,0.35)" id="a1-bar-3"></div></div><span class="dist-cnt" id="a1-cnt-3">0</span></div>
+        <div class="dist-row"><span class="dist-lbl">2</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,180,180,0.5)" id="a1-bar-2"></div></div><span class="dist-cnt" id="a1-cnt-2">0</span></div>
+        <div class="dist-row"><span class="dist-lbl">1</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,150,150,0.6)" id="a1-bar-1"></div></div><span class="dist-cnt" id="a1-cnt-1">0</span></div>
+      </div>
+    </div>
+    <div class="result-label">A-2 항목별 평균</div>
+    <div style="margin-bottom:1.75rem">
+      <div class="matrix-item"><span class="matrix-name">모르는 것 질문하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2a"></div></div><span class="matrix-val" id="avg-a2a">—</span></div>
+      <div class="matrix-item"><span class="matrix-name">반대 의견·이견 내기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2b"></div></div><span class="matrix-val" id="avg-a2b">—</span></div>
+      <div class="matrix-item"><span class="matrix-name">내 실수 공개 인정하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2c"></div></div><span class="matrix-val" id="avg-a2c">—</span></div>
+      <div class="matrix-item"><span class="matrix-name">동료에게 도움 요청하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2d"></div></div><span class="matrix-val" id="avg-a2d">—</span></div>
+      <div class="matrix-item"><span class="matrix-name">우려되는 리스크 공유하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2e"></div></div><span class="matrix-val" id="avg-a2e">—</span></div>
+    </div>
+    <div class="two-col">
+      <div><div class="result-label">A-1-a 낮은 이유 (1~3점)</div><div class="open-list" id="list-a1-low"><div class="open-empty">아직 응답 없음</div></div></div>
+      <div><div class="result-label">A-3 개선 제안</div><div class="open-list" id="list-a3"><div class="open-empty">아직 응답 없음</div></div></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="sc-header"><div class="sc-title">B. 공유</div></div>
+    <div class="result-label">B-1 전반 수준</div>
+    <div style="display:flex;gap:2.5rem;margin-bottom:1.75rem;align-items:flex-start">
+      <div class="avg-row"><div class="avg-num" id="b1-avg-disp">—</div><div class="avg-den">/5</div></div>
+      <div style="flex:1;padding-top:6px">
+        <div class="dist-row"><span class="dist-lbl">5</span><div class="dist-track"><div class="dist-fill" id="b1-bar-5"></div></div><span class="dist-cnt" id="b1-cnt-5">0</span></div>
+        <div class="dist-row"><span class="dist-lbl">4</span><div class="dist-track"><div class="dist-fill" id="b1-bar-4"></div></div><span class="dist-cnt" id="b1-cnt-4">0</span></div>
+        <div class="dist-row"><span class="dist-lbl">3</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,255,255,0.35)" id="b1-bar-3"></div></div><span class="dist-cnt" id="b1-cnt-3">0</span></div>
+        <div class="dist-row"><span class="dist-lbl">2</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,180,180,0.5)" id="b1-bar-2"></div></div><span class="dist-cnt" id="b1-cnt-2">0</span></div>
+        <div class="dist-row"><span class="dist-lbl">1</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,150,150,0.6)" id="b1-bar-1"></div></div><span class="dist-cnt" id="b1-cnt-1">0</span></div>
+      </div>
+    </div>
+    <div class="result-label">B-2 항목별 평균</div>
+    <div style="margin-bottom:1.75rem">
+      <div class="matrix-item"><span class="matrix-name">의사결정 결과 + 이유·맥락 기록</span><div class="matrix-track"><div class="matrix-fill" id="bar-b2a"></div></div><span class="matrix-val" id="avg-b2a">—</span></div>
+      <div class="matrix-item"><span class="matrix-name">완성 전 초안·진행물 공유</span><div class="matrix-track"><div class="matrix-fill" id="bar-b2b"></div></div><span class="matrix-val" id="avg-b2b">—</span></div>
+      <div class="matrix-item"><span class="matrix-name">검토된 대안·미해결 사항 기록</span><div class="matrix-track"><div class="matrix-fill" id="bar-b2c"></div></div><span class="matrix-val" id="avg-b2c">—</span></div>
+      <div class="matrix-item"><span class="matrix-name">정보가 검색·참조 가능한 형태로 저장</span><div class="matrix-track"><div class="matrix-fill" id="bar-b2d"></div></div><span class="matrix-val" id="avg-b2d">—</span></div>
+    </div>
+    <div class="two-col">
+      <div><div class="result-label">B-3 공유 안 되는 이유</div><div class="open-list" id="list-b3"><div class="open-empty">아직 응답 없음</div></div></div>
+      <div><div class="result-label">B-4 개선 제안</div><div class="open-list" id="list-b4"><div class="open-empty">아직 응답 없음</div></div></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="sc-header"><div class="sc-title">C. 투표 집계</div></div>
+    <div class="two-col">
+      <div>
+        <div class="vote-sect-label">심리적 안전감</div>
+        <div class="vote-item"><span class="vote-name">이견·반대 의견 말하기<small>편한 분위기 조성</small></span><div class="vote-track"><div class="vote-fill" id="vbar-a0"></div></div><span class="vote-cnt" id="vcnt-a0">0</span><span class="vote-pct" id="vpct-a0">0%</span></div>
+        <div class="vote-item"><span class="vote-name">모르는 것 질문 문화<small>질문 = 협업의 시작</small></span><div class="vote-track"><div class="vote-fill" id="vbar-a1"></div></div><span class="vote-cnt" id="vcnt-a1">0</span><span class="vote-pct" id="vpct-a1">0%</span></div>
+        <div class="vote-item"><span class="vote-name">학습 중심 회고 방식<small>비난 없는 회고</small></span><div class="vote-track"><div class="vote-fill" id="vbar-a2"></div></div><span class="vote-cnt" id="vcnt-a2">0</span><span class="vote-pct" id="vpct-a2">0%</span></div>
+        <div class="vote-item"><span class="vote-name">도움 요청 자연스러운 구조<small>혼자 해결 압박 감소</small></span><div class="vote-track"><div class="vote-fill" id="vbar-a3"></div></div><span class="vote-cnt" id="vcnt-a3">0</span><span class="vote-pct" id="vpct-a3">0%</span></div>
+        <div class="vote-item"><span class="vote-name">리더의 불확실성 드러내기<small>리더 행동이 먼저</small></span><div class="vote-track"><div class="vote-fill" id="vbar-a4"></div></div><span class="vote-cnt" id="vcnt-a4">0</span><span class="vote-pct" id="vpct-a4">0%</span></div>
+      </div>
+      <div>
+        <div class="vote-sect-label">공유</div>
+        <div class="vote-item"><span class="vote-name">이유·맥락까지 기록 습관<small>결정의 이유가 남아야</small></span><div class="vote-track"><div class="vote-fill" id="vbar-b0"></div></div><span class="vote-cnt" id="vcnt-b0">0</span><span class="vote-pct" id="vpct-b0">0%</span></div>
+        <div class="vote-item"><span class="vote-name">초안·진행물 먼저 공유<small>중간 단계 피드백</small></span><div class="vote-track"><div class="vote-fill" id="vbar-b1"></div></div><span class="vote-cnt" id="vcnt-b1">0</span><span class="vote-pct" id="vpct-b1">0%</span></div>
+        <div class="vote-item"><span class="vote-name">대안·미해결 사항 기록<small>고민 과정까지 공유</small></span><div class="vote-track"><div class="vote-fill" id="vbar-b2"></div></div><span class="vote-cnt" id="vcnt-b2">0</span><span class="vote-pct" id="vpct-b2">0%</span></div>
+        <div class="vote-item"><span class="vote-name">암묵 → 공개 채널 전환<small>복도·메신저 대화를 기록으로</small></span><div class="vote-track"><div class="vote-fill" id="vbar-b3"></div></div><span class="vote-cnt" id="vcnt-b3">0</span><span class="vote-pct" id="vpct-b3">0%</span></div>
+        <div class="vote-item"><span class="vote-name">공유 도구·채널 정비<small>어디에 남길지 구조 먼저</small></span><div class="vote-track"><div class="vote-fill" id="vbar-b4"></div></div><span class="vote-cnt" id="vcnt-b4">0</span><span class="vote-pct" id="vpct-b4">0%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-note">Firebase Realtime Database · 자동 업데이트 중</div>
+</div>
+</div>
+
+<!-- PAGE 2: 자유토론 -->
+<div class="page" id="page-2">
+<div class="container">
+  <div class="section-block">
+    <div class="sc-header">
+      <div class="sc-title">자유토론</div>
+      <div class="sc-desc">( 팀원들이 작성한 의견이 실시간으로 표시됩니다 )</div>
+    </div>
+    <div id="disc-list"><div class="open-empty">아직 작성된 의견이 없습니다</div></div>
+  </div>
+  <div class="footer-note">Firebase Realtime Database · 자동 업데이트 중</div>
+</div>
+</div>
+
+<div class="modal-overlay" id="reset-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">초기화할까요?</div>
+    <div class="modal-desc" id="modal-desc">이 작업은 되돌릴 수 없습니다.</div>
+    <div class="modal-btns"><button class="modal-cancel" onclick="hideResetModal()">취소</button><button class="modal-confirm" onclick="confirmReset()">삭제</button></div>
+  </div>
+</div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getDatabase,ref,onValue,remove,push,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+const cfg={apiKey:"AIzaSyA5da127Wmh6cbDIk0gTr2uwtj5zP-9v08",authDomain:"drbworld.firebaseapp.com",databaseURL:"https://drbworld-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"drbworld",storageBucket:"drbworld.firebasestorage.app",messagingSenderId:"692323820655",appId:"1:692323820655:web:d38af1a32ddc01001c999a"};
+const app=initializeApp(cfg);const db=getDatabase(app);
+
+window.switchPage=i=>{document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',i===j));document.querySelectorAll('.nav-tab').forEach((t,j)=>t.classList.toggle('active',i===j));};
+window.showSlide=i=>{document.querySelectorAll('.slide').forEach((s,j)=>s.classList.toggle('active',i===j));document.querySelectorAll('.slide-btn').forEach((b,j)=>b.classList.toggle('active',i===j));};
+
+let resetTarget='responses';
+window.showResetModal=target=>{
+  resetTarget=target;
+  const label=target==='responses'?'구성원 의견':'자유토론';
+  document.getElementById('modal-title').textContent=`${label}을 초기화할까요?`;
+  document.getElementById('modal-desc').textContent=`${label}의 모든 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`;
+  document.getElementById('reset-modal').classList.add('show');
+};
+window.hideResetModal=()=>document.getElementById('reset-modal').classList.remove('show');
+window.confirmReset=async()=>{await remove(ref(db,resetTarget));hideResetModal();};
+
+const avg=a=>{const v=a.filter(x=>x>0);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
+const fmt=n=>n!=null?n.toFixed(1):'—';
+const setBar=(id,p)=>{const e=document.getElementById(id);if(e)e.style.width=Math.min(p,100)+'%';};
+const setText=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const renderList=(id,items)=>{const el=document.getElementById(id);if(!el)return;const f=items.filter(x=>x&&x.trim());el.innerHTML=f.length?f.map(t=>`<div class="open-item">${esc(t)}</div>`).join(''):'<div class="open-empty">아직 응답 없음</div>';};
+const timeAgo=ts=>{if(!ts)return'—';const d=Math.floor((Date.now()-ts)/1000);if(d<60)return d+'초';if(d<3600)return Math.floor(d/60)+'분';return Math.floor(d/3600)+'시간';};
+
+/* 구성원 의견 실시간 */
+onValue(ref(db,'responses'),snap=>{
+  const data=snap.val();if(!data){setText('total-count',0);return;}
+  const rs=Object.values(data);const n=rs.length;setText('total-count',n);
+  const a1v=rs.map(r=>r.a1).filter(Boolean);const a1a=avg(a1v);setText('a1-avg-disp',a1a?a1a.toFixed(1):'—');setText('avg-a1',a1a?a1a.toFixed(1):'—');
+  for(let i=1;i<=5;i++){const c=a1v.filter(v=>v===i).length;setBar(`a1-bar-${i}`,n>0?c/n*100:0);setText(`a1-cnt-${i}`,c);}
+  const b1v=rs.map(r=>r.b1).filter(Boolean);const b1a=avg(b1v);setText('b1-avg-disp',b1a?b1a.toFixed(1):'—');setText('avg-b1',b1a?b1a.toFixed(1):'—');
+  for(let i=1;i<=5;i++){const c=b1v.filter(v=>v===i).length;setBar(`b1-bar-${i}`,n>0?c/n*100:0);setText(`b1-cnt-${i}`,c);}
+  ['a','b','c','d','e'].forEach(k=>{const v=rs.map(r=>r.a2&&r.a2['a2'+k]).filter(Boolean);const a=avg(v);setBar(`bar-a2${k}`,a?a/5*100:0);setText(`avg-a2${k}`,fmt(a));});
+  ['a','b','c','d'].forEach(k=>{const v=rs.map(r=>r.b2&&r.b2['b2'+k]).filter(Boolean);const a=avg(v);setBar(`bar-b2${k}`,a?a/5*100:0);setText(`avg-b2${k}`,fmt(a));});
+  const lowR=rs.filter(r=>r.a1<=3).map(r=>r.a1_low_reason||r.a1_mid_reason).filter(Boolean);
+  renderList('list-a1-low',lowR);renderList('list-a3',rs.map(r=>r.a3).filter(Boolean));
+  renderList('list-b3',rs.map(r=>r.b3).filter(Boolean));renderList('list-b4',rs.map(r=>r.b4).filter(Boolean));
+  const vA=[0,0,0,0,0];rs.forEach(r=>{if(r.vote_safety&&Array.isArray(r.vote_safety))r.vote_safety.forEach(i=>{if(i>=0&&i<5)vA[i]++;});});
+  const tA=vA.reduce((a,b)=>a+b,0);vA.forEach((c,i)=>{setBar(`vbar-a${i}`,tA>0?c/tA*100:0);setText(`vcnt-a${i}`,c);setText(`vpct-a${i}`,tA>0?Math.round(c/tA*100)+'%':'0%');});
+  const vB=[0,0,0,0,0];rs.forEach(r=>{if(r.vote_share&&Array.isArray(r.vote_share))r.vote_share.forEach(i=>{if(i>=0&&i<5)vB[i]++;});});
+  const tB=vB.reduce((a,b)=>a+b,0);vB.forEach((c,i)=>{setBar(`vbar-b${i}`,tB>0?c/tB*100:0);setText(`vcnt-b${i}`,c);setText(`vpct-b${i}`,tB>0?Math.round(c/tB*100)+'%':'0%');});
+  const ts=rs.map(r=>r.timestamp).filter(Boolean);if(ts.length)setText('last-time',timeAgo(Math.max(...ts)));
+});
+
+/* 자유토론 실시간 */
+onValue(ref(db,'discussion'),snap=>{
+  const el=document.getElementById('disc-list');if(!el)return;
+  const data=snap.val();
+  if(!data){el.innerHTML='<div class="open-empty">아직 작성된 의견이 없습니다</div>';return;}
+  const items=Object.values(data).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+  el.innerHTML=items.map((d,i)=>`
+    <div class="disc-item">
+      <div class="disc-row">
+        <span class="disc-member">구성원 ${i+1}</span>
+        <span class="disc-text">${esc(d.text||'')}</span>
+      </div>
+      <div class="disc-time">${timeAgo(d.timestamp)} 전</div>
+    </div>`).join('');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>협업 진단 설문</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* 큰글씨: 약간 톤다운 */
+  --w-title:rgba(255,255,255,0.92);
+  /* 본문/중간 글씨: 거의 흰색 */
+  --w-body:rgba(255,255,255,0.96);
+  /* 작은 보조 글씨: 순수 흰색에 가깝게 */
+  --w-small:rgba(255,255,255,0.93);
+  /* 가장 흐린 힌트 텍스트 */
+  --w-hint:rgba(255,255,255,0.80);
+  /* placeholder / 비활성 */
+  --w-muted:rgba(255,255,255,0.55);
+  --w18:rgba(255,255,255,0.18);
+  --w10:rgba(255,255,255,0.10);
+  --line:rgba(255,255,255,0.28);
+  --line-s:rgba(255,255,255,0.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Noto Sans KR',-apple-system,sans-serif;
+  color:var(--w100);
+  min-height:100vh;
+  background:
+    linear-gradient(160deg,rgba(6,22,10,0.58) 0%,rgba(10,32,14,0.42) 40%,rgba(5,20,10,0.52) 100%),
+    url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=90") center/cover no-repeat fixed;
+  background-color:#091a0c;
+}
+
+/* HEADER */
+.header{padding:2.25rem 2rem 2.5rem;text-align:center;border-bottom:1px solid var(--line);}
+.header-title{font-size:29px;font-weight:700;color:var(--w-title);letter-spacing:-0.025em;text-shadow:0 2px 16px rgba(0,0,0,0.6);}
+.header-sub{font-size:17px;color:var(--w-body);margin-top:5px;font-weight:400;}
+.header-note{font-size:15px;color:var(--w-small);margin-top:3px;}
+
+.progress-wrap{max-width:580px;margin:1.5rem auto 0;padding:0 2rem;}
+.progress-track{height:2px;background:var(--w18);border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:rgba(255,255,255,0.8);border-radius:99px;transition:width 0.4s ease;width:0%;}
+.progress-label{font-size:15px;color:var(--w-small);text-align:right;margin-top:5px;}
+
+.container{max-width:580px;margin:0 auto;padding:2.5rem 2rem 5rem;}
+
+.section{margin-bottom:3rem;padding-bottom:3rem;border-bottom:1px solid var(--line);}
+.section:last-of-type{border-bottom:none;}
+.section-header{margin-bottom:1.75rem;}
+.section-title{font-size:22px;font-weight:600;color:var(--w-title);letter-spacing:-0.02em;text-shadow:0 1px 12px rgba(0,0,0,0.5);}
+.section-desc{font-size:15px;color:var(--w-small);margin-top:3px;}
+
+.q-block{margin-bottom:1.75rem;}
+.q-block:last-child{margin-bottom:0;}
+.q-tag{display:inline-block;font-size:14px;font-weight:500;color:var(--w-small);border:1px solid var(--line);padding:2px 11px;border-radius:99px;margin-bottom:8px;letter-spacing:0.06em;}
+.q-text{font-size:20px;font-weight:500;color:var(--w-title);margin-bottom:6px;line-height:1.5;letter-spacing:-0.01em;text-shadow:0 1px 10px rgba(0,0,0,0.5);}
+.q-sub{font-size:16px;color:var(--w-small);margin-bottom:14px;line-height:1.6;}
+
+.cond-block{border-left:2px solid var(--line);padding-left:1.25rem;margin-bottom:1.75rem;display:none;}
+.cond-block.visible{display:block;}
+.cond-tag{font-size:14px;color:var(--w-small);display:inline-block;margin-bottom:8px;letter-spacing:0.04em;}
+
+/* ── 리커트 : 균일한 크기, hover/선택 시 밝게 ── */
+.likert-wrap{display:flex;gap:8px;}
+.likert-opt{flex:1;}
+.likert-opt input{display:none;}
+.likert-opt label{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:6px;
+  height:88px;          /* 고정 높이 — 모든 박스 동일 */
+  border:1px solid rgba(255,255,255,0.28);
+  border-radius:12px;
+  cursor:pointer;
+  transition:all 0.18s;
+  background:rgba(255,255,255,0.04);
+}
+.likert-opt label .num{font-size:27px;font-weight:700;color:rgba(255,255,255,0.55);transition:all 0.18s;}
+.likert-opt label .lbl{font-size:13px;color:rgba(255,255,255,0.55);text-align:center;line-height:1.3;transition:all 0.18s;}
+/* hover */
+.likert-opt label:hover{
+  border-color:rgba(255,255,255,0.75);
+  background:rgba(255,255,255,0.12);
+}
+.likert-opt label:hover .num,
+.likert-opt label:hover .lbl{color:rgba(255,255,255,0.90);}
+/* 선택됨 */
+.likert-opt input:checked+label{
+  border-color:rgba(255,255,255,0.95);
+  background:rgba(255,255,255,0.20);
+}
+.likert-opt input:checked+label .num{color:rgba(255,255,255,1);}
+.likert-opt input:checked+label .lbl{color:rgba(255,255,255,0.90);}
+
+/* ── 매트릭스 ── */
+.matrix-head{display:grid;grid-template-columns:1fr repeat(5,48px);padding:0 0 8px 0;border-bottom:1px solid var(--line-s);margin-bottom:2px;}
+.matrix-head span{font-size:15px;color:var(--w-small);text-align:center;}
+.matrix-head span:first-child{text-align:left;}
+.matrix-row-item{display:grid;grid-template-columns:1fr repeat(5,48px);padding:12px 0;border-bottom:1px solid var(--line-s);align-items:center;}
+.matrix-row-item:last-child{border-bottom:none;}
+.matrix-row-item span{font-size:17px;color:var(--w-body);line-height:1.5;}
+.matrix-row-item label{display:flex;justify-content:center;align-items:center;cursor:pointer;height:44px;}
+/* 네이티브 라디오 appearance:none 으로 직접 커스텀 */
+.matrix-row-item label input[type=radio]{
+  appearance:none;-webkit-appearance:none;
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,0.45);
+  background:rgba(255,255,255,0.06);
+  cursor:pointer;transition:all 0.18s;margin:0;
+}
+.matrix-row-item label input[type=radio]:hover{
+  border-color:rgba(255,255,255,0.85);
+  background:rgba(255,255,255,0.14);
+}
+.matrix-row-item label input[type=radio]:checked{
+  border-color:rgba(255,255,255,0.95);
+  background:rgba(255,255,255,0.22);
+  box-shadow:inset 0 0 0 5px rgba(255,255,255,0.88);
+}
+
+textarea{
+  width:100%;border:none;border-bottom:1px solid rgba(255,255,255,0.35);
+  padding:10px 0;font-size:17px;font-family:inherit;
+  color:rgba(255,255,255,0.92);  /* 입력 글자 흰색 계열 */
+  background:transparent;resize:none;min-height:60px;
+  line-height:1.7;transition:border-color 0.2s;
+  caret-color:rgba(255,255,255,0.9);
+}
+textarea:focus{outline:none;border-bottom-color:rgba(255,255,255,0.7);}
+textarea::placeholder{color:rgba(255,255,255,0.40);}
+
+.sep{height:1px;background:var(--line-s);margin:1.5rem 0;}
+
+/* ── 투표 카드 ── */
+.vote-cat-label{font-size:14px;font-weight:600;color:var(--w-small);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--line-s);}
+.vote-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:6px;}
+.vote-card{
+  min-height:72px;display:flex;align-items:center;gap:14px;
+  padding:14px 16px;
+  border:1px solid rgba(255,255,255,0.22);border-radius:12px;
+  cursor:pointer;transition:all 0.18s;user-select:none;
+  background:rgba(255,255,255,0.03);
+}
+.vote-card:hover{border-color:rgba(255,255,255,0.70);background:rgba(255,255,255,0.10);}
+.vote-card.selected{border-color:rgba(255,255,255,0.95);background:rgba(255,255,255,0.16);}
+.vote-card.disabled{opacity:0.35;pointer-events:none;}
+
+.vote-check{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  border:1.5px solid rgba(255,255,255,0.40);
+  background:transparent;transition:all 0.18s;
+  display:flex;align-items:center;justify-content:center;
+}
+.vote-card.selected .vote-check{background:rgba(255,255,255,0.95);border-color:rgba(255,255,255,0.95);}
+.vote-check-inner{width:8px;height:8px;border-radius:50%;background:rgba(8,24,12,0.90);opacity:0;transition:opacity 0.15s;}
+.vote-card.selected .vote-check-inner{opacity:1;}
+.vote-card-text{flex:1;}
+.vote-card-main{font-size:17px;color:var(--w-body);font-weight:400;line-height:1.5;}
+.vote-card-sub{font-size:14px;color:var(--w-small);margin-top:3px;line-height:1.4;}
+.vote-limit-note{font-size:15px;color:var(--w-small);margin-top:4px;}
+
+/* ── 제출 버튼 ── */
+.submit-wrap{text-align:center;margin-top:2.5rem;}
+.submit-btn{
+  position:relative;overflow:hidden;
+  background:rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.96);
+  border:1px solid rgba(255,255,255,0.60);
+  border-radius:99px;
+  padding:14px 52px;font-size:18px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;font-family:inherit;
+  text-shadow:0 1px 6px rgba(0,0,0,0.4);
+  letter-spacing:0.02em;
+}
+.submit-btn::before{
+  content:'';position:absolute;inset:0;border-radius:99px;
+  background:rgba(255,255,255,0.08);
+  opacity:0;transition:opacity 0.18s;
+}
+.submit-btn:hover{
+  background:rgba(255,255,255,0.25);
+  border-color:rgba(255,255,255,0.90);
+  color:#fff;
+}
+.submit-btn:hover::before{opacity:1;}
+.submit-btn:disabled{
+  background:transparent;border-color:rgba(255,255,255,0.25);
+  color:rgba(255,255,255,0.35);cursor:not-allowed;
+}
+.notice{font-size:15px;color:var(--w-small);text-align:center;margin-top:10px;}
+
+.toast{position:fixed;bottom:36px;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(0,0,0,0.75);color:#fff;padding:12px 24px;border-radius:99px;border:1px solid var(--line);font-size:16px;opacity:0;transition:all 0.3s;pointer-events:none;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.success{display:none;text-align:center;padding:5rem 2rem;}
+.success.show{display:block;}
+.success-mark{width:52px;height:52px;border:1px solid var(--w60);border-radius:50%;margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;animation:appear 0.4s ease;}
+@keyframes appear{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.success-title{font-size:25px;font-weight:600;color:var(--w100);margin-bottom:8px;}
+.success-sub{font-size:17px;color:var(--w-body);line-height:1.8;}
+#survey-form.hidden{display:none;}
+
+@media(max-width:480px){
+  .matrix-head,.matrix-row-item{grid-template-columns:1fr repeat(5,32px);}
+  .matrix-row-item span{font-size:15px;}
+  .likert-wrap{gap:5px;}
+  .vote-card{min-height:64px;padding:12px 14px;}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-title">우리 팀 협업 진단 설문</div>
+  <div class="header-sub">심리적 안전감 & 공유 수준 점검</div>
+  <div class="header-note">익명으로 취합됩니다</div>
+  <div class="progress-wrap">
+    <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+    <div class="progress-label" id="progress-label">0% 완료</div>
+  </div>
+</div>
+
+<div class="container">
+<div id="survey-form">
+
+  <!-- A -->
+  <div class="section">
+    <div class="section-header"><div class="section-title">A. 심리적 안전감</div><div class="section-desc">말이 흐를 수 있는 조건 · 현황 진단</div></div>
+
+    <div class="q-block">
+      <div class="q-tag">A-1</div>
+      <div class="q-text">나는 우리 팀에서 전반적으로 심리적 안전감을 느낀다.</div>
+      <div class="q-sub">1 = 전혀 그렇지 않다 · 5 = 매우 그렇다</div>
+      <div class="likert-wrap">
+        <div class="likert-opt"><input type="radio" name="a1" id="a1-1" value="1"><label for="a1-1"><span class="num">1</span><span class="lbl">전혀<br>아니다</span></label></div>
+        <div class="likert-opt"><input type="radio" name="a1" id="a1-2" value="2"><label for="a1-2"><span class="num">2</span><span class="lbl"></span></label></div>
+        <div class="likert-opt"><input type="radio" name="a1" id="a1-3" value="3"><label for="a1-3"><span class="num">3</span><span class="lbl">보통</span></label></div>
+        <div class="likert-opt"><input type="radio" name="a1" id="a1-4" value="4"><label for="a1-4"><span class="num">4</span><span class="lbl"></span></label></div>
+        <div class="likert-opt"><input type="radio" name="a1" id="a1-5" value="5"><label for="a1-5"><span class="num">5</span><span class="lbl">매우<br>그렇다</span></label></div>
+      </div>
+    </div>
+
+    <div class="cond-block" id="cond-low">
+      <div class="cond-tag">↳ 1~2점 응답</div>
+      <div class="q-tag">A-1-a</div>
+      <div class="q-text">심리적 안전감이 높지 않다고 느끼는 이유는 무엇인가요?</div>
+      <div class="q-sub">어떤 상황에서, 어떤 이유로 말하기 어렵다고 느끼는지 적어주세요.</div>
+      <textarea id="a1_low_reason" placeholder="예: 이견을 냈을 때 무시된 경험이 있다 / 직급 차이로 반대 의견을 내기 어렵다 등"></textarea>
+    </div>
+    <div class="cond-block" id="cond-mid">
+      <div class="cond-tag">↳ 3점 응답</div>
+      <div class="q-tag">A-1-a</div>
+      <div class="q-text">심리적 안전감을 충분히 느끼지 못하게 하는 요인이 있다면?</div>
+      <div class="q-sub">상황에 따라 말하기 어렵거나 망설여지는 경우가 있다면 적어주세요.</div>
+      <textarea id="a1_mid_reason" placeholder="예: 특정 주제나 사람 앞에서는 의견 내기가 어렵다 등"></textarea>
+    </div>
+
+    <div class="q-block">
+      <div class="q-tag">A-2</div>
+      <div class="q-text">각 상황에서 부담 없이 행동할 수 있는 정도를 표시해 주세요.</div>
+      <div class="q-sub">1 = 매우 어렵다 · 5 = 매우 편하다</div>
+      <div class="matrix-head"><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+      <div class="matrix-row-item"><span>모르는 것 질문하기</span><label><input type="radio" name="a2a" value="1"></label><label><input type="radio" name="a2a" value="2"></label><label><input type="radio" name="a2a" value="3"></label><label><input type="radio" name="a2a" value="4"></label><label><input type="radio" name="a2a" value="5"></label></div>
+      <div class="matrix-row-item"><span>반대 의견·이견 내기</span><label><input type="radio" name="a2b" value="1"></label><label><input type="radio" name="a2b" value="2"></label><label><input type="radio" name="a2b" value="3"></label><label><input type="radio" name="a2b" value="4"></label><label><input type="radio" name="a2b" value="5"></label></div>
+      <div class="matrix-row-item"><span>내 실수 공개 인정하기</span><label><input type="radio" name="a2c" value="1"></label><label><input type="radio" name="a2c" value="2"></label><label><input type="radio" name="a2c" value="3"></label><label><input type="radio" name="a2c" value="4"></label><label><input type="radio" name="a2c" value="5"></label></div>
+      <div class="matrix-row-item"><span>동료에게 도움 요청하기</span><label><input type="radio" name="a2d" value="1"></label><label><input type="radio" name="a2d" value="2"></label><label><input type="radio" name="a2d" value="3"></label><label><input type="radio" name="a2d" value="4"></label><label><input type="radio" name="a2d" value="5"></label></div>
+      <div class="matrix-row-item"><span>우려되는 리스크 공유하기</span><label><input type="radio" name="a2e" value="1"></label><label><input type="radio" name="a2e" value="2"></label><label><input type="radio" name="a2e" value="3"></label><label><input type="radio" name="a2e" value="4"></label><label><input type="radio" name="a2e" value="5"></label></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-tag">A-3</div>
+      <div class="q-text">심리적 안전감을 높이기 위해 우리 팀이 실제로 바꿀 수 있는 것은?</div>
+      <div class="q-sub">구체적인 행동 · 규칙 · 구조 변화 등 자유롭게 적어주세요.</div>
+      <textarea id="a3" placeholder="예: 회의 시작 시 이견을 먼저 환영하는 말 건네기 등"></textarea>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="section">
+    <div class="section-header"><div class="section-title">B. 공유</div><div class="section-desc">판단이 이어지게 하는 조건 · 현황 진단</div></div>
+
+    <div class="q-block">
+      <div class="q-tag">B-1</div>
+      <div class="q-text">우리 팀에서 의사결정과 업무 정보가 잘 공유되고 있다고 생각한다.</div>
+      <div class="q-sub">1 = 전혀 그렇지 않다 · 5 = 매우 그렇다</div>
+      <div class="likert-wrap">
+        <div class="likert-opt"><input type="radio" name="b1" id="b1-1" value="1"><label for="b1-1"><span class="num">1</span><span class="lbl">전혀<br>아니다</span></label></div>
+        <div class="likert-opt"><input type="radio" name="b1" id="b1-2" value="2"><label for="b1-2"><span class="num">2</span><span class="lbl"></span></label></div>
+        <div class="likert-opt"><input type="radio" name="b1" id="b1-3" value="3"><label for="b1-3"><span class="num">3</span><span class="lbl">보통</span></label></div>
+        <div class="likert-opt"><input type="radio" name="b1" id="b1-4" value="4"><label for="b1-4"><span class="num">4</span><span class="lbl"></span></label></div>
+        <div class="likert-opt"><input type="radio" name="b1" id="b1-5" value="5"><label for="b1-5"><span class="num">5</span><span class="lbl">매우<br>그렇다</span></label></div>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-tag">B-2</div>
+      <div class="q-text">각 항목이 우리 팀에서 실제로 이루어지고 있는 정도를 표시해 주세요.</div>
+      <div class="q-sub">1 = 전혀 안 된다 · 5 = 매우 잘 된다</div>
+      <div class="matrix-head"><span></span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span></div>
+      <div class="matrix-row-item"><span>의사결정 결과 + 이유·맥락 기록</span><label><input type="radio" name="b2a" value="1"></label><label><input type="radio" name="b2a" value="2"></label><label><input type="radio" name="b2a" value="3"></label><label><input type="radio" name="b2a" value="4"></label><label><input type="radio" name="b2a" value="5"></label></div>
+      <div class="matrix-row-item"><span>완성 전 초안·진행물 공유</span><label><input type="radio" name="b2b" value="1"></label><label><input type="radio" name="b2b" value="2"></label><label><input type="radio" name="b2b" value="3"></label><label><input type="radio" name="b2b" value="4"></label><label><input type="radio" name="b2b" value="5"></label></div>
+      <div class="matrix-row-item"><span>검토된 대안·미해결 사항 기록</span><label><input type="radio" name="b2c" value="1"></label><label><input type="radio" name="b2c" value="2"></label><label><input type="radio" name="b2c" value="3"></label><label><input type="radio" name="b2c" value="4"></label><label><input type="radio" name="b2c" value="5"></label></div>
+      <div class="matrix-row-item"><span>정보가 검색·참조 가능한 형태로 저장</span><label><input type="radio" name="b2d" value="1"></label><label><input type="radio" name="b2d" value="2"></label><label><input type="radio" name="b2d" value="3"></label><label><input type="radio" name="b2d" value="4"></label><label><input type="radio" name="b2d" value="5"></label></div>
+    </div>
+
+    <div class="q-block">
+      <div class="q-tag">B-3</div>
+      <div class="q-text">우리 팀에서 공유가 잘 안 되는 주된 이유가 무엇이라고 생각하시나요?</div>
+      <div class="q-sub">경험을 바탕으로 구체적으로 적어주실수록 도움이 됩니다.</div>
+      <textarea id="b3" placeholder="예: 기록할 시간이 없다 / 어디에 남겨야 하는지 기준이 없다 등"></textarea>
+    </div>
+    <div class="q-block">
+      <div class="sep"></div>
+      <div class="q-tag">B-4</div>
+      <div class="q-text">공유가 잘 이루어지게 하려면 우리 팀이 무엇을 하면 좋을까요?</div>
+      <div class="q-sub">도구 · 규칙 · 습관 · 구조 변화 등 어떤 아이디어든 환영합니다.</div>
+      <textarea id="b4" placeholder="예: 회의록에 결정 이유 한 줄씩 남기기 / 주간 공유 루틴 만들기 등"></textarea>
+    </div>
+  </div>
+
+  <!-- C 투표 -->
+  <div class="section">
+    <div class="section-header"><div class="section-title">C. 우리 팀에 지금 가장 필요한 것은?</div><div class="section-desc">카테고리별 최대 2개 선택 · 다시 클릭하면 취소</div></div>
+
+    <div style="margin-bottom:2rem">
+      <div class="vote-cat-label">심리적 안전감 — 가장 필요한 변화</div>
+      <div class="vote-grid" id="va-grid">
+        <div class="vote-card" data-cat="va" data-val="0" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">회의에서 이견·반대 의견을 편하게 말할 수 있는 분위기</div><div class="vote-card-sub">암묵적 동조가 기대되는 상황을 개선</div></div></div>
+        <div class="vote-card" data-cat="va" data-val="1" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">모르는 것을 물어도 괜찮은 문화</div><div class="vote-card-sub">질문이 협업의 시작으로 받아들여지는 분위기</div></div></div>
+        <div class="vote-card" data-cat="va" data-val="2" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">실수를 추궁이 아닌 학습으로 다루는 회고 방식</div><div class="vote-card-sub">비난 없는 회고로 전환</div></div></div>
+        <div class="vote-card" data-cat="va" data-val="3" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">도움 요청이 자연스러운 협업 구조</div><div class="vote-card-sub">혼자 해결해야 한다는 압박을 줄이는 환경</div></div></div>
+        <div class="vote-card" data-cat="va" data-val="4" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">리더·상위직급이 먼저 불확실성을 드러내는 행동</div><div class="vote-card-sub">리더의 솔직함이 팀 전체의 안전감을 올린다</div></div></div>
+      </div>
+      <div class="vote-limit-note">최대 2개까지 선택할 수 있습니다 · 다시 클릭하면 취소</div>
+    </div>
+
+    <div>
+      <div class="vote-cat-label">공유 — 가장 필요한 변화</div>
+      <div class="vote-grid" id="vb-grid">
+        <div class="vote-card" data-cat="vb" data-val="0" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">의사결정 결과뿐 아니라 이유·맥락까지 기록하는 습관</div><div class="vote-card-sub">"왜 그렇게 결정했는지"가 남아야 다음 판단이 이어짐</div></div></div>
+        <div class="vote-card" data-cat="vb" data-val="1" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">완성 전 초안·진행 중 작업을 먼저 공유하는 문화</div><div class="vote-card-sub">중간 단계에서 피드백을 받는 방식</div></div></div>
+        <div class="vote-card" data-cat="vb" data-val="2" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">검토된 대안과 미해결 사항도 함께 남기는 기록</div><div class="vote-card-sub">"무엇을 고민했는지"까지 공유</div></div></div>
+        <div class="vote-card" data-cat="vb" data-val="3" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">복도·메신저·회식 대화를 공개 채널로 끌어내는 구조</div><div class="vote-card-sub">암묵적 정보를 명시적 기록으로 전환</div></div></div>
+        <div class="vote-card" data-cat="vb" data-val="4" onclick="toggleVote(this)"><div class="vote-check"><div class="vote-check-inner"></div></div><div class="vote-card-text"><div class="vote-card-main">정보를 검색·참조할 수 있는 공유 도구·채널 정비</div><div class="vote-card-sub">어디에 남길지 구조부터</div></div></div>
+      </div>
+      <div class="vote-limit-note">최대 2개까지 선택할 수 있습니다 · 다시 클릭하면 취소</div>
+    </div>
+  </div>
+
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitSurvey()">구성원 의견 제출하기</button>
+    <div class="notice">응답은 익명으로 저장되며 팀 개선 목적으로만 활용됩니다</div>
+  </div>
+</div>
+
+<div class="success" id="success-screen">
+  <div class="success-mark"><svg width="22" height="22" viewBox="0 0 22 22" fill="none"><polyline points="4,11 8.5,16 18,6" stroke="rgba(255,255,255,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="success-title">응답이 제출되었습니다</div>
+  <div class="success-sub">소중한 의견 감사합니다<br>아래에서 자유토론에도 참여하실 수 있습니다</div>
+</div>
+
+<!-- 자유토론 : 설문 제출 여부와 무관하게 항상 표시 -->
+<div class="section" style="margin-top:2rem">
+  <div class="section-header">
+    <div class="section-title">D. 자유토론</div>
+    <div class="section-desc">자유롭게 의견을 남겨주세요 · 실시간으로 대시보드에 표시됩니다</div>
+  </div>
+  <div class="q-block">
+    <div class="q-text">팀 협업과 관련해 하고 싶은 말, 제안, 질문을 자유롭게 적어주세요.</div>
+    <div class="q-sub">익명으로 표시됩니다</div>
+    <textarea id="disc-input" placeholder="예: 우리 팀에서 가장 먼저 바꾸고 싶은 것은... / 오늘 내용 중 가장 인상 깊었던 것은..." style="min-height:90px"></textarea>
+  </div>
+  <div class="submit-wrap" style="margin-top:1rem">
+    <button class="submit-btn" id="disc-btn" onclick="submitDiscussion()">의견 남기기</button>
+  </div>
+  <div id="disc-sent" style="display:none;text-align:center;padding:1rem 0;font-size:17px;color:var(--w-small)">의견이 전달되었습니다. 추가로 더 작성하실 수 있습니다.</div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getDatabase,ref,push,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+const cfg={apiKey:"AIzaSyA5da127Wmh6cbDIk0gTr2uwtj5zP-9v08",authDomain:"drbworld.firebaseapp.com",databaseURL:"https://drbworld-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"drbworld",storageBucket:"drbworld.firebasestorage.app",messagingSenderId:"692323820655",appId:"1:692323820655:web:d38af1a32ddc01001c999a"};
+const app=initializeApp(cfg);const db=getDatabase(app);
+
+/* ── 라디오 토글 (취소 기능) ── */
+/* ── 매트릭스 라디오 토글 ── */
+/* mousedown에서 클릭 직전 상태 저장, click에서 취소 처리 */
+document.querySelectorAll('.matrix-row-item label').forEach(label=>{
+  const radio = label.querySelector('input[type=radio]');
+  if(!radio) return;
+  let wasCheckedBeforeClick = false;
+  label.addEventListener('mousedown', ()=>{ wasCheckedBeforeClick = radio.checked; });
+  label.addEventListener('click', e=>{
+    if(wasCheckedBeforeClick){
+      /* 이미 선택된 걸 클릭 → 취소 */
+      radio.checked = false;
+      updateProgress();
+    } else {
+      radio.checked = true;
+      updateProgress();
+    }
+  });
+});
+
+/* ── 리커트 토글 ── */
+document.querySelectorAll('.likert-opt label').forEach(label=>{
+  const radio = label.control || label.querySelector('input');
+  if(!radio) return;
+  let wasCheckedBeforeClick = false;
+  label.addEventListener('mousedown', ()=>{ wasCheckedBeforeClick = radio.checked; });
+  label.addEventListener('click', e=>{
+    if(wasCheckedBeforeClick){
+      radio.checked = false;
+      updateProgress();
+      checkA1(null);
+    }
+  });
+});
+document.querySelectorAll('input[name="a1"]').forEach(r=>{ r.addEventListener('change',()=>{ checkA1(parseInt(r.value)); updateProgress(); }); });
+document.querySelectorAll('input[name="b1"]').forEach(r=>{ r.addEventListener('change',()=>{ updateProgress(); }); });
+
+window.checkA1=v=>{
+  document.getElementById('cond-low').classList.toggle('visible', v!=null && v<=2);
+  document.getElementById('cond-mid').classList.toggle('visible', v===3);
+};
+
+/* ── 투표 토글 ── */
+const voteState={va:new Set(),vb:new Set()};
+window.toggleVote=function(card){
+  const cat=card.dataset.cat; const val=parseInt(card.dataset.val);
+  const sel=voteState[cat]; const grid=document.getElementById(cat+'-grid');
+  if(sel.has(val)){ sel.delete(val); card.classList.remove('selected'); }
+  else { if(sel.size>=2) return; sel.add(val); card.classList.add('selected'); }
+  grid.querySelectorAll('.vote-card').forEach(c=>{
+    if(sel.size>=2 && !sel.has(parseInt(c.dataset.val))) c.classList.add('disabled');
+    else c.classList.remove('disabled');
+  });
+};
+
+const getVal=name=>{const e=document.querySelector(`input[name="${name}"]:checked`);return e?parseInt(e.value):null;};
+const getMatrix=names=>{const r={};names.forEach(n=>{r[n]=getVal(n);});return r;};
+const getVotes=cat=>Array.from(voteState[cat]);
+
+function updateProgress(){
+  const f=['a1','b1'].filter(n=>getVal(n)!==null).length;
+  const p=Math.round(f/2*100);
+  document.getElementById('progress').style.width=p+'%';
+  document.getElementById('progress-label').textContent=p+'% 완료';
+}
+
+/* ── 구성원 의견 제출 ── */
+window.submitSurvey=async()=>{
+  if(!getVal('a1')){showToast('A-1 문항에 응답해 주세요');return;}
+  if(!getVal('b1')){showToast('B-1 문항에 응답해 주세요');return;}
+  const btn=document.querySelector('#survey-form .submit-btn');btn.disabled=true;btn.textContent='제출 중...';
+  const payload={
+    timestamp:serverTimestamp(),
+    a1:getVal('a1'),
+    a1_low_reason:document.getElementById('a1_low_reason').value.trim(),
+    a1_mid_reason:document.getElementById('a1_mid_reason').value.trim(),
+    a2:getMatrix(['a2a','a2b','a2c','a2d','a2e']),
+    a3:document.getElementById('a3').value.trim(),
+    b1:getVal('b1'),
+    b2:getMatrix(['b2a','b2b','b2c','b2d']),
+    b3:document.getElementById('b3').value.trim(),
+    b4:document.getElementById('b4').value.trim(),
+    vote_safety:getVotes('va'),
+    vote_share:getVotes('vb')
+  };
+  try{
+    await push(ref(db,'responses'),payload);
+    document.getElementById('survey-form').classList.add('hidden');
+    document.getElementById('success-screen').classList.add('show');
+    window.scrollTo({top:0,behavior:'smooth'});
+  }catch(e){
+    showToast('오류가 발생했습니다. 다시 시도해 주세요.');
+    btn.disabled=false;btn.textContent='구성원 의견 제출하기';
+  }
+};
+
+/* ── 자유토론 제출 ── */
+window.submitDiscussion=async()=>{
+  const ta=document.getElementById('disc-input');
+  const text=ta.value.trim();
+  if(!text){showToast('의견을 입력해 주세요');return;}
+  const btn=document.getElementById('disc-btn');
+  btn.disabled=true;btn.textContent='전송 중...';
+  try{
+    await push(ref(db,'discussion'),{text,timestamp:serverTimestamp()});
+    ta.value='';
+    document.getElementById('disc-sent').style.display='block';
+    setTimeout(()=>{ document.getElementById('disc-sent').style.display='none'; },3000);
+  }catch(e){
+    showToast('오류가 발생했습니다. 다시 시도해 주세요.');
+  }
+  btn.disabled=false;btn.textContent='의견 남기기';
+};
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
+</script>
+</body>
+</html>
