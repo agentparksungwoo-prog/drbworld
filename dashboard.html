@@ -36,7 +36,7 @@ body{
 
 /* ── HEADER : 완전 투명, 텍스트만 ── */
 .header{
-  padding:1.75rem 2.5rem 1.5rem;
+  padding:2.1rem 2.5rem 1.8rem;
   border-bottom:1px solid var(--line);
 }
 .header-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;}
@@ -173,39 +173,444 @@ body{
 .modal-confirm{background:rgba(255,255,255,0.12);border:1px solid var(--white-30);border-radius:99px;padding:10px 24px;font-size:14px;color:var(--w-title);cursor:pointer;font-family:inherit;transition:all 0.2s;}
 .modal-confirm:hover{background:rgba(255,255,255,0.2);}
 
+/* 질문 맥락 표시 */
+.q-ctx{margin-bottom:1rem;padding:0.9rem 1.25rem;border-left:3px solid rgba(255,255,255,0.35);background:rgba(255,255,255,0.05);border-radius:0 10px 10px 0;}
+.q-ctx-label{font-size:12px;font-weight:700;color:rgba(255,255,255,0.55);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:5px;}
+.q-ctx-text{font-size:16px;color:rgba(255,255,255,0.92);font-weight:500;line-height:1.5;margin-bottom:3px;}
+.q-ctx-scale{font-size:13px;color:rgba(255,255,255,0.55);}
+
+/* 결론 편집 */
+.concl-block{margin-bottom:2rem;}
+.concl-label{font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;}
+.concl-editor{
+  min-height:100px;padding:16px 18px;
+  border:1px solid rgba(255,255,255,0.28);border-radius:12px;
+  background:rgba(255,255,255,0.05);
+  color:rgba(255,255,255,0.93);font-size:16px;font-family:inherit;
+  line-height:1.75;outline:none;
+  transition:border-color 0.2s;
+  white-space:pre-wrap;
+}
+.concl-editor:focus{border-color:rgba(255,255,255,0.65);background:rgba(255,255,255,0.08);}
+.concl-editor:empty::before{content:attr(data-placeholder);color:rgba(255,255,255,0.30);font-size:14px;pointer-events:none;}
+
 .footer-note{font-size:13px;color:var(--w-hint);text-align:center;margin-top:3rem;}
 
-/* 자유토론 */
-.disc-item{padding:1.25rem 0;border-bottom:1px solid var(--line-soft);}
+/* 자유토론 수정/삭제 */
+.disc-item{padding:1.25rem 0;border-bottom:1px solid var(--line-soft);position:relative;}
 .disc-item:last-child{border-bottom:none;}
-.disc-row{display:flex;align-items:baseline;gap:12px;}
+.disc-row{display:flex;align-items:baseline;gap:12px;flex:1;}
 .disc-member{font-size:13px;font-weight:700;color:var(--w-small);white-space:nowrap;flex-shrink:0;}
 .disc-text{font-size:17px;color:var(--w-body);line-height:1.75;font-weight:400;}
 .disc-time{font-size:13px;color:var(--w-hint);margin-top:6px;}
+.disc-actions{display:flex;gap:8px;margin-top:8px;}
+.disc-btn{background:transparent;border:1px solid var(--line);border-radius:99px;padding:4px 14px;font-size:12px;color:var(--w-small);cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.disc-btn:hover{border-color:var(--w-body);color:var(--w-body);}
+.disc-btn.del:hover{border-color:rgba(255,150,150,0.6);color:rgba(255,150,150,0.9);}
+.disc-edit-area{width:100%;margin-top:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.35);border-radius:10px;padding:10px 14px;color:var(--w-body);font-size:16px;font-family:inherit;line-height:1.7;resize:vertical;min-height:60px;outline:none;}
+.disc-edit-area:focus{border-color:rgba(255,255,255,0.65);}
 
-@media(max-width:720px){
-  .stats-row{grid-template-columns:repeat(2,1fr);}
-  .two-col,.three-col{grid-template-columns:1fr;}
-  .vs-wrap{flex-direction:column;}
-  .vote-track{display:none;}
-  .matrix-name{min-width:130px;font-size:13px;}
-  .slide-title{font-size:26px;}
+/* ── 전체 인쇄 ── */
+@media print {
+  .no-print,
+  .nav-wrap,
+  .disc-actions,
+  .modal-overlay,
+  .qr-modal-overlay { display:none !important; }
+
+  @page {
+    size: A4 landscape;
+    margin: 14mm 18mm;
+  }
+
+  /* 흰 배경 보고서 */
+  html { background:#fff !important; }
+  body {
+    background:#fff !important;
+    background-image: none !important;
+    color:#1A1A1A !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 헤더 인쇄용 */
+  .header {
+    background:#F5F7F5 !important;
+    border-bottom: 2px solid #2D5C3A !important;
+    padding: 10px 18mm !important;
+  }
+  .header-title { color:#1A3522 !important; font-size:18px !important; text-shadow:none !important; }
+  .header-sub   { color:#4A7C5F !important; font-size:12px !important; }
+
+  /* 모든 탭 표시 */
+  .page { display:block !important; }
+  #page-0 { page-break-after:always; }
+  #page-1 { page-break-after:always; }
+  #page-2 { page-break-after:always; }
+  #page-3 { page-break-after:avoid; }
+
+  /* 슬라이드 */
+  .slide-nav { display:none !important; }
+  .slide { display:block !important; margin-bottom:1.5rem; }
+
+  /* 잘림 방지 */
+  .slide-wrap, .section-block, .stat-item,
+  .two-col, .three-col, .vs-wrap,
+  .concl-block, .matrix-item, .vote-item,
+  .open-item, .disc-item, .q-ctx,
+  .item-block, .flow-row { page-break-inside:avoid; }
+
+  /* 레이아웃 유지 */
+  .two-col   { display:grid !important; grid-template-columns:1fr 1fr !important; }
+  .three-col { display:grid !important; grid-template-columns:1fr 1fr 1fr !important; }
+  .vs-wrap   { display:flex !important; }
+  .stats-row { display:grid !important; grid-template-columns:repeat(4,1fr) !important; }
+
+  /* 텍스트 컬러 */
+  .slide-title,.sc-title,.item-title,.stat-value,.avg-num { color:#1A3522 !important; text-shadow:none !important; }
+  .slide-sub,.item-body,.vs-body,.q-ctx-text { color:#333 !important; }
+  .slide-label,.item-tag,.q-ctx-label,.result-label,.vote-sect-label,
+  .stat-label,.stat-sub,.dist-lbl,.dist-cnt,.disc-member,.disc-time,
+  .footer-note,.q-ctx-scale,.concl-label { color:#666 !important; }
+  .flow-box { border-color:#999 !important; color:#222 !important; background:#F8F8F8 !important; }
+  .flow-arrow { color:#666 !important; }
+  .flow-wrong { border-color:#C04040 !important; color:#C04040 !important; background:#FFF5F5 !important; }
+  .flow-right { border-color:#2D7040 !important; color:#2D7040 !important; background:#F3FAF5 !important; }
+  .mk-g { color:#1A7040 !important; }
+  .mk-r { color:#C04040 !important; }
+  .quote-line { border-left-color:#2D5C3A !important; color:#555 !important; }
+
+  /* 배경/테두리 */
+  .q-ctx { background:#F3FAF5 !important; border-left-color:#2D5C3A !important; }
+  .concl-editor { background:#F8F8F8 !important; border-color:#CCC !important; color:#1A1A1A !important; }
+  .open-item { border-color:#DDD !important; color:#333 !important; }
+  .disc-text { color:#333 !important; }
+  .matrix-name { color:#333 !important; }
+  .vote-name  { color:#333 !important; }
+  .sc-header  { border-bottom-color:#DDD !important; }
+  .dist-track,.matrix-track,.vote-track { background:#E8E8E8 !important; }
+  .dist-fill,.matrix-fill,.vote-fill { background:#2D5C3A !important; }
+  .matrix-val,.vote-cnt { color:#1A3522 !important; }
+  .avg-den { color:#888 !important; }
+  .vs-head { color:#555 !important; }
+  .vs-body { border-color:#DDD !important; }
+  .check-list li { border-color:#EEE !important; color:#333 !important; }
+  .nav-wrap { display:none !important; }
+  .container { max-width:100% !important; padding:1rem 0 2rem !important; }
+}
+
+/* ── 표지 페이지 ── */
+.cover-page{
+  position:fixed;inset:0;z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;
+  background:
+    linear-gradient(160deg,rgba(8,28,14,0.62) 0%,rgba(10,32,14,0.48) 40%,rgba(5,20,10,0.58) 100%),
+    url("https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1920&q=90") center/cover no-repeat;
+  transition:opacity 0.6s ease;
+}
+.cover-page.hide{opacity:0;pointer-events:none;}
+.cover-title{font-size:48px;font-weight:700;color:#fff;letter-spacing:-0.03em;text-align:center;line-height:1.2;text-shadow:0 2px 24px rgba(0,0,0,0.5);margin-bottom:16px;}
+.cover-title span{display:block;font-size:22px;font-weight:300;color:rgba(255,255,255,0.70);letter-spacing:0.02em;margin-top:10px;}
+.cover-team{font-size:18px;color:rgba(255,255,255,0.65);font-weight:400;letter-spacing:0.06em;margin-bottom:60px;}
+.cover-hint{font-size:13px;color:rgba(255,255,255,0.35);letter-spacing:0.12em;animation:blink 2.4s infinite;}
+@keyframes blink{0%,100%{opacity:0.35}50%{opacity:0.8}}
+
+/* ── 고정 레이아웃 ── */
+.site-wrap{
+  display:flex;flex-direction:column;
+  height:100vh;
+  overflow:hidden;
+}
+.sticky-top{flex-shrink:0;}
+.scroll-area{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+
+/* ── 슬라이드 아코디언 ── */
+.slide-nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:2rem;}
+.slide-btn{
+  padding:7px 18px;font-size:13px;font-weight:400;
+  border:1px solid var(--line);border-radius:99px;
+  background:transparent;color:var(--w-small);
+  cursor:pointer;transition:all 0.18s;font-family:inherit;
+  text-decoration:none;display:inline-block;
+}
+.slide-btn:hover{border-color:var(--w-body);color:var(--w-body);}
+.slide-btn.active{border-color:var(--w-body);color:var(--w-body);background:rgba(255,255,255,0.08);}
+
+/* 슬라이드 — 기본 숨김, active만 표시 */
+.slide{display:none;}
+.slide.active{display:block;}
+.slide-wrap{padding-bottom:0;}
+
+/* ── 자유토론 hover 메뉴 ── */
+.disc-item{
+  padding:1.25rem 0;border-bottom:1px solid var(--line-soft);
+  position:relative;cursor:pointer;transition:background 0.15s;
+  border-radius:8px;margin:0 -8px;padding-left:8px;padding-right:8px;
+}
+.disc-item:last-child{border-bottom:none;}
+.disc-item:hover{background:rgba(255,255,255,0.06);}
+.disc-row{display:flex;align-items:baseline;gap:12px;flex:1;}
+.disc-member{font-size:17px;font-weight:600;color:var(--w-body);white-space:nowrap;flex-shrink:0;}
+.disc-text{font-size:17px;color:var(--w-body);line-height:1.75;font-weight:400;}
+/* 팝오버 메뉴 */
+.disc-menu{
+  display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);
+  background:rgba(15,35,20,0.92);border:1px solid var(--line);
+  border-radius:10px;padding:4px;gap:4px;flex-direction:column;
+  backdrop-filter:blur(12px);z-index:10;
+}
+.disc-item:hover .disc-menu{display:flex;}
+.disc-btn{background:transparent;border:none;border-radius:7px;padding:6px 14px;font-size:13px;color:var(--w-body);cursor:pointer;font-family:inherit;transition:all 0.15s;text-align:left;white-space:nowrap;}
+.disc-btn:hover{background:rgba(255,255,255,0.12);color:#fff;}
+.disc-btn.del:hover{background:rgba(255,100,100,0.18);color:rgba(255,160,160,1);}
+.disc-edit-area{width:100%;margin-top:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.35);border-radius:10px;padding:10px 14px;color:var(--w-body);font-size:16px;font-family:inherit;line-height:1.7;resize:vertical;min-height:60px;outline:none;}
+.disc-edit-area:focus{border-color:rgba(255,255,255,0.65);}
+.disc-edit-actions{display:flex;gap:8px;margin-top:6px;}
+
+/* ── 참석자 선택 모달 ── */
+.cover-modal{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.55);backdrop-filter:blur(8px);}
+.cover-modal.show{display:flex;}
+.cover-modal-box{background:rgba(12,30,16,0.95);border:1px solid rgba(255,255,255,0.2);border-radius:24px;padding:2.75rem;max-width:420px;width:90%;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,0.5);animation:fadeUp 0.25s ease;}
+.cover-modal-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:8px;letter-spacing:-0.02em;}
+.cover-modal-desc{font-size:14px;color:rgba(255,255,255,0.5);margin-bottom:1.75rem;line-height:1.6;}
+.cover-modal-btns{display:flex;flex-direction:column;gap:12px;}
+.cover-modal-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.2);border-radius:14px;padding:16px 20px;cursor:pointer;display:flex;align-items:center;gap:14px;text-align:left;transition:all 0.18s;font-family:inherit;width:100%;}
+.cover-modal-btn:hover{background:rgba(255,255,255,0.14);border-color:rgba(255,255,255,0.5);}
+.cmb-icon{font-size:22px;flex-shrink:0;width:32px;text-align:center;}
+.cmb-label{font-size:15px;font-weight:600;color:#fff;display:block;margin-bottom:3px;}
+.cmb-sub{font-size:12px;color:rgba(255,255,255,0.4);display:block;}
+.cover-modal-btn-sm{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.25);border-radius:99px;padding:11px 26px;font-size:14px;font-weight:500;color:rgba(255,255,255,0.8);cursor:pointer;font-family:inherit;transition:all 0.15s;}
+.cover-modal-btn-sm.primary{background:rgba(255,255,255,0.2);border-color:rgba(255,255,255,0.55);color:#fff;}
+.cover-modal-btn-sm:hover{background:rgba(255,255,255,0.25);color:#fff;}
+
+/* ── AI Agent 패널 — 전체 너비 분할 ── */
+.disc-outer{
+  display:flex;gap:0;
+  transition:all 0.36s cubic-bezier(0.4,0,0.2,1);
+}
+/* 패널 열릴 때 컨테이너를 전체 너비로, 양쪽 10% 여백 */
+#page-2.panel-expanded .container{
+  max-width:100% !important;
+  padding-left:10% !important;
+  padding-right:10% !important;
+}
+.disc-main{
+  flex:1;min-width:0;
+  transition:flex 0.36s cubic-bezier(0.4,0,0.2,1);
+}
+/* 자유토론 5.5 : GPT 2.5 = 11 : 5 */
+.disc-outer.agent-open .disc-main{
+  flex:11;
+  padding-right:1.75rem;
+}
+.ai-full-panel{
+  flex:0;width:0;overflow:hidden;
+  display:flex;flex-direction:column;
+  border-left:0px solid var(--line);
+  transition:flex 0.36s cubic-bezier(0.4,0,0.2,1),
+             border-left-width 0.1s 0.25s ease,
+             padding-left 0.36s ease;
+  padding-left:0;
+  min-height:460px;
+}
+.disc-outer.agent-open .ai-full-panel{
+  flex:5;
+  width:auto;
+  border-left-width:1px;
+  padding-left:1.75rem;
+  overflow:visible;
+}
+.ai-panel-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-bottom:0.9rem;border-bottom:1px solid var(--line);
+  margin-bottom:1rem;flex-shrink:0;
+}
+.ai-panel-title{font-size:15px;font-weight:600;color:var(--w-body);}
+.ai-chat-log{
+  flex:1;overflow-y:auto;
+  display:flex;flex-direction:column;gap:10px;
+  min-height:320px;max-height:500px;
+  margin-bottom:1rem;
+}
+.ai-msg{padding:10px 13px;border-radius:12px;font-size:14px;line-height:1.7;max-width:92%;}
+.ai-msg.user{background:rgba(255,255,255,0.13);color:var(--w-body);align-self:flex-end;border-radius:12px 12px 3px 12px;}
+.ai-msg.bot{background:rgba(255,255,255,0.07);color:var(--w-body);align-self:flex-start;border-radius:3px 12px 12px 12px;}
+.ai-msg.loading{color:var(--w-hint);font-style:italic;}
+.ai-input-row{display:flex;gap:8px;flex-shrink:0;}
+.ai-input{flex:1;background:rgba(255,255,255,0.07);border:1px solid var(--line);border-radius:10px;padding:9px 13px;color:var(--w-body);font-size:14px;font-family:inherit;outline:none;}
+.ai-input:focus{border-color:rgba(255,255,255,0.45);}
+.ai-send{background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.3);border-radius:10px;padding:9px 16px;color:#fff;font-size:13px;cursor:pointer;font-family:inherit;transition:all 0.15s;flex-shrink:0;}
+.ai-send:hover{background:rgba(255,255,255,0.26);}
+
+/* ── 저작권 ── */
+.copyright{
+  text-align:center;
+  padding:3.5rem 0 2.5rem;
+  margin-top:2rem;
+  border-top:1px solid var(--line-soft);
+  font-size:12px;
+  color:rgba(255,255,255,0.54);
+  letter-spacing:0.05em;
+  line-height:1.9;
+}
+.copyright a{color:rgba(255,255,255,0.54);text-decoration:underline;text-underline-offset:2px;}
+.copyright a:hover{color:rgba(255,255,255,0.9);}
+
+/* 초기화 피커 */
+.reset-picker-btn{
+  width:100%;background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.18);border-radius:12px;
+  padding:14px 18px;cursor:pointer;font-family:inherit;
+  text-align:left;transition:all 0.15s;
+  display:flex;flex-direction:column;gap:4px;
+}
+.reset-picker-btn:hover{background:rgba(255,255,255,0.13);border-color:rgba(255,255,255,0.4);}
+.rpb-label{font-size:15px;font-weight:600;color:var(--w-title);}
+.rpb-sub{font-size:12px;color:var(--w-hint);}
+
+/* 결론 인쇄 — 결론 탭만 인쇄 */
+@media print{
+  body.print-conclusion .page:not(#page-3){ display:none !important; }
+  body.print-conclusion #page-3{ display:block !important; }
+  body.print-conclusion .concl-editor{
+    background:#F8F8F8 !important;border:1px solid #DDD !important;
+    color:#111 !important;min-height:auto !important;
+  }
+  body.print-conclusion .concl-label{ color:#444 !important; }
+  body.print-conclusion .sc-title{ color:#1A3522 !important; }
+  body.print-conclusion .no-print{ display:none !important; }
+  body.print-conclusion .header{ background:#F4F8F5 !important;border-bottom:2px solid #2D5C3A !important; }
+  body.print-conclusion .header-title{ color:#1A3522 !important;text-shadow:none !important; }
+  body.print-conclusion .header-sub{ color:#4A7C5F !important; }
+  body.print-conclusion{ background:#fff !important;background-image:none !important; }
+  body.print-conclusion .scroll-area,.site-wrap{ height:auto !important;overflow:visible !important; }
+  body.print-conclusion .sticky-top{ position:static !important; }
+  @page{ size:A4 portrait;margin:15mm 18mm; }
+}
+.scroll-area::-webkit-scrollbar{ width:6px; }
+.scroll-area::-webkit-scrollbar-track{ background:transparent; }
+.scroll-area::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,0.18);
+  border-radius:99px;
+}
+.scroll-area::-webkit-scrollbar-thumb:hover{
+  background:rgba(255,255,255,0.32);
+}
+.ai-chat-log::-webkit-scrollbar{ width:4px; }
+.ai-chat-log::-webkit-scrollbar-track{ background:transparent; }
+.ai-chat-log::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,0.15);
+  border-radius:99px;
+}
+
+/* ── 인쇄: 세로, 여백 최적화 ── */
+@media print {
+  .no-print,.nav-wrap,.disc-menu,.disc-edit-actions,
+  .modal-overlay,.qr-modal-overlay,.ai-full-panel,
+  .cover-page,.cover-modal,.slide-nav{display:none !important;}
+  @page{size:A4 portrait;margin:12mm 14mm;}
+  html{background:#fff !important;}
+  body{background:#fff !important;background-image:none !important;color:#111 !important;-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;font-size:12px !important;}
+  .header{background:#F4F8F5 !important;border-bottom:2px solid #2D5C3A !important;padding:8px 14mm !important;}
+  .header-title{color:#1A3522 !important;font-size:15px !important;text-shadow:none !important;}
+  .header-sub{color:#4A7C5F !important;font-size:10px !important;}
+  .site-wrap{display:block !important;height:auto !important;overflow:visible !important;}
+  .scroll-area{overflow:visible !important;height:auto !important;}
+  .sticky-top{position:static !important;}
+  #page-2 .container{padding-right:0 !important;}
+  .page{display:block !important;}
+  #page-0{page-break-after:always;}
+  #page-1{page-break-after:always;}
+  #page-2{page-break-after:always;}
+  #page-3{page-break-after:avoid;}
+  .slide{display:block !important;}
+  .slide+.slide{border-top:1px solid #DDD !important;padding-top:1rem !important;margin-top:0 !important;}
+  .slide-wrap,.section-block,.stat-item,.two-col,.three-col,.vs-wrap,.concl-block,.matrix-item,.vote-item,.open-item,.disc-item,.q-ctx,.item-block,.flow-row{page-break-inside:avoid;}
+  .two-col{display:grid !important;grid-template-columns:1fr 1fr !important;gap:10px !important;}
+  .three-col{display:grid !important;grid-template-columns:1fr 1fr 1fr !important;gap:8px !important;}
+  .vs-wrap{display:flex !important;}
+  .stats-row{display:grid !important;grid-template-columns:repeat(4,1fr) !important;gap:10px !important;}
+  *{color:#111 !important;text-shadow:none !important;background:transparent !important;border-color:#DDD !important;}
+  h1,h2,h3,.slide-title,.sc-title,.item-title{color:#1A1A1A !important;}
+  .flow-wrong{color:#C00 !important;border-color:#C00 !important;}
+  .flow-right{color:#186030 !important;border-color:#186030 !important;}
+  .mk-g{color:#186030 !important;}
+  .mk-r{color:#C00 !important;}
+  .q-ctx{background:#F3FAF5 !important;border-left:3px solid #2D5C3A !important;}
+  .concl-editor{background:#F8F8F8 !important;border:1px solid #CCC !important;}
+  .dist-track,.matrix-track,.vote-track{background:#E8E8E8 !important;}
+  .dist-fill,.matrix-fill,.vote-fill{background:#2D5C3A !important;}
+  .container{max-width:100% !important;padding:0.5rem 0 1rem !important;}
+  .section-block{margin-bottom:1.5rem !important;}
+  .copyright{color:#999 !important;font-size:9px !important;padding:0.5rem 0 !important;}
 }
 </style>
 </head>
 <body>
 
+<!-- 표지 -->
+<div class="cover-page no-print" id="cover">
+  <div class="cover-title">
+    협업의 두 가지 조건
+    <span>심리적 안전감과 공유</span>
+  </div>
+  <div class="cover-team">DRB동일 재무팀 with AI Agent</div>
+  <div class="cover-hint" onclick="showParticipantModal()">클릭하여 시작</div>
+  <div style="position:absolute;bottom:1.5rem;left:0;right:0;text-align:center;font-size:11px;color:rgba(255,255,255,0.70);letter-spacing:0.05em;line-height:1.8">
+    © DRB Holding Co., Ltd. Finance Team · Created for <a href="https://drbworld.sharepoint.com/:u:/s/ChangeAgents/IQCzVypZBO-4Tb35O8OdQz7-AdELIATNlPeVfl2g98hC-pM?e=HYB67h" target="_blank" style="color:rgba(255,255,255,0.75);text-decoration:underline">Change Agents</a> activity Purpose · All rights reserved
+  </div>
+</div>
+<div class="cover-modal no-print" id="participant-modal">
+  <div class="cover-modal-box">
+    <div class="cover-modal-title">참석자를 선택하세요</div>
+    <div class="cover-modal-desc">선택에 따라 AI 기능 사용 여부가 결정됩니다</div>
+    <div class="cover-modal-btns">
+      <button class="cover-modal-btn" onclick="selectParticipant('team')">
+        <span class="cmb-icon">👥</span>
+        <span class="cmb-label">재무팀 구성원만 참석</span>
+        <span class="cmb-sub">AI 기능 없이 진행</span>
+      </button>
+      <button class="cover-modal-btn" onclick="selectParticipant('agent')">
+        <span class="cmb-icon">✦</span>
+        <span class="cmb-label">AI Agent도 참석</span>
+        <span class="cmb-sub">GPT-4o API 키 필요</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 참석자 선택 모달 -->
+<div class="cover-modal no-print" id="api-modal">
+  <div class="cover-modal-box">
+    <div class="cover-modal-title">OpenAI API 키 입력</div>
+    <div class="cover-modal-desc">키는 이 브라우저에서만 사용되며 어디에도 저장되지 않습니다</div>
+    <input id="main-api-input" type="password" placeholder="sk-..." style="width:100%;padding:13px 16px;border:1px solid rgba(255,255,255,0.3);border-radius:12px;font-size:15px;font-family:inherit;background:rgba(255,255,255,0.08);color:#fff;outline:none;margin-bottom:8px">
+    <div id="main-api-status" style="font-size:13px;color:rgba(255,255,255,0.5);min-height:18px;margin-bottom:1.25rem"></div>
+    <div style="display:flex;gap:10px;justify-content:center">
+      <button class="cover-modal-btn-sm" onclick="backToParticipant()">← 뒤로</button>
+      <button class="cover-modal-btn-sm primary" onclick="confirmApiKey()">시작하기</button>
+    </div>
+  </div>
+</div>
+
+<div class="site-wrap">
+<div class="sticky-top">
+
 <div class="header">
   <div class="header-inner">
     <div>
-      <div class="header-title">협업의 두 가지 조건</div>
+      <div class="header-title" style="cursor:pointer" onclick="returnToCover()" title="클릭하면 처음으로">협업의 두 가지 조건</div>
       <div class="header-sub">심리적 안전감과 공유</div>
     </div>
     <div class="header-right">
-      <div class="live-badge"><div class="live-dot"></div> LIVE</div>
-      <button class="reset-btn" onclick="showQR()">설문 QR</button>
-      <button class="reset-btn" onclick="showResetModal('responses')">구성원 의견 초기화</button>
-      <button class="reset-btn" onclick="showResetModal('discussion')">자유토론 초기화</button>
+      <div class="live-badge no-print"><div class="live-dot"></div> LIVE</div>
+      <button class="reset-btn no-print" onclick="showQR()">설문 QR</button>
+      <button class="reset-btn no-print" onclick="showResetPicker()">초기화</button>
     </div>
   </div>
 </div>
@@ -215,13 +620,17 @@ body{
     <div class="nav-tab active" onclick="switchPage(0)">협업이란?</div>
     <div class="nav-tab" onclick="switchPage(1)">구성원 의견</div>
     <div class="nav-tab" onclick="switchPage(2)">자유토론</div>
+    <div class="nav-tab" onclick="switchPage(3)">결론</div>
   </div>
 </div>
 
-<!-- PAGE 0: Slides -->
+</div><!-- /sticky-top -->
+<div class="scroll-area" id="scroll-area">
+
+<!-- PAGE 0: 협업이란? (세로 스크롤) -->
 <div class="page active" id="page-0">
 <div class="container">
-  <div class="slide-nav">
+  <div class="slide-nav no-print">
     <button class="slide-btn active" onclick="showSlide(0)">1. 핵심 주장</button>
     <button class="slide-btn" onclick="showSlide(1)">2. 심리적 안전감</button>
     <button class="slide-btn" onclick="showSlide(2)">3. 실패의 유형</button>
@@ -330,71 +739,137 @@ body{
 </div>
 </div>
 
-<!-- PAGE 1: Dashboard -->
+<!-- PAGE 1: 구성원 의견 -->
 <div class="page" id="page-1">
 <div class="container">
   <div class="stats-row">
-    <div class="stat-item"><div class="stat-label">총 응답 수</div><div class="stat-value" id="total-count">0</div><div class="stat-sub">명 참여</div></div>
-    <div class="stat-item"><div class="stat-label">심리적 안전감 평균</div><div class="stat-value" id="avg-a1">—</div><div class="stat-sub">/ 5점</div></div>
-    <div class="stat-item"><div class="stat-label">공유 수준 평균</div><div class="stat-value" id="avg-b1">—</div><div class="stat-sub">/ 5점</div></div>
-    <div class="stat-item"><div class="stat-label">최근 응답</div><div class="stat-value" style="font-size:22px;padding-top:8px" id="last-time">—</div><div class="stat-sub">전</div></div>
+    <div class="stat-item">
+      <div class="stat-label">총 응답 수</div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <div class="stat-value" id="total-count">0</div>
+        <div class="stat-sub">명 참여</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">심리적 안전감 평균</div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <div class="stat-value" id="avg-a1">—</div>
+        <div class="stat-sub">/ 5점</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">공유 수준 평균</div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <div class="stat-value" id="avg-b1">—</div>
+        <div class="stat-sub">/ 5점</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">최근 응답</div>
+      <div style="display:flex;align-items:baseline;gap:6px">
+        <div class="stat-value" style="font-size:28px" id="last-time">—</div>
+        <div class="stat-sub">전</div>
+      </div>
+    </div>
   </div>
 
   <div class="section-block">
     <div class="sc-header"><div class="sc-title">A. 심리적 안전감</div></div>
-    <div class="result-label">A-1 전반 수준</div>
-    <div style="display:flex;gap:2.5rem;margin-bottom:1.75rem;align-items:flex-start">
-      <div class="avg-row"><div class="avg-num" id="a1-avg-disp">—</div><div class="avg-den">/5</div></div>
-      <div style="flex:1;padding-top:6px">
-        <div class="dist-row"><span class="dist-lbl">5</span><div class="dist-track"><div class="dist-fill" id="a1-bar-5"></div></div><span class="dist-cnt" id="a1-cnt-5">0</span></div>
-        <div class="dist-row"><span class="dist-lbl">4</span><div class="dist-track"><div class="dist-fill" id="a1-bar-4"></div></div><span class="dist-cnt" id="a1-cnt-4">0</span></div>
-        <div class="dist-row"><span class="dist-lbl">3</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,255,255,0.35)" id="a1-bar-3"></div></div><span class="dist-cnt" id="a1-cnt-3">0</span></div>
-        <div class="dist-row"><span class="dist-lbl">2</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,180,180,0.5)" id="a1-bar-2"></div></div><span class="dist-cnt" id="a1-cnt-2">0</span></div>
-        <div class="dist-row"><span class="dist-lbl">1</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,150,150,0.6)" id="a1-bar-1"></div></div><span class="dist-cnt" id="a1-cnt-1">0</span></div>
-      </div>
+
+    <div class="q-ctx">
+      <div class="q-ctx-label">A-1 질문</div>
+      <div class="q-ctx-text">나는 우리 팀에서 전반적으로 심리적 안전감을 느낀다.</div>
+      <div class="q-ctx-scale">1 = 전혀 그렇지 않다 &nbsp;·&nbsp; 5 = 매우 그렇다</div>
     </div>
-    <div class="result-label">A-2 항목별 평균</div>
+    <div class="two-col">
+      <div><div class="result-label">A-1 전반 수준</div>
+      <div style="display:flex;gap:2.5rem;margin-bottom:1.75rem;align-items:flex-start">
+        <div class="avg-row"><div class="avg-num" id="a1-avg-disp">—</div><div class="avg-den">/5</div></div>
+        <div style="flex:1;padding-top:6px">
+          <div class="dist-row"><span class="dist-lbl">5</span><div class="dist-track"><div class="dist-fill" id="a1-bar-5"></div></div><span class="dist-cnt" id="a1-cnt-5">0</span></div>
+          <div class="dist-row"><span class="dist-lbl">4</span><div class="dist-track"><div class="dist-fill" id="a1-bar-4"></div></div><span class="dist-cnt" id="a1-cnt-4">0</span></div>
+          <div class="dist-row"><span class="dist-lbl">3</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,255,255,0.35)" id="a1-bar-3"></div></div><span class="dist-cnt" id="a1-cnt-3">0</span></div>
+          <div class="dist-row"><span class="dist-lbl">2</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,180,180,0.5)" id="a1-bar-2"></div></div><span class="dist-cnt" id="a1-cnt-2">0</span></div>
+          <div class="dist-row"><span class="dist-lbl">1</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,150,150,0.6)" id="a1-bar-1"></div></div><span class="dist-cnt" id="a1-cnt-1">0</span></div>
+        </div>
+      </div></div>
+      <div></div>
+    </div>
+
+    <div class="q-ctx">
+      <div class="q-ctx-label">A-2 질문</div>
+      <div class="q-ctx-text">각 상황에서 부담 없이 행동할 수 있는 정도를 표시해 주세요.</div>
+      <div class="q-ctx-scale">1 = 매우 어렵다 &nbsp;·&nbsp; 5 = 매우 편하다</div>
+    </div>
     <div style="margin-bottom:1.75rem">
-      <div class="matrix-item"><span class="matrix-name">모르는 것 질문하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2a"></div></div><span class="matrix-val" id="avg-a2a">—</span></div>
+      <div class="matrix-item"><span class="matrix-name">모르는 것을 질문하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2a"></div></div><span class="matrix-val" id="avg-a2a">—</span></div>
       <div class="matrix-item"><span class="matrix-name">반대 의견·이견 내기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2b"></div></div><span class="matrix-val" id="avg-a2b">—</span></div>
-      <div class="matrix-item"><span class="matrix-name">내 실수 공개 인정하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2c"></div></div><span class="matrix-val" id="avg-a2c">—</span></div>
+      <div class="matrix-item"><span class="matrix-name">내 실수를 공개 인정하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2c"></div></div><span class="matrix-val" id="avg-a2c">—</span></div>
       <div class="matrix-item"><span class="matrix-name">동료에게 도움 요청하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2d"></div></div><span class="matrix-val" id="avg-a2d">—</span></div>
       <div class="matrix-item"><span class="matrix-name">우려되는 리스크 공유하기</span><div class="matrix-track"><div class="matrix-fill" id="bar-a2e"></div></div><span class="matrix-val" id="avg-a2e">—</span></div>
     </div>
-    <div class="two-col">
-      <div><div class="result-label">A-1-a 낮은 이유 (1~3점)</div><div class="open-list" id="list-a1-low"><div class="open-empty">아직 응답 없음</div></div></div>
-      <div><div class="result-label">A-3 개선 제안</div><div class="open-list" id="list-a3"><div class="open-empty">아직 응답 없음</div></div></div>
+
+    <div>
+      <div class="q-ctx"><div class="q-ctx-label">A-1-a &nbsp;질문 (1~3점 응답자 대상)</div><div class="q-ctx-text">심리적 안전감이 높지 않다고 느끼는 이유는 무엇인가요?</div></div>
+      <div class="open-list" id="list-a1-low" style="margin-bottom:1.75rem"><div class="open-empty">아직 응답 없음</div></div>
+    </div>
+    <div>
+      <div class="q-ctx"><div class="q-ctx-label">A-3 &nbsp;질문</div><div class="q-ctx-text">심리적 안전감을 높이기 위해 우리 팀이 실제로 바꿀 수 있는 것은?</div></div>
+      <div class="open-list" id="list-a3"><div class="open-empty">아직 응답 없음</div></div>
     </div>
   </div>
 
   <div class="section-block">
     <div class="sc-header"><div class="sc-title">B. 공유</div></div>
-    <div class="result-label">B-1 전반 수준</div>
-    <div style="display:flex;gap:2.5rem;margin-bottom:1.75rem;align-items:flex-start">
-      <div class="avg-row"><div class="avg-num" id="b1-avg-disp">—</div><div class="avg-den">/5</div></div>
-      <div style="flex:1;padding-top:6px">
-        <div class="dist-row"><span class="dist-lbl">5</span><div class="dist-track"><div class="dist-fill" id="b1-bar-5"></div></div><span class="dist-cnt" id="b1-cnt-5">0</span></div>
-        <div class="dist-row"><span class="dist-lbl">4</span><div class="dist-track"><div class="dist-fill" id="b1-bar-4"></div></div><span class="dist-cnt" id="b1-cnt-4">0</span></div>
-        <div class="dist-row"><span class="dist-lbl">3</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,255,255,0.35)" id="b1-bar-3"></div></div><span class="dist-cnt" id="b1-cnt-3">0</span></div>
-        <div class="dist-row"><span class="dist-lbl">2</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,180,180,0.5)" id="b1-bar-2"></div></div><span class="dist-cnt" id="b1-cnt-2">0</span></div>
-        <div class="dist-row"><span class="dist-lbl">1</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,150,150,0.6)" id="b1-bar-1"></div></div><span class="dist-cnt" id="b1-cnt-1">0</span></div>
-      </div>
+
+    <div class="q-ctx">
+      <div class="q-ctx-label">B-1 질문</div>
+      <div class="q-ctx-text">우리 팀에서 의사결정과 업무 정보가 잘 공유되고 있다고 생각한다.</div>
+      <div class="q-ctx-scale">1 = 전혀 그렇지 않다 &nbsp;·&nbsp; 5 = 매우 그렇다</div>
     </div>
-    <div class="result-label">B-2 항목별 평균</div>
+    <div class="two-col">
+      <div><div class="result-label">B-1 전반 수준</div>
+      <div style="display:flex;gap:2.5rem;margin-bottom:1.75rem;align-items:flex-start">
+        <div class="avg-row"><div class="avg-num" id="b1-avg-disp">—</div><div class="avg-den">/5</div></div>
+        <div style="flex:1;padding-top:6px">
+          <div class="dist-row"><span class="dist-lbl">5</span><div class="dist-track"><div class="dist-fill" id="b1-bar-5"></div></div><span class="dist-cnt" id="b1-cnt-5">0</span></div>
+          <div class="dist-row"><span class="dist-lbl">4</span><div class="dist-track"><div class="dist-fill" id="b1-bar-4"></div></div><span class="dist-cnt" id="b1-cnt-4">0</span></div>
+          <div class="dist-row"><span class="dist-lbl">3</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,255,255,0.35)" id="b1-bar-3"></div></div><span class="dist-cnt" id="b1-cnt-3">0</span></div>
+          <div class="dist-row"><span class="dist-lbl">2</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,180,180,0.5)" id="b1-bar-2"></div></div><span class="dist-cnt" id="b1-cnt-2">0</span></div>
+          <div class="dist-row"><span class="dist-lbl">1</span><div class="dist-track"><div class="dist-fill" style="background:rgba(255,150,150,0.6)" id="b1-bar-1"></div></div><span class="dist-cnt" id="b1-cnt-1">0</span></div>
+        </div>
+      </div></div>
+      <div></div>
+    </div>
+
+    <div class="q-ctx">
+      <div class="q-ctx-label">B-2 질문</div>
+      <div class="q-ctx-text">각 항목이 우리 팀에서 실제로 이루어지고 있는 정도를 표시해 주세요.</div>
+      <div class="q-ctx-scale">1 = 전혀 안 된다 &nbsp;·&nbsp; 5 = 매우 잘 된다</div>
+    </div>
     <div style="margin-bottom:1.75rem">
       <div class="matrix-item"><span class="matrix-name">의사결정 결과 + 이유·맥락 기록</span><div class="matrix-track"><div class="matrix-fill" id="bar-b2a"></div></div><span class="matrix-val" id="avg-b2a">—</span></div>
       <div class="matrix-item"><span class="matrix-name">완성 전 초안·진행물 공유</span><div class="matrix-track"><div class="matrix-fill" id="bar-b2b"></div></div><span class="matrix-val" id="avg-b2b">—</span></div>
       <div class="matrix-item"><span class="matrix-name">검토된 대안·미해결 사항 기록</span><div class="matrix-track"><div class="matrix-fill" id="bar-b2c"></div></div><span class="matrix-val" id="avg-b2c">—</span></div>
       <div class="matrix-item"><span class="matrix-name">정보가 검색·참조 가능한 형태로 저장</span><div class="matrix-track"><div class="matrix-fill" id="bar-b2d"></div></div><span class="matrix-val" id="avg-b2d">—</span></div>
     </div>
-    <div class="two-col">
-      <div><div class="result-label">B-3 공유 안 되는 이유</div><div class="open-list" id="list-b3"><div class="open-empty">아직 응답 없음</div></div></div>
-      <div><div class="result-label">B-4 개선 제안</div><div class="open-list" id="list-b4"><div class="open-empty">아직 응답 없음</div></div></div>
+
+    <div>
+      <div class="q-ctx"><div class="q-ctx-label">B-3 &nbsp;질문</div><div class="q-ctx-text">우리 팀에서 공유가 잘 안 되는 주된 이유가 무엇이라고 생각하시나요?</div></div>
+      <div class="open-list" id="list-b3" style="margin-bottom:1.75rem"><div class="open-empty">아직 응답 없음</div></div>
+    </div>
+    <div>
+      <div class="q-ctx"><div class="q-ctx-label">B-4 &nbsp;질문</div><div class="q-ctx-text">공유가 잘 이루어지게 하려면 우리 팀이 무엇을 하면 좋을까요?</div></div>
+      <div class="open-list" id="list-b4"><div class="open-empty">아직 응답 없음</div></div>
     </div>
   </div>
 
   <div class="section-block">
-    <div class="sc-header"><div class="sc-title">C. 투표 집계</div></div>
+    <div class="sc-header"><div class="sc-title">C. 우리 팀에 지금 가장 필요한 것 — 투표</div></div>
+    <div class="q-ctx" style="margin-bottom:1.5rem">
+      <div class="q-ctx-label">C 질문</div>
+      <div class="q-ctx-text">심리적 안전감과 공유 각 카테고리에서 우리 팀에 지금 가장 필요한 변화를 선택해 주세요. (각 최대 2개)</div>
+    </div>
     <div class="two-col">
       <div>
         <div class="vote-sect-label">심리적 안전감</div>
@@ -415,22 +890,135 @@ body{
     </div>
   </div>
 
-  <div class="footer-note">Firebase Realtime Database · 자동 업데이트 중</div>
 </div>
 </div>
 
 <!-- PAGE 2: 자유토론 -->
 <div class="page" id="page-2">
+<div class="container" id="disc-container">
+  <div class="section-block">
+    <div class="sc-header" style="justify-content:space-between">
+      <div class="sc-title">자유토론</div>
+      <button class="reset-btn no-print" id="agent-toggle-btn" style="font-size:13px;padding:7px 18px;border-color:rgba(255,255,255,0.5);color:rgba(255,255,255,0.85)" onclick="toggleAgentPanel()">✦ AI Agent와 상담</button>
+    </div>
+    <div class="disc-outer" id="disc-outer">
+      <!-- 자유토론 목록 -->
+      <div class="disc-main">
+        <div id="disc-list"><div class="open-empty">아직 작성된 의견이 없습니다</div></div>
+      </div>
+      <!-- AI 채팅 패널 (컨테이너 안에서 우측 분할) -->
+      <div class="ai-full-panel no-print" id="ai-full-panel">
+        <div class="ai-panel-header">
+          <div class="ai-panel-title">✦ AI Agent 상담</div>
+          <button class="reset-btn" style="font-size:12px;padding:4px 12px" onclick="toggleAgentPanel()">닫기</button>
+        </div>
+        <div class="ai-chat-log" id="ai-chat-log">
+          <div class="ai-msg bot">안녕하세요. 구성원 의견과 자유토론 내용을 바탕으로 질문해 주세요.</div>
+        </div>
+        <div class="ai-input-row">
+          <input class="ai-input" id="ai-chat-input" type="text" placeholder="질문을 입력하세요..." onkeydown="if(event.key==='Enter')sendAgentMsg()">
+          <button class="ai-send" onclick="sendAgentMsg()">전송</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PAGE 3: 결론 -->
+<div class="page" id="page-3">
 <div class="container">
   <div class="section-block">
-    <div class="sc-header">
-      <div class="sc-title">자유토론</div>
-      <div class="sc-desc">( 팀원들이 작성한 의견이 실시간으로 표시됩니다 )</div>
+    <div class="sc-header" style="justify-content:space-between;align-items:center">
+      <div class="sc-title">결론 작성</div>
+      <button class="reset-btn no-print" style="font-size:13px;padding:8px 20px;border-color:rgba(255,255,255,0.55);color:rgba(255,255,255,0.92);display:flex;align-items:center;gap:7px;flex-shrink:0" onclick="showAiModal()">
+        <span>✦</span> AI Agent 초안작성
+      </button>
     </div>
-    <div id="disc-list"><div class="open-empty">아직 작성된 의견이 없습니다</div></div>
+
+    <div class="concl-block">
+      <div class="concl-label">전체 요약</div>
+      <div class="concl-editor" id="concl-summary" contenteditable="true" data-placeholder="오늘 진단 결과의 전체적인 요약을 작성하거나 붙여넣으세요.&#10;예: 우리 팀의 심리적 안전감 평균은 X점으로..."></div>
+    </div>
+
+    <div class="concl-block">
+      <div class="concl-label">심리적 안전감 — 주요 발견 및 시사점</div>
+      <div class="concl-editor" id="concl-safety" contenteditable="true" data-placeholder="심리적 안전감 관련 주요 발견, 패턴, 시사점을 작성하세요.&#10;예: 특히 '반대 의견 내기' 항목이 가장 낮게 나타났으며..."></div>
+    </div>
+
+    <div class="concl-block">
+      <div class="concl-label">공유 — 주요 발견 및 시사점</div>
+      <div class="concl-editor" id="concl-share" contenteditable="true" data-placeholder="공유 수준 관련 주요 발견, 패턴, 시사점을 작성하세요.&#10;예: 의사결정 맥락 기록이 가장 취약한 것으로 나타났으며..."></div>
+    </div>
+
+    <div class="concl-block">
+      <div class="concl-label">팀이 선택한 우선순위 변화</div>
+      <div class="concl-editor" id="concl-priority" contenteditable="true" data-placeholder="투표 결과 기반으로 팀이 가장 필요하다고 선택한 변화를 정리하세요.&#10;예: 투표 결과 '학습 중심 회고 방식'이 1위로..."></div>
+    </div>
+
+    <div class="concl-block">
+      <div class="concl-label">액션 아이템 (다음 단계)</div>
+      <div class="concl-editor" id="concl-action" contenteditable="true" data-placeholder="오늘 논의를 바탕으로 도출된 구체적인 실행 과제를 작성하세요.&#10;예: 1. 월 1회 비난 없는 회고 도입 / 2. 의사결정 기록 양식 만들기..."></div>
+    </div>
+
+    <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--line)">
+      <button class="reset-btn" style="font-size:13px;color:rgba(255,160,160,0.8);border-color:rgba(255,160,160,0.3)" onclick="clearConclusion()">결론 초기화</button>
+      <button class="reset-btn" style="font-size:14px;font-weight:600;color:#fff;border-color:rgba(255,255,255,0.65);padding:10px 28px" onclick="printConclusion()">보고서 인쇄</button>
+    </div>
+
   </div>
-  <div class="footer-note">Firebase Realtime Database · 자동 업데이트 중</div>
 </div>
+</div>
+
+<!-- 초기화 대상 선택 모달 -->
+<div class="modal-overlay no-print" id="reset-picker-modal">
+  <div class="modal-box" style="max-width:380px">
+    <div class="modal-title">무엇을 초기화할까요?</div>
+    <div class="modal-desc">초기화할 항목을 선택하세요</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem">
+      <button class="reset-picker-btn" onclick="confirmResetPick('responses')">
+        <span class="rpb-label">구성원 의견</span>
+        <span class="rpb-sub">설문 응답 전체 삭제</span>
+      </button>
+      <button class="reset-picker-btn" onclick="confirmResetPick('discussion')">
+        <span class="rpb-label">자유토론</span>
+        <span class="rpb-sub">자유토론 의견 전체 삭제</span>
+      </button>
+      <button class="reset-picker-btn" onclick="confirmResetPick('conclusion')">
+        <span class="rpb-label">결론</span>
+        <span class="rpb-sub">결론 작성 내용 전체 삭제</span>
+      </button>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="hideResetPicker()">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- 최종 확인 모달 -->
+<div class="modal-overlay no-print" id="reset-confirm-modal">
+  <div class="modal-box" style="max-width:360px">
+    <div class="modal-title" id="rconfirm-title">초기화할까요?</div>
+    <div class="modal-desc" id="rconfirm-desc">이 작업은 되돌릴 수 없습니다.</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="hideResetConfirm()">취소</button>
+      <button class="modal-confirm" onclick="doReset()">초기화</button>
+    </div>
+  </div>
+</div>
+
+<!-- AI 키 입력 모달 -->
+<div class="modal-overlay" id="ai-modal" style="z-index:1100">
+  <div class="modal-box" style="max-width:460px">
+    <div class="modal-title">OpenAI API 키 입력</div>
+    <div class="modal-desc" style="margin-bottom:1.25rem">키는 이 브라우저에서만 사용되며 어디에도 저장되지 않습니다. 창을 닫으면 사라집니다.</div>
+    <input id="ai-key-input" type="password" placeholder="sk-..." style="width:100%;padding:12px 14px;border:1px solid rgba(30,61,42,0.2);border-radius:10px;font-size:14px;font-family:inherit;margin-bottom:8px;outline:none;color:#1A1A1A">
+    <div id="ai-status" style="font-size:13px;color:#4A7C5F;min-height:20px;margin-bottom:1.25rem;text-align:left"></div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="hideAiModal()">취소</button>
+      <button class="modal-confirm" id="ai-run-btn" onclick="runGPT()">자동 작성 시작</button>
+    </div>
+  </div>
 </div>
 
 <!-- QR 모달 -->
@@ -444,22 +1032,498 @@ body{
   </div>
 </div>
 
-<div class="modal-overlay" id="reset-modal">
-  <div class="modal-box">
-    <div class="modal-title" id="modal-title">초기화할까요?</div>
-    <div class="modal-desc" id="modal-desc">이 작업은 되돌릴 수 없습니다.</div>
-    <div class="modal-btns"><button class="modal-cancel" onclick="hideResetModal()">취소</button><button class="modal-confirm" onclick="confirmReset()">삭제</button></div>
-  </div>
-</div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getDatabase,ref,onValue,remove,push,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import{getDatabase,ref,onValue,remove,push,set,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 const cfg={apiKey:"AIzaSyA5da127Wmh6cbDIk0gTr2uwtj5zP-9v08",authDomain:"drbworld.firebaseapp.com",databaseURL:"https://drbworld-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"drbworld",storageBucket:"drbworld.firebasestorage.app",messagingSenderId:"692323820655",appId:"1:692323820655:web:d38af1a32ddc01001c999a"};
 const app=initializeApp(cfg);const db=getDatabase(app);
 
-window.switchPage=i=>{document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',i===j));document.querySelectorAll('.nav-tab').forEach((t,j)=>t.classList.toggle('active',i===j));};
-window.showSlide=i=>{document.querySelectorAll('.slide').forEach((s,j)=>s.classList.toggle('active',i===j));document.querySelectorAll('.slide-btn').forEach((b,j)=>b.classList.toggle('active',i===j));};
+/* 탭 전환 — 반드시 window에 등록 */
+/* ── 전역 API 키 (한 번 입력, 전체 공유) ── */
+let _sharedApiKey = null;
+let _agentMode = false; // true = AI Agent 참석
+
+/* 표지 → 참석자 선택 */
+window.showParticipantModal = () => {
+  document.getElementById('participant-modal').classList.add('show');
+};
+window.selectParticipant = mode => {
+  document.getElementById('participant-modal').classList.remove('show');
+  if(mode === 'agent'){
+    document.getElementById('api-modal').classList.add('show');
+    setTimeout(()=>document.getElementById('main-api-input').focus(), 100);
+  } else {
+    _agentMode = false;
+    enterSite();
+  }
+};
+window.backToParticipant = () => {
+  document.getElementById('api-modal').classList.remove('show');
+  document.getElementById('participant-modal').classList.add('show');
+};
+window.confirmApiKey = () => {
+  const k = document.getElementById('main-api-input').value.trim();
+  if(!k || !k.startsWith('sk-')){
+    document.getElementById('main-api-status').textContent = '올바른 API 키를 입력해주세요 (sk- 로 시작)';
+    document.getElementById('main-api-status').style.color='rgba(255,160,160,0.9)';
+    return;
+  }
+  _sharedApiKey = k;
+  _agentMode = true;
+  document.getElementById('api-modal').classList.remove('show');
+  enterSite();
+};
+document.getElementById('main-api-input')?.addEventListener('keydown', e=>{ if(e.key==='Enter') confirmApiKey(); });
+
+/* 메인으로 진입 */
+window.enterSite = () => {
+  const c = document.getElementById('cover');
+  c.classList.add('hide');
+  setTimeout(()=>{ c.style.display='none'; }, 650);
+  // AI 관련 버튼 표시 여부
+  const agentBtns = document.querySelectorAll('.ai-only');
+  agentBtns.forEach(b=>b.style.display = _agentMode ? '' : 'none');
+};
+
+/* ── AI Agent 패널 토글 ── */
+window.toggleAgentPanel = () => {
+  if(!_agentMode){
+    alert('AI Agent 참석 모드가 아닙니다. 처음 화면에서 "AI Agent도 참석"을 선택해주세요.');
+    return;
+  }
+  const outer = document.getElementById('disc-outer');
+  const page2 = document.getElementById('page-2');
+  const isOpen = outer.classList.contains('agent-open');
+  outer.classList.toggle('agent-open', !isOpen);
+  page2.classList.toggle('panel-expanded', !isOpen);
+};
+
+/* 표지로 돌아가기 */
+window.returnToCover = () => {
+  const c = document.getElementById('cover');
+  c.style.display = '';
+  c.classList.remove('hide');
+  _sharedApiKey = null;
+  _agentMode = false;
+};
+
+window.sendAgentMsg = async () => {
+  if(!_sharedApiKey){ alert('API 키가 없습니다. 처음 화면에서 다시 시작해주세요.'); return; }
+  const input = document.getElementById('ai-chat-input');
+  const log = document.getElementById('ai-chat-log');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value='';
+  log.innerHTML += `<div class="ai-msg user">${esc(text)}</div>`;
+  const loading = document.createElement('div');
+  loading.className='ai-msg loading'; loading.textContent='답변 생성 중...';
+  log.appendChild(loading); log.scrollTop=log.scrollHeight;
+  const discCtx = _cachedDiscussion.length
+    ? '자유토론 의견:\n'+_cachedDiscussion.map((t,i)=>`구성원${i+1}: ${t}`).join('\n')
+    : '자유토론 의견 없음';
+  const sysMsg = `당신은 DRB Holding Co., Ltd. 재무팀의 협업 진단 결과를 분석하는 AI Agent입니다. 다음 데이터를 참고하여 한국어로 답변하세요.\n\n${discCtx}`;
+  try{
+    const res = await fetch('https://api.openai.com/v1/chat/completions',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${_sharedApiKey}`},
+      body:JSON.stringify({model:'gpt-4o',messages:[{role:'system',content:sysMsg},{role:'user',content:text}],temperature:0.7,max_tokens:800})
+    });
+    if(!res.ok) throw new Error((await res.json()).error?.message||'오류');
+    const data=await res.json();
+    loading.className='ai-msg bot'; loading.textContent=data.choices[0].message.content;
+  }catch(e){ loading.className='ai-msg bot'; loading.textContent=`오류: ${e.message}`; }
+  log.scrollTop=log.scrollHeight;
+};
+
+/* 탭 전환 — scroll-area 맨 위로 */
+/* ── 화면 상태 동기화 ── */
+// 클릭한 기기 → Firebase session/state 저장
+// 모든 기기 → onValue로 실시간 수신 후 화면 적용
+
+let _isSyncing = false; // 루프 방지
+
+function applyState(state){
+  if(!state) return;
+  _isSyncing = true;
+  // 탭
+  if(state.page !== undefined){
+    document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',state.page===j));
+    document.querySelectorAll('.nav-tab').forEach((t,j)=>t.classList.toggle('active',state.page===j));
+    const area = document.getElementById('scroll-area');
+    if(area) area.scrollTop = 0;
+  }
+  // 슬라이드 (협업이란? 탭일 때만)
+  if(state.slide !== undefined){
+    document.querySelectorAll('.slide').forEach((s,j)=>s.classList.toggle('active',state.slide===j));
+    document.querySelectorAll('.slide-btn').forEach((b,j)=>b.classList.toggle('active',state.slide===j));
+  }
+  _isSyncing = false;
+}
+
+function pushState(page, slide){
+  if(_isSyncing) return;
+  const state = { page, slide: slide ?? null, ts: Date.now() };
+  set(ref(db,'session/state'), state);
+}
+
+// Firebase에서 상태 수신 → 모든 기기 동기화
+onValue(ref(db,'session/state'), snap=>{
+  if(_isSyncing) return;
+  const s = snap.val();
+  if(!s) return;
+  applyState(s);
+});
+
+window.switchPage = i => {
+  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',i===j));
+  document.querySelectorAll('.nav-tab').forEach((t,j)=>t.classList.toggle('active',i===j));
+  const area = document.getElementById('scroll-area');
+  if(area) area.scrollTop = 0;
+  // 슬라이드 현재 인덱스 유지
+  const curSlide = [...document.querySelectorAll('.slide-btn')].findIndex(b=>b.classList.contains('active'));
+  pushState(i, curSlide >= 0 ? curSlide : 0);
+};
+
+/* 슬라이드 전환 */
+window.showSlide = i => {
+  document.querySelectorAll('.slide').forEach((s,j)=>s.classList.toggle('active',i===j));
+  document.querySelectorAll('.slide-btn').forEach((b,j)=>b.classList.toggle('active',i===j));
+  const area = document.getElementById('scroll-area');
+  if(area) area.scrollTop = 0;
+  pushState(0, i); // 슬라이드는 항상 page-0
+};
+
+/* 결과 보고서 출력 */
+let _cachedData = null;
+window.exportReport = () => {
+  if(!_cachedData){ alert('아직 응답 데이터가 없습니다.'); return; }
+  const d = _cachedData;
+  const avg = a => { const v=a.filter(x=>x>0); return v.length ? (v.reduce((a,b)=>a+b,0)/v.length).toFixed(2) : '—'; };
+  const pct = (c,t) => t>0 ? Math.round(c/t*100)+'%' : '0%';
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  const rs = Object.values(d);
+  const n = rs.length;
+  const a1v = rs.map(r=>r.a1).filter(Boolean);
+  const b1v = rs.map(r=>r.b1).filter(Boolean);
+
+  const matrixRows = (node, keys, names) => keys.map((k,i) => {
+    const v = rs.map(r=>r[node]&&r[node][node+k]).filter(Boolean);
+    const a = avg(v);
+    const bar = a!=='—' ? Math.round(parseFloat(a)/5*100) : 0;
+    return `<tr><td>${names[i]}</td><td style="width:200px"><div style="background:#eee;border-radius:4px;height:10px;overflow:hidden"><div style="background:#2D5C3A;width:${bar}%;height:100%"></div></div></td><td style="text-align:right;font-weight:700;color:#1A3522">${a} <span style="color:#888;font-weight:400">/ 5</span></td></tr>`;
+  }).join('');
+
+  const voteLabel_a = ['이견·반대 의견 말하기','모르는 것 질문 문화','학습 중심 회고 방식','도움 요청 자연스러운 구조','리더의 불확실성 드러내기'];
+  const voteLabel_b = ['이유·맥락까지 기록 습관','초안·진행물 먼저 공유','대안·미해결 사항 기록','암묵 → 공개 채널 전환','공유 도구·채널 정비'];
+  const vA=[0,0,0,0,0],vB=[0,0,0,0,0];
+  rs.forEach(r=>{ if(r.vote_safety) r.vote_safety.forEach(i=>{ if(i>=0&&i<5)vA[i]++; }); });
+  rs.forEach(r=>{ if(r.vote_share) r.vote_share.forEach(i=>{ if(i>=0&&i<5)vB[i]++; }); });
+  const tA=vA.reduce((a,b)=>a+b,0), tB=vB.reduce((a,b)=>a+b,0);
+  const voteRows = (arr, labels, total) => arr.map((c,i)=>`<tr><td>${labels[i]}</td><td style="width:200px"><div style="background:#eee;border-radius:4px;height:10px;overflow:hidden"><div style="background:#2D5C3A;width:${pct(c,total).replace('%','')}%;height:100%"></div></div></td><td style="text-align:right;font-weight:700;color:#1A3522">${c}명 (${pct(c,total)})</td></tr>`).join('');
+
+  const listRows = arr => arr.length ? arr.map(t=>`<div style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#333;line-height:1.6">${esc(t)}</div>`).join('') : '<div style="color:#aaa;padding:10px 0;font-size:14px">응답 없음</div>';
+
+  const lowR = rs.filter(r=>r.a1<=3).map(r=>r.a1_low_reason||r.a1_mid_reason).filter(Boolean);
+  const now = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<title>협업 진단 결과 보고서</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1A1A1A;background:#fff;padding:0;}
+@media print{.no-print{display:none!important;} body{padding:0;}}
+.cover{background:linear-gradient(135deg,#1A3522,#2D5C3A);color:#fff;padding:80px 60px;page-break-after:always;}
+.cover-title{font-size:36px;font-weight:700;margin-bottom:12px;letter-spacing:-0.02em;}
+.cover-sub{font-size:18px;opacity:0.75;margin-bottom:60px;}
+.cover-meta{font-size:14px;opacity:0.6;border-top:1px solid rgba(255,255,255,0.25);padding-top:20px;}
+.page{padding:50px 60px;max-width:900px;margin:0 auto;}
+h2{font-size:22px;font-weight:700;color:#1A3522;margin:40px 0 8px;padding-bottom:10px;border-bottom:2px solid #C8DDD0;}
+h3{font-size:16px;font-weight:600;color:#2D5C3A;margin:24px 0 8px;}
+.q-box{background:#F5FAF7;border-left:4px solid #2D5C3A;padding:12px 16px;border-radius:0 8px 8px 0;margin-bottom:16px;}
+.q-box .q-label{font-size:11px;font-weight:700;color:#4A7C5F;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;}
+.q-box .q-text{font-size:15px;color:#1A1A1A;font-weight:500;line-height:1.5;}
+.q-box .q-scale{font-size:12px;color:#888;margin-top:3px;}
+.score-big{font-size:52px;font-weight:700;color:#1A3522;line-height:1;}
+.score-denom{font-size:18px;color:#888;}
+.score-row{display:flex;align-items:center;gap:24px;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;margin-bottom:12px;}
+td{padding:10px 8px;font-size:14px;color:#333;vertical-align:middle;}
+tr{border-bottom:1px solid #f0f0f0;}
+.section-card{background:#FAFAFA;border:1px solid #eee;border-radius:10px;padding:20px 24px;margin-bottom:20px;}
+.vote-top{display:inline-block;background:#2D5C3A;color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:99px;margin-bottom:8px;}
+.print-btn{position:fixed;bottom:30px;right:30px;background:#1A3522;color:#fff;border:none;border-radius:99px;padding:14px 28px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+.print-btn:hover{background:#2D5C3A;}
+</style></head><body>
+<div class="cover">
+  <div class="cover-title">우리 팀 협업 진단 결과</div>
+  <div class="cover-sub">심리적 안전감 & 공유 수준 진단 보고서</div>
+  <div class="cover-meta">총 응답 ${n}명 &nbsp;·&nbsp; 집계 일시: ${now} &nbsp;·&nbsp; DRB동일 재무팀</div>
+</div>
+<div class="page">
+<h2>A. 심리적 안전감</h2>
+<div class="q-box"><div class="q-label">A-1 질문</div><div class="q-text">나는 우리 팀에서 전반적으로 심리적 안전감을 느낀다.</div><div class="q-scale">1 = 전혀 그렇지 않다 · 5 = 매우 그렇다</div></div>
+<div class="score-row"><div class="score-big">${avg(a1v)}</div><div class="score-denom">/ 5점</div><div style="font-size:14px;color:#666">(응답 ${a1v.length}명)</div></div>
+
+<div class="q-box"><div class="q-label">A-2 질문</div><div class="q-text">각 상황에서 부담 없이 행동할 수 있는 정도</div><div class="q-scale">1 = 매우 어렵다 · 5 = 매우 편하다</div></div>
+<div class="section-card"><table>
+${matrixRows('a2',['a','b','c','d','e'],['모르는 것을 질문하기','반대 의견·이견 내기','내 실수를 공개 인정하기','동료에게 도움 요청하기','우려되는 리스크 공유하기'])}
+</table></div>
+
+<h3>▸ A-1-a &nbsp; 안전감이 낮은 이유 (1~3점 응답자)</h3>
+<div class="section-card">${listRows(lowR)}</div>
+
+<h3>▸ A-3 &nbsp; 개선 제안</h3>
+<div class="section-card">${listRows(rs.map(r=>r.a3).filter(Boolean))}</div>
+
+<h2>B. 공유</h2>
+<div class="q-box"><div class="q-label">B-1 질문</div><div class="q-text">우리 팀에서 의사결정과 업무 정보가 잘 공유되고 있다고 생각한다.</div><div class="q-scale">1 = 전혀 그렇지 않다 · 5 = 매우 그렇다</div></div>
+<div class="score-row"><div class="score-big">${avg(b1v)}</div><div class="score-denom">/ 5점</div><div style="font-size:14px;color:#666">(응답 ${b1v.length}명)</div></div>
+
+<div class="q-box"><div class="q-label">B-2 질문</div><div class="q-text">각 항목이 우리 팀에서 실제로 이루어지고 있는 정도</div><div class="q-scale">1 = 전혀 안 된다 · 5 = 매우 잘 된다</div></div>
+<div class="section-card"><table>
+${matrixRows('b2',['a','b','c','d'],['의사결정 결과 + 이유·맥락 기록','완성 전 초안·진행물 공유','검토된 대안·미해결 사항 기록','정보가 검색·참조 가능한 형태로 저장'])}
+</table></div>
+
+<h3>▸ B-3 &nbsp; 공유가 안 되는 이유</h3>
+<div class="section-card">${listRows(rs.map(r=>r.b3).filter(Boolean))}</div>
+
+<h3>▸ B-4 &nbsp; 개선 제안</h3>
+<div class="section-card">${listRows(rs.map(r=>r.b4).filter(Boolean))}</div>
+
+<h2>C. 우리 팀에 가장 필요한 것 — 투표 결과</h2>
+<div class="q-box"><div class="q-label">C 질문</div><div class="q-text">심리적 안전감과 공유 각 카테고리에서 우리 팀에 지금 가장 필요한 변화를 선택하세요. (각 최대 2개)</div></div>
+<h3>심리적 안전감 — 우선순위</h3>
+<div class="section-card"><table>${voteRows(vA,voteLabel_a,tA)}</table></div>
+<h3>공유 — 우선순위</h3>
+<div class="section-card"><table>${voteRows(vB,voteLabel_b,tB)}</table></div>
+</div>
+<button class="print-btn no-print" onclick="window.print()">인쇄 / PDF 저장</button>
+</body></html>`;
+
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+};
+
+/* ── GPT-4o 자동 결론 작성 ── */
+window.showAiModal = () => {
+  if(!_agentMode){ alert('AI Agent 참석 모드가 아닙니다. 처음 화면에서 "AI Agent도 참석"을 선택해주세요.'); return; }
+  if(!_cachedData){ alert('구성원 의견 데이터가 없습니다. 먼저 설문 응답을 수집해주세요.'); return; }
+  document.getElementById('ai-status').textContent = '';
+  document.getElementById('ai-key-input').value = _sharedApiKey || '';
+  document.getElementById('ai-modal').classList.add('show');
+};
+window.hideAiModal = () => document.getElementById('ai-modal').classList.remove('show');
+
+window.runGPT = async () => {
+  const key = document.getElementById('ai-key-input').value.trim() || _sharedApiKey;
+  if(!key || !key.startsWith('sk-')){ alert('올바른 API 키를 입력해주세요. (sk- 로 시작)'); return; }
+  if(key !== _sharedApiKey) _sharedApiKey = key; // 업데이트
+  if(!_cachedData){ alert('응답 데이터가 없습니다.'); return; }
+
+  const btn = document.getElementById('ai-run-btn');
+  const status = document.getElementById('ai-status');
+  btn.disabled = true; btn.textContent = '작성 중...';
+
+  // 데이터 요약 준비
+  const rs = Object.values(_cachedData);
+  const n = rs.length;
+  const avgFn = a => { const v=a.filter(x=>x>0); return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(2):'없음'; };
+  const a1avg = avgFn(rs.map(r=>r.a1).filter(Boolean));
+  const b1avg = avgFn(rs.map(r=>r.b1).filter(Boolean));
+  const matAvg = (node, key) => avgFn(rs.map(r=>r[node]&&r[node][node+key]).filter(Boolean));
+
+  const a2 = {
+    질문하기: matAvg('a2','a'), 이견내기: matAvg('a2','b'),
+    실수인정: matAvg('a2','c'), 도움요청: matAvg('a2','d'), 리스크공유: matAvg('a2','e')
+  };
+  const b2 = {
+    맥락기록: matAvg('b2','a'), 초안공유: matAvg('b2','b'),
+    대안기록: matAvg('b2','c'), 검색가능저장: matAvg('b2','d')
+  };
+
+  const vA=[0,0,0,0,0], vB=[0,0,0,0,0];
+  rs.forEach(r=>{ if(r.vote_safety) r.vote_safety.forEach(i=>{if(i>=0&&i<5)vA[i]++;}); });
+  rs.forEach(r=>{ if(r.vote_share) r.vote_share.forEach(i=>{if(i>=0&&i<5)vB[i]++;}); });
+  const voteLabel_a = ['이견·반대 의견 말하기','모르는 것 질문 문화','학습 중심 회고 방식','도움 요청 자연스러운 구조','리더의 불확실성 드러내기'];
+  const voteLabel_b = ['이유·맥락까지 기록 습관','초안·진행물 먼저 공유','대안·미해결 사항 기록','암묵→공개 채널 전환','공유 도구·채널 정비'];
+  const topVoteA = vA.map((c,i)=>({label:voteLabel_a[i],count:c})).sort((a,b)=>b.count-a.count).slice(0,2).map(x=>`${x.label}(${x.count}명)`).join(', ');
+  const topVoteB = vB.map((c,i)=>({label:voteLabel_b[i],count:c})).sort((a,b)=>b.count-a.count).slice(0,2).map(x=>`${x.label}(${x.count}명)`).join(', ');
+
+  const lowR = rs.filter(r=>r.a1<=3).map(r=>r.a1_low_reason||r.a1_mid_reason).filter(Boolean);
+  const a3list = rs.map(r=>r.a3).filter(Boolean);
+  const b3list = rs.map(r=>r.b3).filter(Boolean);
+  const b4list = rs.map(r=>r.b4).filter(Boolean);
+
+  const discText = _cachedDiscussion.length
+    ? _cachedDiscussion.map((t,i)=>`- 구성원${i+1}: ${t}`).join('\n')
+    : '없음';
+
+  const dataStr = `
+[진단 개요]
+응답 인원: ${n}명 / DRB동일 재무팀
+
+[A. 심리적 안전감]
+A-1 전반 평균: ${a1avg}/5
+A-2 항목별 평균:
+- 모르는 것 질문하기: ${a2.질문하기}
+- 반대 의견·이견 내기: ${a2.이견내기}
+- 내 실수 공개 인정: ${a2.실수인정}
+- 도움 요청하기: ${a2.도움요청}
+- 리스크 공유하기: ${a2.리스크공유}
+A-1-a 낮은 이유(1~3점): ${lowR.length ? lowR.join(' / ') : '없음'}
+A-3 개선 제안: ${a3list.length ? a3list.join(' / ') : '없음'}
+
+[B. 공유]
+B-1 전반 평균: ${b1avg}/5
+B-2 항목별 평균:
+- 맥락·이유 기록: ${b2.맥락기록}
+- 초안·진행물 공유: ${b2.초안공유}
+- 대안·미해결 기록: ${b2.대안기록}
+- 검색 가능한 형태로 저장: ${b2.검색가능저장}
+B-3 공유 안 되는 이유: ${b3list.length ? b3list.join(' / ') : '없음'}
+B-4 개선 제안: ${b4list.length ? b4list.join(' / ') : '없음'}
+
+[C. 투표 결과]
+심리적 안전감 상위 2개: ${topVoteA || '없음'}
+공유 상위 2개: ${topVoteB || '없음'}
+
+[D. 자유토론 의견]
+${discText}
+`.trim();
+
+  const prompt = `당신은 조직문화 컨설턴트입니다. 아래는 DRB동일 재무팀의 협업 진단 설문 결과와 자유토론 의견입니다. 이 데이터를 바탕으로 아래 5개 섹션을 각각 한국어로 작성해주세요. 자유토론 의견에 포함된 액션 아이템, 제안, 우려사항을 적절한 섹션에 반영하세요. 각 섹션은 구체적이고 실질적으로, 2~4문단 분량으로 작성하세요.
+
+데이터:
+${dataStr}
+
+아래 JSON 형식으로만 응답하세요. 다른 텍스트 없이 JSON만 출력하세요:
+{
+  "summary": "전체 요약 내용",
+  "safety": "심리적 안전감 주요 발견 및 시사점",
+  "share": "공유 주요 발견 및 시사점",
+  "priority": "팀이 선택한 우선순위 변화 분석 (자유토론 의견 반영)",
+  "action": "액션 아이템 - 번호 목록 형식으로, 자유토론에서 나온 구체적 제안을 우선 반영"
+}`;
+
+  try {
+    status.textContent = '⏳ GPT-4o가 데이터를 분석 중입니다...';
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [{ role: 'user', content: prompt }],
+        temperature: 0.7,
+        max_tokens: 2000
+      })
+    });
+
+    if(!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || `오류 ${res.status}`);
+    }
+
+    const data = await res.json();
+    const raw = data.choices[0].message.content.trim();
+    const clean = raw.replace(/^```json\n?/, '').replace(/\n?```$/, '').trim();
+    const parsed = JSON.parse(clean);
+
+    // 결론 편집창에 자동 입력
+    const set = (id, text) => {
+      const el = document.getElementById(id);
+      if(el && text) el.innerText = text;
+    };
+    set('concl-summary',  parsed.summary);
+    set('concl-safety',   parsed.safety);
+    set('concl-share',    parsed.share);
+    set('concl-priority', parsed.priority);
+    set('concl-action',   parsed.action);
+
+    status.textContent = '✓ 작성 완료! 내용을 검토하고 필요하면 수정하세요.';
+    status.style.color = '#2D5C3A';
+    setTimeout(()=>{ hideAiModal(); switchPage(3); }, 1500);
+
+  } catch(e) {
+    status.textContent = `오류: ${e.message}`;
+    status.style.color = '#C04040';
+    btn.disabled = false; btn.textContent = '자동 작성 시작';
+    return;
+  }
+  btn.disabled = false; btn.textContent = '자동 작성 시작';
+};
+
+/* 결론 보고서 출력 */
+window.exportConclusion = () => {
+  const get = id => document.getElementById(id)?.innerText?.trim() || '';
+  const summary  = get('concl-summary');
+  const safety   = get('concl-safety');
+  const share    = get('concl-share');
+  const priority = get('concl-priority');
+  const action   = get('concl-action');
+  const now = new Date().toLocaleDateString('ko-KR',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  const section = (title, content) => content
+    ? `<h2>${title}</h2><div class="content-box">${esc(content)}</div>`
+    : '';
+  const html = `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<title>협업 진단 결론 보고서</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#1A1A1A;background:#fff;}
+@media print{.no-print{display:none!important;}}
+.cover{background:linear-gradient(135deg,#1A3522,#2D5C3A);color:#fff;padding:80px 60px;page-break-after:always;}
+.cover-title{font-size:36px;font-weight:700;margin-bottom:12px;letter-spacing:-0.02em;}
+.cover-sub{font-size:18px;opacity:0.75;margin-bottom:8px;}
+.cover-team{font-size:15px;opacity:0.6;margin-bottom:60px;}
+.cover-meta{font-size:14px;opacity:0.5;border-top:1px solid rgba(255,255,255,0.25);padding-top:20px;}
+.page{padding:50px 60px;max-width:900px;margin:0 auto;}
+h2{font-size:20px;font-weight:700;color:#1A3522;margin:36px 0 10px;padding-bottom:10px;border-bottom:2px solid #C8DDD0;}
+.content-box{background:#F5FAF7;border-left:4px solid #2D5C3A;padding:18px 20px;border-radius:0 8px 8px 0;font-size:15px;line-height:1.85;color:#1A1A1A;white-space:pre-wrap;}
+.print-btn{position:fixed;bottom:30px;right:30px;background:#1A3522;color:#fff;border:none;border-radius:99px;padding:14px 28px;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.2);}
+.print-btn:hover{background:#2D5C3A;}
+.empty-notice{color:#aaa;font-size:14px;font-style:italic;padding:20px 0;text-align:center;}
+</style></head><body>
+<div class="cover">
+  <div class="cover-title">우리 팀 협업 진단 — 결론</div>
+  <div class="cover-sub">심리적 안전감 & 공유 수준 진단 결론 보고서</div>
+  <div class="cover-team">DRB동일 재무팀</div>
+  <div class="cover-meta">작성 일시: ${now}</div>
+</div>
+<div class="page">
+  ${section('전체 요약', summary)}
+  ${section('심리적 안전감 — 주요 발견 및 시사점', safety)}
+  ${section('공유 — 주요 발견 및 시사점', share)}
+  ${section('팀이 선택한 우선순위 변화', priority)}
+  ${section('액션 아이템 (다음 단계)', action)}
+  ${!summary&&!safety&&!share&&!priority&&!action ? '<div class="empty-notice">아직 작성된 내용이 없습니다. 결론 탭에서 내용을 입력해 주세요.</div>' : ''}
+</div>
+<button class="print-btn no-print" onclick="window.print()">인쇄 / PDF 저장</button>
+</body></html>`;
+  const w = window.open('','_blank');
+  w.document.write(html);
+  w.document.close();
+};
+
+/* 자유토론 수정/삭제 */
+window.deleteDisc = async key => {
+  if(!confirm('이 의견을 삭제할까요?')) return;
+  await remove(ref(db,`discussion/${key}`));
+};
+window.editDisc = key => {
+  document.getElementById(`disc-edit-${key}`).style.display='block';
+};
+window.cancelEdit = key => {
+  document.getElementById(`disc-edit-${key}`).style.display='none';
+};
+window.saveDisc = async key => {
+  const text = document.getElementById(`disc-ta-${key}`).value.trim();
+  if(!text) return;
+  await set(ref(db,`discussion/${key}/text`), text);
+  document.getElementById(`disc-edit-${key}`).style.display='none';
+};
 
 /* QR 코드 */
 const SURVEY_URL = 'https://agentparksungwoo-prog.github.io/drbworld/survey.html';
@@ -470,16 +1534,44 @@ window.showQR = () => {
 };
 window.hideQR = () => document.getElementById('qr-modal').classList.remove('show');
 document.getElementById('qr-modal').addEventListener('click', e=>{ if(e.target===e.currentTarget) hideQR(); });
-window.showResetModal=target=>{
-  resetTarget=target;
-  const label=target==='responses'?'구성원 의견':'자유토론';
-  document.getElementById('modal-title').textContent=`${label}을 초기화할까요?`;
-  document.getElementById('modal-desc').textContent=`${label}의 모든 데이터가 영구적으로 삭제됩니다. 이 작업은 되돌릴 수 없습니다.`;
-  document.getElementById('reset-modal').classList.add('show');
+/* ── 통합 초기화 피커 ── */
+window.showResetPicker = () => document.getElementById('reset-picker-modal').classList.add('show');
+window.hideResetPicker = () => document.getElementById('reset-picker-modal').classList.remove('show');
+
+let _resetTarget = null;
+window.confirmResetPick = target => {
+  _resetTarget = target;
+  hideResetPicker();
+  const labels = { responses:'구성원 의견', discussion:'자유토론', conclusion:'결론' };
+  document.getElementById('rconfirm-title').textContent = `${labels[target]}을 초기화할까요?`;
+  document.getElementById('rconfirm-desc').textContent = `${labels[target]}의 모든 데이터가 영구적으로 삭제됩니다. 되돌릴 수 없습니다.`;
+  document.getElementById('reset-confirm-modal').classList.add('show');
 };
-window.hideResetModal=()=>document.getElementById('reset-modal').classList.remove('show');
-let resetTarget='responses';
-window.confirmReset=async()=>{await remove(ref(db,resetTarget));hideResetModal();};
+window.hideResetConfirm = () => document.getElementById('reset-confirm-modal').classList.remove('show');
+window.doReset = async () => {
+  hideResetConfirm();
+  if(_resetTarget === 'conclusion'){
+    ['concl-summary','concl-safety','concl-share','concl-priority','concl-action']
+      .forEach(id=>{ const el=document.getElementById(id); if(el) el.innerText=''; });
+  } else {
+    await remove(ref(db, _resetTarget));
+  }
+};
+
+/* ── 결론 인쇄 (결론 탭만) ── */
+window.printConclusion = () => {
+  document.body.classList.add('print-conclusion');
+  window.print();
+  setTimeout(()=>document.body.classList.remove('print-conclusion'), 1000);
+};
+
+/* ── 결론 초기화 ── */
+window.clearConclusion = () => {
+  _resetTarget = 'conclusion';
+  document.getElementById('rconfirm-title').textContent = '결론을 초기화할까요?';
+  document.getElementById('rconfirm-desc').textContent = '결론 작성 내용이 모두 삭제됩니다. 되돌릴 수 없습니다.';
+  document.getElementById('reset-confirm-modal').classList.add('show');
+};
 
 const avg=a=>{const v=a.filter(x=>x>0);return v.length?v.reduce((a,b)=>a+b,0)/v.length:null;};
 const fmt=n=>n!=null?n.toFixed(1):'—';
@@ -492,6 +1584,7 @@ const timeAgo=ts=>{if(!ts)return'—';const d=Math.floor((Date.now()-ts)/1000);i
 /* 구성원 의견 실시간 */
 onValue(ref(db,'responses'),snap=>{
   const data=snap.val();
+  _cachedData = data;
   if(!data){
     setText('total-count',0);setText('avg-a1','—');setText('avg-b1','—');setText('last-time','—');
     setText('a1-avg-disp','—');setText('b1-avg-disp','—');
@@ -520,20 +1613,39 @@ onValue(ref(db,'responses'),snap=>{
 });
 
 /* 자유토론 실시간 */
+let _cachedDiscussion = [];
 onValue(ref(db,'discussion'),snap=>{
   const el=document.getElementById('disc-list');if(!el)return;
   const data=snap.val();
-  if(!data){el.innerHTML='<div class="open-empty">아직 작성된 의견이 없습니다</div>';return;}
-  const items=Object.values(data).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
-  el.innerHTML=items.map((d,i)=>`
-    <div class="disc-item">
+  if(!data){
+    _cachedDiscussion=[];
+    el.innerHTML='<div class="open-empty">아직 작성된 의견이 없습니다</div>';
+    return;
+  }
+  // 키 포함해서 저장 (삭제에 필요)
+  const entries = Object.entries(data).map(([k,v])=>({key:k,...v})).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+  _cachedDiscussion = entries.map(e=>e.text||'');
+  el.innerHTML = entries.map((d,i)=>`
+    <div class="disc-item" id="disc-${d.key}">
       <div class="disc-row">
         <span class="disc-member">구성원 ${i+1}</span>
-        <span class="disc-text">${esc(d.text||'')}</span>
+        <span class="disc-text" id="disc-text-${d.key}">${esc(d.text||'')}</span>
       </div>
-      <div class="disc-time">${timeAgo(d.timestamp)} 전</div>
+      <div class="disc-menu">
+        <button class="disc-btn" onclick="event.stopPropagation();editDisc('${d.key}')">수정</button>
+        <button class="disc-btn del" onclick="event.stopPropagation();deleteDisc('${d.key}')">삭제</button>
+      </div>
+      <div id="disc-edit-${d.key}" style="display:none;margin-top:8px" onclick="event.stopPropagation()">
+        <textarea class="disc-edit-area" id="disc-ta-${d.key}">${(d.text||'').replace(/</g,'&lt;')}</textarea>
+        <div class="disc-edit-actions">
+          <button class="disc-btn" onclick="saveDisc('${d.key}')">저장</button>
+          <button class="disc-btn" onclick="cancelEdit('${d.key}')">취소</button>
+        </div>
+      </div>
     </div>`).join('');
 });
 </script>
+</div><!-- /scroll-area -->
+</div><!-- /site-wrap -->
 </body>
 </html>
