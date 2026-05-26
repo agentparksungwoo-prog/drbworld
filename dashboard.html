@@ -1509,9 +1509,22 @@ window.sendAgentMsg = async () => {
     ? `\n[★ 참석자가 중요하다고 표시한 의견 — 최우선 참고]\n${selectedMsgs.map(m=>`- ${m}`).join('\n')}`
     : '';
 
-  const prompt = `You are an AI assistant for DRB Holding Co., Ltd. Finance Team collaboration diagnosis. Answer ONLY in Korean. Do NOT use markdown formatting (no **, no ##, no bullet dashes). Write in natural conversational Korean sentences. Be concise and clear — 3 to 5 sentences max unless more detail is truly needed.
+  const prompt = `You are a senior organizational culture and team behavior expert with deep expertise in:
+- Psychological safety (Amy Edmondson's 4-stage model)
+- Team learning and knowledge sharing dynamics
+- Organizational diagnosis and intervention design
+- Korean corporate culture context
 
-Data:
+Your role: Analyze the diagnosis data below and respond to the user's question with expert insight. Provide diagnosis, root cause analysis, and actionable recommendations when relevant.
+
+Rules:
+- Answer ONLY in Korean
+- No markdown (no **, no ##, no bullet dashes, no numbered lists)
+- Write in natural, professional Korean prose — as a consultant speaking directly to a team leader
+- Be concise: 3–5 sentences unless deeper analysis is explicitly requested
+- Ground every claim in the data provided
+
+Diagnosis data:
 ${surveyCtx}
 
 ${discCtx}${selectedCtx}
@@ -1836,18 +1849,34 @@ ${discText}
     ? `\n\n[★ 진행자가 중요 표시한 의견 — 보고서에 우선 반영]\n${selectedMsgs2.map(m=>`- ${m}`).join('\n')}`
     : '';
 
-  const prompt = `당신은 조직문화 컨설턴트입니다. 아래는 DRB동일 재무팀의 협업 진단 설문 결과와 자유토론 의견입니다. 이 데이터를 바탕으로 아래 5개 섹션을 각각 한국어로 작성해주세요. 자유토론 의견에 포함된 액션 아이템, 제안, 우려사항을 적절한 섹션에 반영하세요. ★ 표시된 의견은 특히 중요하게 다뤄주세요. 각 섹션은 구체적이고 실질적으로, 2~4문단 분량으로 작성하세요.
+  const prompt = `You are a senior consultant specializing in organizational culture, psychological safety, and team behavior, with extensive experience diagnosing Korean corporate teams.
 
-데이터:
+Your task: Write a professional Korean diagnosis and recommendation report for DRB Holding Co., Ltd. Finance Team based on the survey and discussion data below.
+
+Expert frameworks to apply:
+1. Psychological Safety — Use Amy Edmondson's framework: assess current stage (inclusion safety / learner safety / contributor safety / challenger safety), identify which stage is the bottleneck, and prescribe accordingly
+2. Knowledge Sharing — Analyze the gap between tacit and explicit knowledge sharing; identify structural vs. cultural barriers
+3. Team Dynamics — Identify patterns in free discussion that reveal power dynamics, communication norms, or unspoken concerns
+4. Root Cause Analysis — Do not just describe symptoms; diagnose the underlying cause of each finding
+5. Actionable Prescription — Every recommendation must be specific, feasible within a Korean corporate context, and tied directly to the data
+
+Writing standards:
+- Professional Korean prose appropriate for an executive-level internal report
+- Each section: 2–4 substantive paragraphs
+- Ground every claim in the data — no generic statements
+- ★ marked discussion opinions are prioritized by the facilitator — give them prominent weight
+- Tone: authoritative but constructive — a trusted advisor, not a critic
+
+Diagnosis data:
 ${dataStr}${selectedStr}
 
-아래 JSON 형식으로만 응답하세요. 다른 텍스트 없이 JSON만 출력하세요:
+Respond ONLY with a JSON object — no other text, no markdown code fences:
 {
-  "summary": "전체 요약 내용",
-  "safety": "심리적 안전감 주요 발견 및 시사점",
-  "share": "공유 주요 발견 및 시사점",
-  "priority": "팀이 선택한 우선순위 변화 분석 (자유토론 의견 반영)",
-  "action": "액션 아이템 - 번호 목록 형식으로, 자유토론에서 나온 구체적 제안을 우선 반영"
+  "summary": "진단 총평 — 핵심 발견, 팀의 현재 협업 수준, 가장 시급한 과제를 전문가 관점에서 서술",
+  "safety": "심리적 안전감 진단 — Edmondson 모델 기반으로 현재 단계 진단, 항목별 분석, 자유토론에서 드러난 패턴, 근본 원인",
+  "share": "공유 수준 진단 — 암묵지·형식지 전환 현황, 공유 장애 요인의 구조적·문화적 분류, 자유토론 의견 연계",
+  "priority": "팀이 선택한 변화 우선순위 해석 — 투표 결과의 의미 분석, 자유토론과의 연관성, 조직행동론적 시사점",
+  "action": "전문가 권고 액션플랜 — 단기(1개월 내)/중기(3개월 내) 과제로 구분, 자유토론 제안 반영, 각 과제의 기대 효과 포함"
 }`;
 
   try {
