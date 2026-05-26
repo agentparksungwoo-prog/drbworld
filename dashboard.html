@@ -179,7 +179,17 @@ body{
 .q-ctx-text{font-size:16px;color:rgba(255,255,255,0.92);font-weight:500;line-height:1.5;margin-bottom:3px;}
 .q-ctx-scale{font-size:13px;color:rgba(255,255,255,0.55);}
 
-/* 결론 편집 */
+/* 결론 읽기 버튼 */
+.concl-tts-btn{
+  background:transparent;border:1px solid rgba(255,255,255,0.2);
+  border-radius:99px;padding:4px 12px;font-size:11px;
+  color:rgba(255,255,255,0.5);cursor:pointer;font-family:inherit;
+  transition:all 0.15s;white-space:nowrap;flex-shrink:0;
+}
+.concl-tts-btn:hover{border-color:rgba(255,255,255,0.5);color:rgba(255,255,255,0.85);}
+.concl-tts-btn.playing{border-color:rgba(120,220,160,0.6);color:rgba(150,240,180,1);}
+
+/* 결론 블록 */
 .concl-block{margin-bottom:2rem;}
 .concl-label{font-size:13px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:10px;}
 .concl-editor{
@@ -196,19 +206,120 @@ body{
 
 .footer-note{font-size:13px;color:var(--w-hint);text-align:center;margin-top:3rem;}
 
-/* 자유토론 수정/삭제 */
-.disc-item{padding:1.25rem 0;border-bottom:1px solid var(--line-soft);position:relative;}
-.disc-item:last-child{border-bottom:none;}
-.disc-row{display:flex;align-items:baseline;gap:12px;flex:1;}
-.disc-member{font-size:13px;font-weight:700;color:var(--w-small);white-space:nowrap;flex-shrink:0;}
-.disc-text{font-size:17px;color:var(--w-body);line-height:1.75;font-weight:400;}
-.disc-time{font-size:13px;color:var(--w-hint);margin-top:6px;}
-.disc-actions{display:flex;gap:8px;margin-top:8px;}
-.disc-btn{background:transparent;border:1px solid var(--line);border-radius:99px;padding:4px 14px;font-size:12px;color:var(--w-small);cursor:pointer;font-family:inherit;transition:all 0.15s;}
-.disc-btn:hover{border-color:var(--w-body);color:var(--w-body);}
-.disc-btn.del:hover{border-color:rgba(255,150,150,0.6);color:rgba(255,150,150,0.9);}
+/* 자유토론 채팅창 — AI 패널과 동일 스타일 */
+.disc-chat-wrap{
+  display:flex;flex-direction:column;
+  flex:1;          /* disc-main의 남은 공간 전부 사용 */
+  min-height:0;    /* flex 자식은 min-height:0 필수 */
+}
+.disc-chat-window{
+  flex:1;overflow-y:auto;
+  padding:0.25rem 0 0.75rem;
+  display:flex;flex-direction:column;gap:12px;
+}
+.disc-chat-placeholder{
+  text-align:center;margin:auto;
+  color:rgba(255,255,255,0.25);font-size:14px;
+  letter-spacing:0.05em;
+}
+.disc-chat-window::-webkit-scrollbar{width:4px;}
+.disc-chat-window::-webkit-scrollbar-track{background:transparent;}
+.disc-chat-window::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:99px;}
+/* 하단 입력창 — ai-input-row와 완전 동일 */
+.disc-chat-bottom{
+  flex-shrink:0;
+  border-top:1px solid var(--line);
+  padding-top:0.75rem;
+  padding-bottom:0;
+  display:flex;gap:8px;align-items:center;
+  margin-bottom:0;
+}
+.disc-chat-input-field{
+  flex:1;background:rgba(255,255,255,0.07);
+  border:1px solid var(--line);
+  border-radius:10px;padding:10px 13px;
+  color:var(--w-body);font-size:14px;font-family:inherit;outline:none;
+  transition:border-color 0.18s;
+  height:42px;box-sizing:border-box;
+}
+.disc-chat-input-field:focus{border-color:rgba(255,255,255,0.45);}
+.disc-chat-input-field::placeholder{color:rgba(255,255,255,0.3);}
+.disc-chat-send-btn{
+  background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.3);
+  border-radius:10px;padding:0 16px;
+  color:#fff;font-size:13px;font-weight:500;
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+  transition:all 0.15s;flex-shrink:0;
+  height:42px;box-sizing:border-box;
+}
+.disc-chat-send-btn:hover{background:rgba(255,255,255,0.26);}
+.disc-bubble{display:flex;flex-direction:row;align-items:flex-start;gap:10px;position:relative;}
+.disc-meta{display:flex;flex-direction:column;align-items:flex-start;gap:3px;flex-shrink:0;padding-top:2px;min-width:52px;max-width:68px;}
+.disc-name{font-size:13px;font-weight:700;color:rgba(255,255,255,0.65);white-space:nowrap;}
+.disc-ts{font-size:11px;color:rgba(255,255,255,0.30);}
+.disc-body{
+  font-size:16px;color:rgba(255,255,255,0.93);line-height:1.65;
+  padding:10px 15px;
+  background:rgba(255,255,255,0.13);
+  border-radius:4px 18px 18px 18px;
+  position:relative;
+  display:block;
+  word-break:keep-all;overflow-wrap:break-word;
+  white-space:pre-wrap;
+  transition:background 0.15s;
+  box-shadow:0 1px 4px rgba(0,0,0,0.18);
+}
+/* 말풍선 꼬리 */
+.disc-body::before{
+  content:'';
+  position:absolute;
+  top:0;left:-8px;
+  width:0;height:0;
+  border-top:8px solid rgba(255,255,255,0.13);
+  border-left:8px solid transparent;
+}
+.disc-bubble:hover .disc-body{background:rgba(255,255,255,0.18);}
+.disc-bubble:hover .disc-body::before{border-top-color:rgba(255,255,255,0.18);}
+.disc-bubble:hover .disc-menu{display:flex;}
+
+/* 선택된 말풍선 */
+.disc-bubble.selected .disc-body{
+  background:rgba(100,200,150,0.18);
+  border:1.5px solid rgba(120,210,160,0.5);
+  box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+.disc-bubble.selected .disc-body::before{
+  border-top-color:rgba(120,210,160,0.5);
+}
+.disc-bubble.selected .disc-name{ color:rgba(150,240,190,0.85); }
+.disc-bubble.selected .disc-body::after{ display:none; }
+/* 좋은 의견 배지 */
+.disc-good-badge{
+  position:absolute;
+  top:-10px;right:10px;
+  background:rgba(60,160,110,0.9);
+  color:#fff;
+  font-size:10px;font-weight:600;
+  padding:2px 8px;border-radius:99px;
+  letter-spacing:0.05em;white-space:nowrap;
+  pointer-events:none;
+  display:none;
+}
+.disc-bubble.selected .disc-good-badge{ display:block; }
+
+/* hover 팝오버 메뉴 */
+.disc-menu{
+  display:none;position:absolute;right:0;top:0;
+  background:rgba(15,35,20,0.92);border:1px solid var(--line);
+  border-radius:10px;padding:4px;gap:4px;flex-direction:column;
+  backdrop-filter:blur(12px);z-index:10;
+}
+.disc-btn{background:transparent;border:none;border-radius:7px;padding:6px 14px;font-size:13px;color:var(--w-body);cursor:pointer;font-family:inherit;transition:all 0.15s;text-align:left;white-space:nowrap;}
+.disc-btn:hover{background:rgba(255,255,255,0.12);color:#fff;}
+.disc-btn.del:hover{background:rgba(255,100,100,0.18);color:rgba(255,160,160,1);}
 .disc-edit-area{width:100%;margin-top:8px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.35);border-radius:10px;padding:10px 14px;color:var(--w-body);font-size:16px;font-family:inherit;line-height:1.7;resize:vertical;min-height:60px;outline:none;}
 .disc-edit-area:focus{border-color:rgba(255,255,255,0.65);}
+.disc-edit-actions{display:flex;gap:8px;margin-top:6px;}
 
 /* ── 전체 인쇄 ── */
 @media print {
@@ -216,7 +327,9 @@ body{
   .nav-wrap,
   .disc-actions,
   .modal-overlay,
-  .qr-modal-overlay { display:none !important; }
+  .qr-modal-overlay,
+  .cover-page,
+  .cover-modal { display:none !important; }
 
   @page {
     size: A4 landscape;
@@ -316,6 +429,21 @@ body{
 .cover-hint{font-size:13px;color:rgba(255,255,255,0.35);letter-spacing:0.12em;animation:blink 2.4s infinite;}
 @keyframes blink{0%,100%{opacity:0.35}50%{opacity:0.8}}
 
+/* 자연 소리 버튼 */
+.sound-btn{
+  position:fixed;bottom:2rem;right:2rem;z-index:9998;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.20);
+  color:rgba(255,255,255,0.45);
+  font-size:15px;cursor:pointer;
+  transition:all 0.25s;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);
+}
+.sound-btn:hover{background:rgba(255,255,255,0.14);color:rgba(255,255,255,0.75);border-color:rgba(255,255,255,0.35);}
+.sound-btn.playing{border-color:rgba(120,210,160,0.45);color:rgba(150,240,190,0.7);background:rgba(80,180,130,0.10);}
+
 /* ── 고정 레이아웃 ── */
 .site-wrap{
   display:flex;flex-direction:column;
@@ -327,6 +455,8 @@ body{
   flex:1;
   overflow-y:auto;
   overflow-x:hidden;
+  display:flex;
+  flex-direction:column;
 }
 
 /* ── 슬라이드 아코디언 ── */
@@ -392,8 +522,12 @@ body{
 .disc-outer{
   display:flex;gap:0;
   transition:all 0.36s cubic-bezier(0.4,0,0.2,1);
+  flex:1;
+  min-height:0;
+  align-items:stretch;
 }
 /* 패널 열릴 때 컨테이너를 전체 너비로, 양쪽 10% 여백 */
+#page-2.active{ display:flex; flex-direction:column; height:100%; }
 #page-2.panel-expanded .container{
   max-width:100% !important;
   padding-left:10% !important;
@@ -402,6 +536,7 @@ body{
 .disc-main{
   flex:1;min-width:0;
   transition:flex 0.36s cubic-bezier(0.4,0,0.2,1);
+  display:flex;flex-direction:column;  /* disc-chat-wrap이 높이 100% 채우도록 */
 }
 /* 자유토론 5.5 : GPT 2.5 = 11 : 5 */
 .disc-outer.agent-open .disc-main{
@@ -416,7 +551,7 @@ body{
              border-left-width 0.1s 0.25s ease,
              padding-left 0.36s ease;
   padding-left:0;
-  min-height:460px;
+  min-height:0;    /* 고정 높이는 disc-outer가 결정 */
 }
 .disc-outer.agent-open .ai-full-panel{
   flex:5;
@@ -434,17 +569,113 @@ body{
 .ai-chat-log{
   flex:1;overflow-y:auto;
   display:flex;flex-direction:column;gap:10px;
-  min-height:320px;max-height:500px;
+  min-height:0;      /* flex 자식 필수 */
   margin-bottom:1rem;
 }
 .ai-msg{padding:10px 13px;border-radius:12px;font-size:14px;line-height:1.7;max-width:92%;}
 .ai-msg.user{background:rgba(255,255,255,0.13);color:var(--w-body);align-self:flex-end;border-radius:12px 12px 3px 12px;}
-.ai-msg.bot{background:rgba(255,255,255,0.07);color:var(--w-body);align-self:flex-start;border-radius:3px 12px 12px 12px;}
-.ai-msg.loading{color:var(--w-hint);font-style:italic;}
-.ai-input-row{display:flex;gap:8px;flex-shrink:0;}
-.ai-input{flex:1;background:rgba(255,255,255,0.07);border:1px solid var(--line);border-radius:10px;padding:9px 13px;color:var(--w-body);font-size:14px;font-family:inherit;outline:none;}
+.ai-msg.bot{background:rgba(255,255,255,0.07);color:var(--w-body);align-self:flex-start;border-radius:3px 12px 12px 12px;line-height:1.8;cursor:pointer;transition:background 0.15s;white-space:pre-wrap;}
+.ai-msg.bot:hover{background:rgba(255,255,255,0.13);}
+.ai-msg.bot.clickable::after{content:'↗ 전체 보기';display:block;font-size:10px;color:rgba(255,255,255,0.3);margin-top:6px;text-align:right;}
+.ai-msg.loading{color:var(--w-hint);font-style:italic;cursor:default;}
+.ai-msg.loading::after{display:none !important;}
+
+/* 로딩 점 애니메이션 */
+.ai-msg.loading{ color:transparent !important; cursor:default; min-height:36px; display:flex; align-items:center; }
+.ai-msg.loading::before{
+  content:'';
+  display:inline-flex;
+  gap:5px;
+  align-items:center;
+}
+.dot-wave{ display:inline-flex; gap:5px; align-items:center; }
+.dot-wave span{
+  width:7px; height:7px; border-radius:50%;
+  background:rgba(255,255,255,0.55);
+  animation:dotBounce 1.2s infinite ease-in-out;
+}
+.dot-wave span:nth-child(2){ animation-delay:0.2s; }
+.dot-wave span:nth-child(3){ animation-delay:0.4s; }
+@keyframes dotBounce{
+  0%,80%,100%{ transform:scale(0.7); opacity:0.4; }
+  40%{ transform:scale(1.1); opacity:1; }
+}
+
+/* 답변 팝업 - 개선 */
+.ai-popup-overlay{
+  position:fixed;inset:0;z-index:2000;
+  background:rgba(4,14,8,0.80);
+  backdrop-filter:blur(16px);
+  display:none;align-items:center;justify-content:center;
+  padding:2rem;
+}
+.ai-popup-overlay.show{display:flex;}
+.ai-popup-box{
+  background:rgba(12,28,16,0.97);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:24px;
+  padding:0;
+  max-width:700px;width:100%;max-height:82vh;
+  display:flex;flex-direction:column;
+  box-shadow:0 32px 80px rgba(0,0,0,0.6);
+  animation:fadeUp 0.22s ease;
+  overflow:hidden;
+}
+.ai-popup-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 1.5rem;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  flex-shrink:0;
+}
+.ai-popup-toolbar-left{ display:flex; gap:10px; align-items:center; }
+.ai-popup-tts-btn{
+  background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.18);
+  border-radius:99px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,0.7);
+  cursor:pointer;font-family:inherit;transition:all 0.15s;display:flex;align-items:center;gap:5px;
+}
+.ai-popup-tts-btn:hover{background:rgba(255,255,255,0.14);color:#fff;}
+.ai-popup-tts-btn.playing{border-color:rgba(120,220,160,0.6);color:rgba(150,240,180,1);}
+.ai-popup-close-btn{
+  background:transparent;border:1px solid rgba(255,255,255,0.15);
+  border-radius:99px;padding:5px 14px;font-size:12px;
+  color:rgba(255,255,255,0.5);cursor:pointer;font-family:inherit;transition:all 0.15s;
+}
+.ai-popup-close-btn:hover{border-color:rgba(255,255,255,0.4);color:#fff;}
+.ai-popup-body{
+  flex:1;overflow-y:auto;
+  padding:1.75rem 1.75rem 2rem;
+}
+/* 팝업 스크롤바 */
+.ai-popup-body::-webkit-scrollbar{ width:4px; }
+.ai-popup-body::-webkit-scrollbar-track{ background:transparent; }
+.ai-popup-body::-webkit-scrollbar-thumb{ background:rgba(255,255,255,0.15);border-radius:99px; }
+.ai-popup-body::-webkit-scrollbar-thumb:hover{ background:rgba(255,255,255,0.28); }
+.ai-popup-text{
+  font-size:16px;color:rgba(255,255,255,0.90);
+  line-height:2;white-space:pre-wrap;
+  word-break:break-word;
+}
+
+/* 초안 작성 중 오버레이 */
+.draft-loading-overlay{
+  position:fixed;inset:0;z-index:3000;
+  background:rgba(4,14,8,0.75);backdrop-filter:blur(12px);
+  display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;
+}
+.draft-loading-overlay.show{display:flex;}
+.draft-loading-text{font-size:18px;color:rgba(255,255,255,0.85);letter-spacing:0.05em;}
+.draft-spinner{
+  width:40px;height:40px;border-radius:50%;
+  border:3px solid rgba(255,255,255,0.12);
+  border-top-color:rgba(255,255,255,0.7);
+  animation:spin 0.9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ai-input-row{display:flex;gap:8px;flex-shrink:0;padding-top:0.75rem;border-top:1px solid var(--line);align-items:center;}
+.ai-input{flex:1;background:rgba(255,255,255,0.07);border:1px solid var(--line);border-radius:10px;padding:10px 13px;color:var(--w-body);font-size:14px;font-family:inherit;outline:none;height:42px;box-sizing:border-box;}
 .ai-input:focus{border-color:rgba(255,255,255,0.45);}
-.ai-send{background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.3);border-radius:10px;padding:9px 16px;color:#fff;font-size:13px;cursor:pointer;font-family:inherit;transition:all 0.15s;flex-shrink:0;}
+.ai-input:focus{border-color:rgba(255,255,255,0.45);}
+.ai-send{background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.3);border-radius:10px;padding:0 16px;color:#fff;font-size:13px;cursor:pointer;font-family:inherit;transition:all 0.15s;flex-shrink:0;height:42px;box-sizing:border-box;}
 .ai-send:hover{background:rgba(255,255,255,0.26);}
 
 /* ── 저작권 ── */
@@ -477,16 +708,19 @@ body{
 @media print{
   body.print-conclusion .page:not(#page-3){ display:none !important; }
   body.print-conclusion #page-3{ display:block !important; }
+  body.print-conclusion .header{ display:none !important; }
+  body.print-conclusion .nav-wrap{ display:none !important; }
+  body.print-conclusion .sticky-top{ display:none !important; }
+  body.print-conclusion .cover-page{ display:none !important; }
+  body.print-conclusion .cover-modal{ display:none !important; }
+  body.print-conclusion .site-wrap{ padding-top:0 !important; }
   body.print-conclusion .concl-editor{
     background:#F8F8F8 !important;border:1px solid #DDD !important;
     color:#111 !important;min-height:auto !important;
   }
   body.print-conclusion .concl-label{ color:#444 !important; }
-  body.print-conclusion .sc-title{ color:#1A3522 !important; }
+  body.print-conclusion .sc-title{ color:#1A3522 !important; font-size:20px !important; }
   body.print-conclusion .no-print{ display:none !important; }
-  body.print-conclusion .header{ background:#F4F8F5 !important;border-bottom:2px solid #2D5C3A !important; }
-  body.print-conclusion .header-title{ color:#1A3522 !important;text-shadow:none !important; }
-  body.print-conclusion .header-sub{ color:#4A7C5F !important; }
   body.print-conclusion{ background:#fff !important;background-image:none !important; }
   body.print-conclusion .scroll-area,.site-wrap{ height:auto !important;overflow:visible !important; }
   body.print-conclusion .sticky-top{ position:static !important; }
@@ -554,7 +788,7 @@ body{
 <body>
 
 <!-- 표지 -->
-<div class="cover-page no-print" id="cover">
+<div class="cover-page" id="cover">
   <div class="cover-title">
     협업의 두 가지 조건
     <span>심리적 안전감과 공유</span>
@@ -565,29 +799,40 @@ body{
     © DRB Holding Co., Ltd. Finance Team · Created for <a href="https://drbworld.sharepoint.com/:u:/s/ChangeAgents/IQCzVypZBO-4Tb35O8OdQz7-AdELIATNlPeVfl2g98hC-pM?e=HYB67h" target="_blank" style="color:rgba(255,255,255,0.75);text-decoration:underline">Change Agents</a> activity Purpose · All rights reserved
   </div>
 </div>
-<div class="cover-modal no-print" id="participant-modal">
+<div class="cover-modal" id="participant-modal">
   <div class="cover-modal-box">
     <div class="cover-modal-title">참석자를 선택하세요</div>
     <div class="cover-modal-desc">선택에 따라 AI 기능 사용 여부가 결정됩니다</div>
     <div class="cover-modal-btns">
       <button class="cover-modal-btn" onclick="selectParticipant('team')">
-        <span class="cmb-icon">👥</span>
+        <span class="cmb-icon" style="font-size:15px;color:rgba(255,255,255,0.7);font-weight:300;letter-spacing:0">—</span>
         <span class="cmb-label">재무팀 구성원만 참석</span>
         <span class="cmb-sub">AI 기능 없이 진행</span>
       </button>
       <button class="cover-modal-btn" onclick="selectParticipant('agent')">
-        <span class="cmb-icon">✦</span>
-        <span class="cmb-label">AI Agent도 참석</span>
-        <span class="cmb-sub">GPT-4o API 키 필요</span>
+        <span class="cmb-icon" style="font-size:15px;color:rgba(255,255,255,0.7);font-weight:300;letter-spacing:0">✦</span>
+        <span class="cmb-label">AI와 협업하기</span>
+        <span class="cmb-sub">API 키 입력</span>
       </button>
     </div>
   </div>
 </div>
 
+<!-- 자연 소리 버튼 (항상 표시) -->
+<button class="sound-btn no-print" id="sound-btn" onclick="toggleSound()" title="자연 소리 켜기/끄기">
+  <svg id="sound-icon" width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+    <polygon points="3,1 13,7 3,13"/>
+  </svg>
+</button>
+
+<audio id="nature-audio" loop preload="none">
+  <source src="https://www.orangefreesounds.com/wp-content/uploads/2018/04/Bird-singing-and-forest-stream-ambient.mp3" type="audio/mpeg">
+</audio>
+
 <!-- 참석자 선택 모달 -->
-<div class="cover-modal no-print" id="api-modal">
+<div class="cover-modal" id="api-modal">
   <div class="cover-modal-box">
-    <div class="cover-modal-title">OpenAI API 키 입력</div>
+    <div class="cover-modal-title">API 키 입력</div>
     <div class="cover-modal-desc">키는 이 브라우저에서만 사용되며 어디에도 저장되지 않습니다</div>
     <input id="main-api-input" type="password" placeholder="sk-..." style="width:100%;padding:13px 16px;border:1px solid rgba(255,255,255,0.3);border-radius:12px;font-size:15px;font-family:inherit;background:rgba(255,255,255,0.08);color:#fff;outline:none;margin-bottom:8px">
     <div id="main-api-status" style="font-size:13px;color:rgba(255,255,255,0.5);min-height:18px;margin-bottom:1.25rem"></div>
@@ -894,26 +1139,30 @@ body{
 </div>
 
 <!-- PAGE 2: 자유토론 -->
-<div class="page" id="page-2">
-<div class="container" id="disc-container">
-  <div class="section-block">
+<div class="page" id="page-2" style="height:100%;">
+<div class="container" id="disc-container" style="display:flex;flex-direction:column;height:100%;">
+  <div class="section-block" style="flex:1;display:flex;flex-direction:column;margin-bottom:0;">
     <div class="sc-header" style="justify-content:space-between">
       <div class="sc-title">자유토론</div>
-      <button class="reset-btn no-print" id="agent-toggle-btn" style="font-size:13px;padding:7px 18px;border-color:rgba(255,255,255,0.5);color:rgba(255,255,255,0.85)" onclick="toggleAgentPanel()">✦ AI Agent와 상담</button>
+      <button class="reset-btn no-print" id="agent-toggle-btn" style="font-size:13px;padding:7px 18px;border-color:rgba(255,255,255,0.5);color:rgba(255,255,255,0.85)" onclick="toggleAgentPanel()">AI와 협업</button>
     </div>
-    <div class="disc-outer" id="disc-outer">
-      <!-- 자유토론 목록 -->
+    <div class="disc-outer" id="disc-outer" style="margin-bottom:3rem;">
+      <!-- 자유토론 채팅창 -->
       <div class="disc-main">
-        <div id="disc-list"><div class="open-empty">아직 작성된 의견이 없습니다</div></div>
-      </div>
-      <!-- AI 채팅 패널 (컨테이너 안에서 우측 분할) -->
-      <div class="ai-full-panel no-print" id="ai-full-panel">
-        <div class="ai-panel-header">
-          <div class="ai-panel-title">✦ AI Agent 상담</div>
-          <button class="reset-btn" style="font-size:12px;padding:4px 12px" onclick="toggleAgentPanel()">닫기</button>
+        <div class="disc-chat-wrap">
+          <div id="disc-list" class="disc-chat-window">
+            <div class="disc-chat-placeholder">대화를 시작해 보세요</div>
+          </div>
+          <div class="disc-chat-bottom no-print">
+            <input class="disc-chat-input-field" id="disc-dash-input" placeholder="대시보드에서 직접 입력..." onkeydown="if(event.key==='Enter')sendDiscFromDash()">
+            <button class="disc-chat-send-btn" onclick="sendDiscFromDash()">전송</button>
+          </div>
         </div>
+      </div>
+      <!-- AI 채팅 패널 -->
+      <div class="ai-full-panel no-print" id="ai-full-panel">
         <div class="ai-chat-log" id="ai-chat-log">
-          <div class="ai-msg bot">안녕하세요. 구성원 의견과 자유토론 내용을 바탕으로 질문해 주세요.</div>
+          <div class="ai-msg bot" style="cursor:default">안녕하세요. 구성원 의견과 자유토론 내용을 바탕으로 질문해 주세요.</div>
         </div>
         <div class="ai-input-row">
           <input class="ai-input" id="ai-chat-input" type="text" placeholder="질문을 입력하세요..." onkeydown="if(event.key==='Enter')sendAgentMsg()">
@@ -931,39 +1180,59 @@ body{
   <div class="section-block">
     <div class="sc-header" style="justify-content:space-between;align-items:center">
       <div class="sc-title">결론 작성</div>
-      <button class="reset-btn no-print" style="font-size:13px;padding:8px 20px;border-color:rgba(255,255,255,0.55);color:rgba(255,255,255,0.92);display:flex;align-items:center;gap:7px;flex-shrink:0" onclick="showAiModal()">
-        <span>✦</span> AI Agent 초안작성
-      </button>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="reset-btn no-print" style="font-size:13px;padding:8px 20px;border-color:rgba(255,255,255,0.55);color:rgba(255,255,255,0.92);display:flex;align-items:center;gap:7px;flex-shrink:0" onclick="showAiModal()">
+          <span>✦</span> AI 초안작성
+        </button>
+      </div>
     </div>
 
     <div class="concl-block">
-      <div class="concl-label">전체 요약</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="concl-label" style="margin-bottom:0">전체 요약</div>
+        <button class="concl-tts-btn" onclick="conclTTS('concl-summary',this)">▶ 읽기</button>
+      </div>
       <div class="concl-editor" id="concl-summary" contenteditable="true" data-placeholder="오늘 진단 결과의 전체적인 요약을 작성하거나 붙여넣으세요.&#10;예: 우리 팀의 심리적 안전감 평균은 X점으로..."></div>
     </div>
 
     <div class="concl-block">
-      <div class="concl-label">심리적 안전감 — 주요 발견 및 시사점</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="concl-label" style="margin-bottom:0">심리적 안전감 — 주요 발견 및 시사점</div>
+        <button class="concl-tts-btn" onclick="conclTTS('concl-safety',this)">▶ 읽기</button>
+      </div>
       <div class="concl-editor" id="concl-safety" contenteditable="true" data-placeholder="심리적 안전감 관련 주요 발견, 패턴, 시사점을 작성하세요.&#10;예: 특히 '반대 의견 내기' 항목이 가장 낮게 나타났으며..."></div>
     </div>
 
     <div class="concl-block">
-      <div class="concl-label">공유 — 주요 발견 및 시사점</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="concl-label" style="margin-bottom:0">공유 — 주요 발견 및 시사점</div>
+        <button class="concl-tts-btn" onclick="conclTTS('concl-share',this)">▶ 읽기</button>
+      </div>
       <div class="concl-editor" id="concl-share" contenteditable="true" data-placeholder="공유 수준 관련 주요 발견, 패턴, 시사점을 작성하세요.&#10;예: 의사결정 맥락 기록이 가장 취약한 것으로 나타났으며..."></div>
     </div>
 
     <div class="concl-block">
-      <div class="concl-label">팀이 선택한 우선순위 변화</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="concl-label" style="margin-bottom:0">팀이 선택한 우선순위 변화</div>
+        <button class="concl-tts-btn" onclick="conclTTS('concl-priority',this)">▶ 읽기</button>
+      </div>
       <div class="concl-editor" id="concl-priority" contenteditable="true" data-placeholder="투표 결과 기반으로 팀이 가장 필요하다고 선택한 변화를 정리하세요.&#10;예: 투표 결과 '학습 중심 회고 방식'이 1위로..."></div>
     </div>
 
     <div class="concl-block">
-      <div class="concl-label">액션 아이템 (다음 단계)</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="concl-label" style="margin-bottom:0">액션 아이템 (다음 단계)</div>
+        <button class="concl-tts-btn" onclick="conclTTS('concl-action',this)">▶ 읽기</button>
+      </div>
       <div class="concl-editor" id="concl-action" contenteditable="true" data-placeholder="오늘 논의를 바탕으로 도출된 구체적인 실행 과제를 작성하세요.&#10;예: 1. 월 1회 비난 없는 회고 도입 / 2. 의사결정 기록 양식 만들기..."></div>
     </div>
 
     <div class="no-print" style="display:flex;justify-content:space-between;align-items:center;margin-top:2.5rem;padding-top:1.5rem;border-top:1px solid var(--line)">
       <button class="reset-btn" style="font-size:13px;color:rgba(255,160,160,0.8);border-color:rgba(255,160,160,0.3)" onclick="clearConclusion()">결론 초기화</button>
-      <button class="reset-btn" style="font-size:14px;font-weight:600;color:#fff;border-color:rgba(255,255,255,0.65);padding:10px 28px" onclick="printConclusion()">보고서 인쇄</button>
+      <div style="display:flex;gap:10px">
+        <button class="reset-btn" style="font-size:13px;color:rgba(255,255,255,0.8);border-color:rgba(255,255,255,0.4)" onclick="saveSnapshot()">현재상태 저장</button>
+        <button class="reset-btn" style="font-size:14px;font-weight:600;color:#fff;border-color:rgba(255,255,255,0.65);padding:10px 28px" onclick="printConclusion()">보고서 인쇄</button>
+      </div>
     </div>
 
   </div>
@@ -1007,6 +1276,27 @@ body{
   </div>
 </div>
 
+<!-- AI 답변 팝업 -->
+<div class="ai-popup-overlay" id="ai-popup-overlay" onclick="if(event.target===this)closeAiPopup()">
+  <div class="ai-popup-box">
+    <div class="ai-popup-toolbar">
+      <div class="ai-popup-toolbar-left">
+        <button class="ai-popup-tts-btn" id="tts-btn" onclick="toggleTTS()">▶ 읽어주기</button>
+      </div>
+      <button class="ai-popup-close-btn" onclick="closeAiPopup()">닫기</button>
+    </div>
+    <div class="ai-popup-body">
+      <div class="ai-popup-text" id="ai-popup-text"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 초안 작성 중 오버레이 -->
+<div class="draft-loading-overlay" id="draft-loading-overlay">
+  <div class="draft-spinner"></div>
+  <div class="draft-loading-text">초안 작성 중입니다...</div>
+</div>
+
 <!-- AI 키 입력 모달 -->
 <div class="modal-overlay" id="ai-modal" style="z-index:1100">
   <div class="modal-box" style="max-width:460px">
@@ -1043,6 +1333,28 @@ const app=initializeApp(cfg);const db=getDatabase(app);
 /* ── 전역 API 키 (한 번 입력, 전체 공유) ── */
 let _sharedApiKey = null;
 let _agentMode = false; // true = AI Agent 참석
+
+/* 자연 소리 토글 */
+window.toggleSound = () => {
+  const audio = document.getElementById('nature-audio');
+  const btn = document.getElementById('sound-btn');
+  const icon = document.getElementById('sound-icon');
+  const playIcon = '<polygon points="3,1 13,7 3,13"/>';
+  const pauseIcon = '<rect x="2" y="1" width="4" height="12" rx="1"/><rect x="8" y="1" width="4" height="12" rx="1"/>';
+  if(audio.paused){
+    audio.volume = 0.45;
+    audio.play().then(()=>{
+      btn.classList.add('playing');
+      icon.innerHTML = pauseIcon;
+      btn.title = '자연 소리 끄기';
+    }).catch(()=>{});
+  } else {
+    audio.pause();
+    btn.classList.remove('playing');
+    icon.innerHTML = playIcon;
+    btn.title = '자연 소리 켜기';
+  }
+};
 
 /* 표지 → 참석자 선택 */
 window.showParticipantModal = () => {
@@ -1084,6 +1396,43 @@ window.enterSite = () => {
   // AI 관련 버튼 표시 여부
   const agentBtns = document.querySelectorAll('.ai-only');
   agentBtns.forEach(b=>b.style.display = _agentMode ? '' : 'none');
+  // 항상 협업이란? page-0, slide-0 으로 초기화 (Firebase도 리셋)
+  document.querySelectorAll('.page').forEach((p,j)=>p.classList.toggle('active',j===0));
+  document.querySelectorAll('.nav-tab').forEach((t,j)=>t.classList.toggle('active',j===0));
+  document.querySelectorAll('.slide').forEach((s,j)=>s.classList.toggle('active',j===0));
+  document.querySelectorAll('.slide-btn').forEach((b,j)=>b.classList.toggle('active',j===0));
+  const area = document.getElementById('scroll-area');
+  if(area) area.scrollTop = 0;
+  // Firebase session/state 초기화 → 연결된 모든 기기 page-0으로
+  pushState(0, 0);
+};
+
+/* AI 답변 팝업 + TTS */
+let _ttsUtterance = null;
+window.openAiPopup = text => {
+  document.getElementById('ai-popup-text').textContent = text;
+  document.getElementById('ai-popup-overlay').classList.add('show');
+  document.getElementById('tts-btn').textContent = '▶ 읽어주기';
+  document.getElementById('tts-btn').classList.remove('playing');
+  if(_ttsUtterance) speechSynthesis.cancel();
+};
+window.closeAiPopup = () => {
+  document.getElementById('ai-popup-overlay').classList.remove('show');
+  if(_ttsUtterance) speechSynthesis.cancel();
+};
+window.toggleTTS = () => {
+  const btn = document.getElementById('tts-btn');
+  if(speechSynthesis.speaking){
+    speechSynthesis.cancel();
+    btn.textContent='▶ 읽어주기'; btn.classList.remove('playing');
+    return;
+  }
+  const text = document.getElementById('ai-popup-text').textContent;
+  _ttsUtterance = new SpeechSynthesisUtterance(text);
+  _ttsUtterance.lang='ko-KR'; _ttsUtterance.rate=1.0;
+  _ttsUtterance.onend=()=>{ btn.textContent='▶ 읽어주기'; btn.classList.remove('playing'); };
+  speechSynthesis.speak(_ttsUtterance);
+  btn.textContent='■ 중지'; btn.classList.add('playing');
 };
 
 /* ── AI Agent 패널 토글 ── */
@@ -1115,12 +1464,21 @@ window.sendAgentMsg = async () => {
   const text = input.value.trim();
   if(!text) return;
   input.value='';
-  log.innerHTML += `<div class="ai-msg user">${esc(text)}</div>`;
-  const loading = document.createElement('div');
-  loading.className='ai-msg loading'; loading.textContent='답변 생성 중...';
-  log.appendChild(loading); log.scrollTop=log.scrollHeight;
 
-  /* 구성원 의견 데이터 요약 */
+  // 사용자 메시지
+  const userDiv = document.createElement('div');
+  userDiv.className='ai-msg user';
+  userDiv.textContent=text;
+  log.appendChild(userDiv);
+
+  // 답변 버블 (점 애니메이션)
+  const botDiv = document.createElement('div');
+  botDiv.className='ai-msg bot loading';
+  botDiv.innerHTML='<div class="dot-wave"><span></span><span></span><span></span></div>';
+  log.appendChild(botDiv);
+  log.scrollTop=log.scrollHeight;
+
+  /* 구성원 의견 데이터 */
   let surveyCtx = '구성원 의견 데이터 없음';
   if(_cachedData){
     const rs = Object.values(_cachedData);
@@ -1129,47 +1487,80 @@ window.sendAgentMsg = async () => {
     const a1avg = avgFn(rs.map(r=>r.a1).filter(Boolean));
     const b1avg = avgFn(rs.map(r=>r.b1).filter(Boolean));
     const matAvg=(node,k)=>avgFn(rs.map(r=>r[node]&&r[node][node+k]).filter(Boolean));
-    const a3list = rs.map(r=>r.a3).filter(Boolean);
-    const b3list = rs.map(r=>r.b3).filter(Boolean);
-    const b4list = rs.map(r=>r.b4).filter(Boolean);
-    const lowR = rs.filter(r=>r.a1<=3).map(r=>r.a1_low_reason||r.a1_mid_reason).filter(Boolean);
+    const a3list=rs.map(r=>r.a3).filter(Boolean);
+    const b3list=rs.map(r=>r.b3).filter(Boolean);
+    const b4list=rs.map(r=>r.b4).filter(Boolean);
+    const lowR=rs.filter(r=>r.a1<=3).map(r=>r.a1_low_reason||r.a1_mid_reason).filter(Boolean);
     const vA=[0,0,0,0,0],vB=[0,0,0,0,0];
     rs.forEach(r=>{ if(r.vote_safety) r.vote_safety.forEach(i=>{if(i>=0&&i<5)vA[i]++;}); });
     rs.forEach(r=>{ if(r.vote_share) r.vote_share.forEach(i=>{if(i>=0&&i<5)vB[i]++;}); });
-    const voteLabel_a=['이견·반대 의견 말하기','모르는 것 질문 문화','학습 중심 회고 방식','도움 요청 자연스러운 구조','리더의 불확실성 드러내기'];
-    const voteLabel_b=['이유·맥락까지 기록 습관','초안·진행물 먼저 공유','대안·미해결 사항 기록','암묵→공개 채널 전환','공유 도구·채널 정비'];
-    const topA=vA.map((c,i)=>({l:voteLabel_a[i],c})).sort((a,b)=>b.c-a.c).slice(0,2).filter(x=>x.c>0).map(x=>`${x.l}(${x.c}명)`).join(', ');
-    const topB=vB.map((c,i)=>({l:voteLabel_b[i],c})).sort((a,b)=>b.c-a.c).slice(0,2).filter(x=>x.c>0).map(x=>`${x.l}(${x.c}명)`).join(', ');
-    surveyCtx = `[구성원 의견 집계 — 총 ${n}명 응답]
-A-1 심리적 안전감 평균: ${a1avg}/5
-A-2 항목별: 질문하기 ${matAvg('a2','a')} / 이견내기 ${matAvg('a2','b')} / 실수인정 ${matAvg('a2','c')} / 도움요청 ${matAvg('a2','d')} / 리스크공유 ${matAvg('a2','e')}
-A-1-a 낮은 이유: ${lowR.length ? lowR.join(' / ') : '없음'}
-A-3 개선제안: ${a3list.length ? a3list.join(' / ') : '없음'}
-B-1 공유 평균: ${b1avg}/5
-B-2 항목별: 맥락기록 ${matAvg('b2','a')} / 초안공유 ${matAvg('b2','b')} / 대안기록 ${matAvg('b2','c')} / 검색저장 ${matAvg('b2','d')}
-B-3 공유 안되는 이유: ${b3list.length ? b3list.join(' / ') : '없음'}
-B-4 개선제안: ${b4list.length ? b4list.join(' / ') : '없음'}
-투표 — 심리적안전감 상위: ${topA||'없음'} / 공유 상위: ${topB||'없음'}`;
+    const vL_a=['이견·반대 의견 말하기','모르는 것 질문 문화','학습 중심 회고 방식','도움 요청 자연스러운 구조','리더의 불확실성 드러내기'];
+    const vL_b=['이유·맥락까지 기록 습관','초안·진행물 먼저 공유','대안·미해결 사항 기록','암묵→공개 채널 전환','공유 도구·채널 정비'];
+    const topA=vA.map((c,i)=>({l:vL_a[i],c})).sort((a,b)=>b.c-a.c).slice(0,2).filter(x=>x.c>0).map(x=>`${x.l}(${x.c}명)`).join(', ');
+    const topB=vB.map((c,i)=>({l:vL_b[i],c})).sort((a,b)=>b.c-a.c).slice(0,2).filter(x=>x.c>0).map(x=>`${x.l}(${x.c}명)`).join(', ');
+    surveyCtx=`[구성원 의견 — ${n}명 응답]\n심리적 안전감 평균: ${a1avg}/5\n항목별: 질문하기 ${matAvg('a2','a')} / 이견내기 ${matAvg('a2','b')} / 실수인정 ${matAvg('a2','c')} / 도움요청 ${matAvg('a2','d')} / 리스크공유 ${matAvg('a2','e')}\n낮은 이유: ${lowR.length?lowR.join(' / '):'없음'}\n개선제안(A): ${a3list.length?a3list.join(' / '):'없음'}\n공유 평균: ${b1avg}/5\n항목별: 맥락기록 ${matAvg('b2','a')} / 초안공유 ${matAvg('b2','b')} / 대안기록 ${matAvg('b2','c')} / 검색저장 ${matAvg('b2','d')}\n공유 안되는 이유: ${b3list.length?b3list.join(' / '):'없음'}\n개선제안(B): ${b4list.length?b4list.join(' / '):'없음'}\n투표 심리적안전감 상위: ${topA||'없음'}\n투표 공유 상위: ${topB||'없음'}`;
   }
-
-  /* 자유토론 */
   const discCtx = _cachedDiscussion.length
-    ? '[자유토론 의견]\n'+_cachedDiscussion.map((t,i)=>`구성원${i+1}: ${t}`).join('\n')
-    : '자유토론 의견 없음';
+    ? '[자유토론]\n'+_cachedDiscussion.map((t,i)=>`구성원${i+1}: ${t}`).join('\n')
+    : '자유토론 없음';
 
-  const sysMsg = `당신은 DRB Holding Co., Ltd. 재무팀의 협업 진단 결과를 분석하는 AI Agent입니다. 아래 데이터를 참고하여 한국어로 답변하세요.\n\n${surveyCtx}\n\n${discCtx}`;
+  const selectedMsgs = getSelectedMsgs();
+  const selectedCtx = selectedMsgs.length
+    ? `\n[★ 참석자가 중요하다고 표시한 의견 — 최우선 참고]\n${selectedMsgs.map(m=>`- ${m}`).join('\n')}`
+    : '';
+
+  const prompt = `You are an AI assistant for DRB Holding Co., Ltd. Finance Team collaboration diagnosis. Answer ONLY in Korean. Do NOT use markdown formatting (no **, no ##, no bullet dashes). Write in natural conversational Korean sentences. Be concise and clear — 3 to 5 sentences max unless more detail is truly needed.
+
+Data:
+${surveyCtx}
+
+${discCtx}${selectedCtx}
+
+Question: ${text}`;
+
+  /* MD 제거 함수 */
+  const stripMd = t => t
+    .replace(/#{1,6}\s+/g,'')
+    .replace(/\*\*(.*?)\*\*/g,'$1')
+    .replace(/\*(.*?)\*/g,'$1')
+    .replace(/`{1,3}[^`]*`{1,3}/g,'')
+    .replace(/^[-*]\s+/gm,'')
+    .replace(/^\d+\.\s+/gm,'')
+    .replace(/\n{3,}/g,'\n\n')
+    .trim();
+
+  /* 타이핑 스트리밍 효과 */
+  const typeText = (el, fullText) => {
+    el.classList.remove('loading');
+    el.textContent='';
+    let i=0;
+    const speed=18;
+    const timer=setInterval(()=>{
+      el.textContent+=fullText[i];
+      i++;
+      log.scrollTop=log.scrollHeight;
+      if(i>=fullText.length){
+        clearInterval(timer);
+        el.classList.add('clickable');
+        el.onclick=()=>openAiPopup(fullText);
+      }
+    },speed);
+  };
 
   try{
-    const res = await fetch('http://192.168.1.128:9800/v1/chat/completions',{
+    const res=await fetch('http://192.168.1.128:9800/v1/chat/completions',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${_sharedApiKey}`},
-      body:JSON.stringify({model:'gpt-oss-120b',messages:[{role:'system',content:sysMsg},{role:'user',content:text}],temperature:0.7,max_tokens:800})
+      body:JSON.stringify({model:'gpt-oss-120b',messages:[{role:'user',content:prompt}],temperature:0.7,max_tokens:1000})
     });
-    if(!res.ok) throw new Error((await res.json()).error?.message||'오류');
+    if(!res.ok) throw new Error((await res.json()).error?.message||`HTTP ${res.status}`);
     const data=await res.json();
-    loading.className='ai-msg bot'; loading.textContent=data.choices[0].message.content;
-  }catch(e){ loading.className='ai-msg bot'; loading.textContent=`오류: ${e.message}`; }
-  log.scrollTop=log.scrollHeight;
+    const raw=data.choices?.[0]?.message?.content||'응답을 받지 못했습니다.';
+    typeText(botDiv, stripMd(raw));
+  }catch(e){
+    botDiv.classList.remove('loading');
+    botDiv.textContent=`오류: ${e.message}`;
+  }
 };
 
 /* 탭 전환 — scroll-area 맨 위로 */
@@ -1181,6 +1572,9 @@ let _isSyncing = false; // 루프 방지
 
 function applyState(state){
   if(!state) return;
+  // 표지가 보이는 동안은 Firebase 상태 무시
+  const cover = document.getElementById('cover');
+  if(cover && cover.style.display !== 'none' && !cover.classList.contains('hide')) return;
   _isSyncing = true;
   // 탭
   if(state.page !== undefined){
@@ -1367,6 +1761,8 @@ window.runGPT = async () => {
   const btn = document.getElementById('ai-run-btn');
   const status = document.getElementById('ai-status');
   btn.disabled = true; btn.textContent = '작성 중...';
+  // 초안 작성 중 오버레이 표시
+  document.getElementById('draft-loading-overlay').classList.add('show');
 
   // 데이터 요약 준비
   const rs = Object.values(_cachedData);
@@ -1435,10 +1831,15 @@ B-4 개선 제안: ${b4list.length ? b4list.join(' / ') : '없음'}
 ${discText}
 `.trim();
 
-  const prompt = `당신은 조직문화 컨설턴트입니다. 아래는 DRB동일 재무팀의 협업 진단 설문 결과와 자유토론 의견입니다. 이 데이터를 바탕으로 아래 5개 섹션을 각각 한국어로 작성해주세요. 자유토론 의견에 포함된 액션 아이템, 제안, 우려사항을 적절한 섹션에 반영하세요. 각 섹션은 구체적이고 실질적으로, 2~4문단 분량으로 작성하세요.
+  const selectedMsgs2 = getSelectedMsgs();
+  const selectedStr = selectedMsgs2.length
+    ? `\n\n[★ 진행자가 중요 표시한 의견 — 보고서에 우선 반영]\n${selectedMsgs2.map(m=>`- ${m}`).join('\n')}`
+    : '';
+
+  const prompt = `당신은 조직문화 컨설턴트입니다. 아래는 DRB동일 재무팀의 협업 진단 설문 결과와 자유토론 의견입니다. 이 데이터를 바탕으로 아래 5개 섹션을 각각 한국어로 작성해주세요. 자유토론 의견에 포함된 액션 아이템, 제안, 우려사항을 적절한 섹션에 반영하세요. ★ 표시된 의견은 특히 중요하게 다뤄주세요. 각 섹션은 구체적이고 실질적으로, 2~4문단 분량으로 작성하세요.
 
 데이터:
-${dataStr}
+${dataStr}${selectedStr}
 
 아래 JSON 형식으로만 응답하세요. 다른 텍스트 없이 JSON만 출력하세요:
 {
@@ -1485,14 +1886,17 @@ ${dataStr}
 
     status.textContent = '✓ 작성 완료! 내용을 검토하고 필요하면 수정하세요.';
     status.style.color = '#2D5C3A';
+    document.getElementById('draft-loading-overlay').classList.remove('show');
     setTimeout(()=>{ hideAiModal(); switchPage(3); }, 1500);
 
   } catch(e) {
     status.textContent = `오류: ${e.message}`;
     status.style.color = '#C04040';
+    document.getElementById('draft-loading-overlay').classList.remove('show');
     btn.disabled = false; btn.textContent = '자동 작성 시작';
     return;
   }
+  document.getElementById('draft-loading-overlay').classList.remove('show');
   btn.disabled = false; btn.textContent = '자동 작성 시작';
 };
 
@@ -1548,6 +1952,27 @@ h2{font-size:20px;font-weight:700;color:#1A3522;margin:36px 0 10px;padding-botto
   w.document.close();
 };
 
+/* 선택된 자유토론 메시지 */
+const getSelectedMsgs = () => {
+  const bubbles = document.querySelectorAll('.disc-bubble.selected');
+  return Array.from(bubbles).map(b => {
+    const name = b.dataset.name || '익명';
+    const text = b.dataset.text || '';
+    return `${name}: ${text}`;
+  });
+};
+window.sendDiscFromDash = async () => {
+  const input = document.getElementById('disc-dash-input');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  await push(ref(db,'discussion'),{
+    name:'진행자',
+    text,
+    timestamp:serverTimestamp()
+  });
+};
+
 /* 자유토론 수정/삭제 */
 window.deleteDisc = async key => {
   if(!confirm('이 의견을 삭제할까요?')) return;
@@ -1575,7 +2000,45 @@ window.showQR = () => {
 };
 window.hideQR = () => document.getElementById('qr-modal').classList.remove('show');
 document.getElementById('qr-modal').addEventListener('click', e=>{ if(e.target===e.currentTarget) hideQR(); });
-/* ── 통합 초기화 피커 ── */
+/* ── 결론 읽기 TTS ── */
+let _conclTtsBtn = null;
+window.conclTTS = (id, btn) => {
+  const text = document.getElementById(id)?.innerText?.trim();
+  if(!text){ return; }
+  if(speechSynthesis.speaking){
+    speechSynthesis.cancel();
+    if(_conclTtsBtn){ _conclTtsBtn.textContent='▶ 읽기'; _conclTtsBtn.classList.remove('playing'); }
+    if(_conclTtsBtn === btn){ _conclTtsBtn=null; return; }
+  }
+  _conclTtsBtn = btn;
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang='ko-KR'; utt.rate=1.0;
+  utt.onend = () => { btn.textContent='▶ 읽기'; btn.classList.remove('playing'); _conclTtsBtn=null; };
+  speechSynthesis.speak(utt);
+  btn.textContent='■ 중지'; btn.classList.add('playing');
+};
+
+/* ── 현재상태 저장 (HTML 스냅샷) ── */
+window.saveSnapshot = () => {
+  // 결론 내용을 data 속성에 백업 (contenteditable은 innerHTML 기준)
+  const ids = ['concl-summary','concl-safety','concl-share','concl-priority','concl-action'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.setAttribute('data-saved', el.innerText);
+  });
+
+  // 채팅 로그 HTML 포함하여 전체 스냅샷
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const now = new Date();
+  const stamp = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}`;
+  a.href = url;
+  a.download = `협업진단_${stamp}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+};
 window.showResetPicker = () => document.getElementById('reset-picker-modal').classList.add('show');
 window.hideResetPicker = () => document.getElementById('reset-picker-modal').classList.remove('show');
 
@@ -1599,7 +2062,7 @@ window.doReset = async () => {
   }
 };
 
-/* ── 결론 인쇄 (결론 탭만) ── */
+/* ── 결론 보고서 인쇄 (결론 탭만) ── */
 window.printConclusion = () => {
   document.body.classList.add('print-conclusion');
   window.print();
@@ -1666,24 +2129,55 @@ onValue(ref(db,'discussion'),snap=>{
   // 키 포함해서 저장 (삭제에 필요)
   const entries = Object.entries(data).map(([k,v])=>({key:k,...v})).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
   _cachedDiscussion = entries.map(e=>e.text||'');
+  const EMOJI_POOL = ['🐱','🐶','🦊','🐻','🐼','🐨','🐯','🦁','🐮','🐸','🐧','🦋','🌿','🌊','🍀','🌸','🌺','🌻','🌹','🍁'];
+  const _emojiMap = {};
+  let _emojiIdx = 0;
+  const getEmoji = name => {
+    if(!_emojiMap[name]){ _emojiMap[name] = EMOJI_POOL[_emojiIdx++ % EMOJI_POOL.length]; }
+    return _emojiMap[name];
+  };
+  const timeStr2 = ts => {
+    if(!ts) return '';
+    const d = new Date(ts);
+    return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+  };
+
+  if(!entries.length){
+    el.innerHTML='<div class="disc-chat-placeholder">대화를 시작해 보세요</div>';
+    return;
+  }
+
   el.innerHTML = entries.map((d,i)=>`
-    <div class="disc-item" id="disc-${d.key}">
-      <div class="disc-row">
-        <span class="disc-member">구성원 ${i+1}</span>
-        <span class="disc-text" id="disc-text-${d.key}">${esc(d.text||'')}</span>
+    <div class="disc-bubble" id="disc-${d.key}" data-text="${(d.text||'').replace(/"/g,'&quot;')}" data-name="${(d.name||'').replace(/"/g,'&quot;')}">
+      <div class="disc-meta">
+        <span class="disc-name">${getEmoji(d.name||`구성원 ${i+1}`)} ${esc(d.name||`구성원 ${i+1}`)}</span>
+        <span class="disc-ts">${timeStr2(d.timestamp)}</span>
       </div>
-      <div class="disc-menu">
-        <button class="disc-btn" onclick="event.stopPropagation();editDisc('${d.key}')">수정</button>
-        <button class="disc-btn del" onclick="event.stopPropagation();deleteDisc('${d.key}')">삭제</button>
-      </div>
-      <div id="disc-edit-${d.key}" style="display:none;margin-top:8px" onclick="event.stopPropagation()">
-        <textarea class="disc-edit-area" id="disc-ta-${d.key}">${(d.text||'').replace(/</g,'&lt;')}</textarea>
-        <div class="disc-edit-actions">
-          <button class="disc-btn" onclick="saveDisc('${d.key}')">저장</button>
-          <button class="disc-btn" onclick="cancelEdit('${d.key}')">취소</button>
+      <div style="flex:1;min-width:0;">
+        <div class="disc-body" id="disc-text-${d.key}"><span class="disc-good-badge">★ 좋은 의견</span>${esc(d.text||'')}</div>
+        <div class="disc-menu">
+          <button class="disc-btn" onclick="event.stopPropagation();editDisc('${d.key}')">수정</button>
+          <button class="disc-btn del" onclick="event.stopPropagation();deleteDisc('${d.key}')">삭제</button>
+        </div>
+        <div id="disc-edit-${d.key}" style="display:none;margin-top:8px">
+          <textarea class="disc-edit-area" id="disc-ta-${d.key}">${(d.text||'').replace(/</g,'&lt;')}</textarea>
+          <div class="disc-edit-actions">
+            <button class="disc-btn" onclick="saveDisc('${d.key}')">저장</button>
+            <button class="disc-btn" onclick="cancelEdit('${d.key}')">취소</button>
+          </div>
         </div>
       </div>
     </div>`).join('');
+
+  // 클릭 선택 토글 (수정/삭제 메뉴 클릭은 제외)
+  el.querySelectorAll('.disc-bubble').forEach(bubble => {
+    bubble.addEventListener('click', e => {
+      if(e.target.closest('.disc-menu') || e.target.closest('.disc-edit-area') || e.target.closest('.disc-btn')) return;
+      bubble.classList.toggle('selected');
+    });
+  });
+
+  el.scrollTop = el.scrollHeight;
 });
 </script>
 </div><!-- /scroll-area -->

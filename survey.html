@@ -360,21 +360,37 @@ textarea::placeholder{color:rgba(255,255,255,0.40);}
   <div class="success-sub">소중한 의견 감사합니다<br>아래에서 자유토론에도 참여하실 수 있습니다</div>
 </div>
 
-<!-- 자유토론 : 설문 제출 여부와 무관하게 항상 표시 -->
+<!-- 자유토론 채팅 -->
 <div class="section" style="margin-top:2rem">
   <div class="section-header">
     <div class="section-title">D. 자유토론</div>
-    <div class="section-desc">자유롭게 의견을 남겨주세요 · 실시간으로 대시보드에 표시됩니다</div>
+    <div class="section-desc">실시간 채팅으로 자유롭게 의견을 나눠주세요</div>
   </div>
-  <div class="q-block">
-    <div class="q-text">팀 협업과 관련해 하고 싶은 말, 제안, 질문을 자유롭게 적어주세요.</div>
-    <div class="q-sub">익명으로 표시됩니다</div>
-    <textarea id="disc-input" placeholder="예: 우리 팀에서 가장 먼저 바꾸고 싶은 것은... / 오늘 내용 중 가장 인상 깊었던 것은..." style="min-height:90px"></textarea>
+
+  <!-- 이름 입력 (최초 1회) -->
+  <div id="chat-name-wrap" style="margin-bottom:1.25rem">
+    <div class="q-text" style="margin-bottom:8px">먼저 이름을 입력해주세요</div>
+    <div style="display:flex;gap:8px">
+      <input id="chat-name-input" type="text" placeholder="이름 또는 닉네임"
+        style="flex:1;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,0.07);color:var(--w-body);font-size:17px;font-family:inherit;outline:none;"
+        maxlength="20">
+      <button id="chat-name-btn" style="padding:11px 20px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.35);border-radius:10px;color:#fff;font-size:15px;cursor:pointer;font-family:inherit;white-space:nowrap"
+        onclick="setName()">확인</button>
+    </div>
   </div>
-  <div class="submit-wrap" style="margin-top:1rem">
-    <button class="submit-btn" id="disc-btn" onclick="submitDiscussion()">의견 남기기</button>
+
+  <!-- 채팅창 (이름 입력 후 표시) -->
+  <div id="chat-wrap" style="display:none">
+    <div id="chat-name-badge" style="font-size:14px;color:var(--w-small);margin-bottom:14px;"></div>
+    <!-- 입력창만 표시 (채팅 내용은 대시보드에서 확인) -->
+    <div style="display:flex;gap:8px">
+      <input id="chat-input" type="text" placeholder="메시지를 입력하세요..."
+        style="flex:1;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:rgba(255,255,255,0.07);color:var(--w-body);font-size:16px;font-family:inherit;outline:none;"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}">
+      <button onclick="sendChat()" style="padding:12px 20px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.35);border-radius:10px;color:#fff;font-size:15px;cursor:pointer;font-family:inherit;white-space:nowrap">전송</button>
+    </div>
+    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:8px;text-align:center">메시지는 대시보드 화면에 실시간으로 표시됩니다</div>
   </div>
-  <div id="disc-sent" style="display:none;text-align:center;padding:1rem 0;font-size:17px;color:var(--w-small)">의견이 전달되었습니다. 추가로 더 작성하실 수 있습니다.</div>
 </div>
 
 </div>
@@ -382,7 +398,7 @@ textarea::placeholder{color:rgba(255,255,255,0.40);}
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getDatabase,ref,push,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import{getDatabase,ref,push,onValue,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 const cfg={apiKey:"AIzaSyA5da127Wmh6cbDIk0gTr2uwtj5zP-9v08",authDomain:"drbworld.firebaseapp.com",databaseURL:"https://drbworld-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"drbworld",storageBucket:"drbworld.firebasestorage.app",messagingSenderId:"692323820655",appId:"1:692323820655:web:d38af1a32ddc01001c999a"};
 const app=initializeApp(cfg);const db=getDatabase(app);
 
@@ -482,22 +498,52 @@ window.submitSurvey=async()=>{
   }
 };
 
-/* ── 자유토론 제출 ── */
-window.submitDiscussion=async()=>{
-  const ta=document.getElementById('disc-input');
-  const text=ta.value.trim();
-  if(!text){showToast('의견을 입력해 주세요');return;}
-  const btn=document.getElementById('disc-btn');
-  btn.disabled=true;btn.textContent='전송 중...';
+/* ── 자유토론 채팅 ── */
+let _chatName = '';
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const timeStr = ts => {
+  if(!ts) return '';
+  const d = new Date(ts);
+  return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+};
+
+window.setName = () => {
+  const input = document.getElementById('chat-name-input');
+  const name = input.value.trim();
+  if(!name){ showToast('이름을 입력해주세요'); return; }
+  _chatName = name;
+  document.getElementById('chat-name-wrap').style.display = 'none';
+  document.getElementById('chat-wrap').style.display = 'block';
+  document.getElementById('chat-name-badge').textContent = `${name} 으로 참여 중`;
+  document.getElementById('chat-input').focus();
+  // 실시간 메시지 수신
+  startChatListener();
+};
+
+document.getElementById('chat-name-input').addEventListener('keydown', e => {
+  if(e.key === 'Enter') window.setName();
+});
+
+function startChatListener(){
+  // survey에서는 수신 표시 없음 - 전송만
+}
+
+window.sendChat = async () => {
+  if(!_chatName){ showToast('이름을 먼저 입력해주세요'); return; }
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
   try{
-    await push(ref(db,'discussion'),{text,timestamp:serverTimestamp()});
-    ta.value='';
-    document.getElementById('disc-sent').style.display='block';
-    setTimeout(()=>{ document.getElementById('disc-sent').style.display='none'; },3000);
+    await push(ref(db,'discussion'), {
+      name: _chatName,
+      text,
+      timestamp: serverTimestamp()
+    });
   }catch(e){
-    showToast('오류가 발생했습니다. 다시 시도해 주세요.');
+    showToast('전송 실패. 다시 시도해 주세요.');
+    input.value = text;
   }
-  btn.disabled=false;btn.textContent='의견 남기기';
 };
 
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2800);}
