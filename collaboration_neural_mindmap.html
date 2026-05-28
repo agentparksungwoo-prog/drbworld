@@ -1,0 +1,299 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:transparent;font-family:var(--font-sans,sans-serif)}
+#wrap{width:100%;position:relative}
+canvas{display:block;width:100%;cursor:pointer}
+#panel{display:none;margin:12px 0 0;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:12px;padding:16px 20px}
+#panel-close{float:right;cursor:pointer;font-size:18px;color:var(--color-text-secondary);line-height:1;margin-left:8px}
+#panel-tag{display:inline-block;font-size:11px;font-weight:500;padding:2px 10px;border-radius:20px;margin-bottom:10px}
+#panel-title{font-size:16px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px}
+#panel-body{font-size:13px;color:var(--color-text-secondary);line-height:1.75}
+#panel-rel{margin-top:12px;font-size:12px;color:var(--color-text-tertiary)}
+#panel-rel span{display:inline-block;margin:3px 4px 0 0;padding:2px 8px;border-radius:12px;border:0.5px solid var(--color-border-tertiary);cursor:pointer;transition:background .15s}
+#panel-rel span:hover{background:var(--color-background-secondary)}
+#hint{text-align:center;font-size:11px;color:var(--color-text-tertiary);margin-top:8px}
+#legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;color:var(--color-text-secondary)}
+#legend span{display:flex;align-items:center;gap:5px}
+#legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+</style>
+
+<div id="legend">
+  <span><i style="background:#7F77DD"></i>개인</span>
+  <span><i style="background:#1D9E75"></i>관계</span>
+  <span><i style="background:#BA7517"></i>구조</span>
+  <span><i style="background:#D85A30"></i>환경</span>
+</div>
+
+<div id="wrap">
+  <canvas id="cv"></canvas>
+  <p id="hint">노드를 클릭하면 상세 설명이 열립니다</p>
+</div>
+
+<div id="panel">
+  <span id="panel-close" onclick="closePanel()">&#x2715;</span>
+  <div id="panel-tag"></div>
+  <div id="panel-title"></div>
+  <div id="panel-body"></div>
+  <div id="panel-rel"></div>
+</div>
+
+<script>
+const COLORS = {
+  purple:{fill:'#EEEDFE',stroke:'#534AB7',text:'#3C3489',tag:'#EEEDFE',tagText:'#3C3489'},
+  teal:  {fill:'#E1F5EE',stroke:'#0F6E56',text:'#085041',tag:'#E1F5EE',tagText:'#085041'},
+  amber: {fill:'#FAEEDA',stroke:'#854F0B',text:'#633806',tag:'#FAEEDA',tagText:'#633806'},
+  coral: {fill:'#FAECE7',stroke:'#993C1D',text:'#712B13',tag:'#FAECE7',tagText:'#712B13'},
+  gray:  {fill:'#F1EFE8',stroke:'#5F5E5A',text:'#2C2C2A',tag:'#F1EFE8',tagText:'#2C2C2A'},
+};
+
+const NODES = [
+  // CENTER
+  {id:'center',label:'협업',sub:'Collaboration',layer:'gray',x:0,y:0,r:44,desc:'둘 이상의 사람이 공동 목표를 위해 상호의존적으로 일하는 상태. 단순한 분업(Division of Labor)과 다르게, 협업은 서로의 산출물이 연결되어 있고, 이견을 조율하며, 집단적 결과물이 개인 합산을 넘는 시너지를 전제로 한다.',layer_label:'중심',rels:['역량','태도','소통스킬','신뢰','갈등','상호의존','목표설계','의사결정','소통체계','조직문화','평가보상','환경']},
+
+  // 개인 레이어 — 위
+  {id:'역량',label:'역량·전문성',sub:'Competence',layer:'purple',x:-1.6,y:-1.8,r:34,
+   desc:'협업에서 각자가 테이블에 가져오는 실질적 기여 능력. 전문 지식(깊이)과 인접 영역 이해(넓이)를 동시에 갖춘 T자형 역량이 가장 이상적이다. 역량이 없으면 역할 분담이 무너지고, 타인에게 의존만 하는 무임승차 구조가 생긴다.',layer_label:'개인',
+   rels:['태도','상호의존','목표설계']},
+  {id:'태도',label:'태도·마음가짐',sub:'Mindset',layer:'purple',x:0,y:-2.1,r:34,
+   desc:'협업 의지의 심리적 기반. 성장 마인드셋(Growth Mindset)은 실수를 학습 기회로 보고, 타인의 아이디어를 위협이 아닌 자원으로 받아들인다. 심리적 안전감(Psychological Safety, Amy Edmondson 1999)이 보장될 때 구성원은 발언하고, 실패를 공유하며, 진짜 협력이 시작된다.',layer_label:'개인',
+   rels:['역량','신뢰','갈등','소통스킬']},
+  {id:'소통스킬',label:'소통 스킬',sub:'Communication',layer:'purple',x:1.6,y:-1.8,r:34,
+   desc:'의미를 정확하게 보내고 받는 능력. 적극적 경청(Active Listening)은 상대 말을 끊지 않고 의미를 확인한다. 비폭력 대화(NVC, Marshall Rosenberg)는 관찰→감정→필요→요청의 구조로 방어심 없이 이견을 전달한다. 피드백 수용력은 비판을 자아 공격으로 받아들이지 않는 훈련이다.',layer_label:'개인',
+   rels:['태도','신뢰','갈등','소통체계']},
+
+  // 관계 레이어 — 왼쪽
+  {id:'신뢰',label:'신뢰 형성',sub:'Trust',layer:'teal',x:-2.3,y:-0.5,r:34,
+   desc:'협업의 근간. Patrick Lencioni의 "팀의 5가지 기능 장애"에서 신뢰 부재를 모든 문제의 1번 원인으로 꼽는다. 신뢰는 일관된 행동(말과 행동 일치), 취약성 공유(자신의 약점을 솔직히 드러내기), 호혜적 교환(주고받는 균형)으로 축적된다. 신뢰가 없으면 정보를 감추고, 확인·검증에 에너지가 낭비된다.',layer_label:'관계',
+   rels:['태도','소통스킬','갈등','상호의존','조직문화']},
+  {id:'갈등',label:'갈등 관리',sub:'Conflict',layer:'teal',x:-2.5,y:0.9,r:34,
+   desc:'협업에서 갈등은 불가피하다. 중요한 건 갈등의 유형 구분이다. 과업 갈등(Task Conflict)은 아이디어·방법의 이견으로 생산적이다. 관계 갈등(Relationship Conflict)은 감정·인격 충돌로 파괴적이다. Thomas-Kilmann 모델은 회피·수용·타협·경쟁·협력의 5가지 갈등 스타일을 제시한다. 심리적 안전이 있을 때 "Productive Conflict(건설적 이견)"가 가능하다.',layer_label:'관계',
+   rels:['신뢰','태도','소통스킬','의사결정']},
+  {id:'상호의존',label:'상호의존성',sub:'Interdependence',layer:'teal',x:-2.1,y:2.0,r:34,
+   desc:'협업이 존재하는 이유 그 자체. 한 사람의 산출물이 다른 사람의 투입이 되는 구조에서 협업이 발생한다. 역할 보완성(Complementarity)은 각자의 강점이 서로의 약점을 메우는 설계다. 지식 공유·확산은 집단 학습(Collective Learning)을 통해 개인이 알 수 없는 것을 팀이 알게 만든다.',layer_label:'관계',
+   rels:['역량','신뢰','목표설계','평가보상']},
+
+  // 구조 레이어 — 오른쪽
+  {id:'목표설계',label:'목표·역할 설계',sub:'Goal Design',layer:'amber',x:2.3,y:-0.5,r:34,
+   desc:'구조의 출발점. OKR(Objectives & Key Results)은 목표(Objective)와 측정 가능한 결과(Key Result)를 연결해 팀 전체가 같은 방향을 보게 한다. RACI 매트릭스는 각 과업에 대해 Responsible(실행), Accountable(책임), Consulted(자문), Informed(공유)를 명시해 역할 혼선을 없앤다. 심리적 계약(Psychological Contract)은 명시되지 않은 기대를 미리 맞추는 과정이다.',layer_label:'구조',
+   rels:['역량','상호의존','의사결정','소통체계','평가보상']},
+  {id:'의사결정',label:'의사결정 구조',sub:'Decision-making',layer:'amber',x:2.5,y:0.9,r:34,
+   desc:'협업의 속도와 질을 결정하는 구조. 컨센서스(Consensus)는 모두의 동의를 구하는 방식으로 느리지만 실행력이 높다. 동의 기반(Consent-based)은 "반대 이유가 없으면 진행"으로 빠르다. 에스컬레이션(Escalation)은 의견이 막혔을 때 상위 결정자에게 넘기는 경로다. "Disagree and Commit"은 아마존의 원칙으로, 이견을 표명하되 결정된 후에는 전폭 실행하는 문화를 말한다.',layer_label:'구조',
+   rels:['목표설계','갈등','소통체계','조직문화']},
+  {id:'소통체계',label:'소통·도구 체계',sub:'Comms System',layer:'amber',x:2.1,y:2.0,r:34,
+   desc:'정보가 조직 안에서 흐르는 방식의 설계. 동기(Synchronous) 소통은 실시간 대화로 빠른 합의에 적합하다. 비동기(Asynchronous) 소통은 시차·집중 방해 없이 깊은 작업을 보장한다. 문서화·지식 관리는 "집단 기억"을 만들어 새 멤버의 온보딩과 의사결정 근거를 남긴다. Tool Overload(도구 과부하)는 채널이 너무 많아 정보가 파편화되는 현대 조직의 역설적 문제다.',layer_label:'구조',
+   rels:['소통스킬','목표설계','의사결정','환경']},
+
+  // 환경 레이어 — 아래
+  {id:'조직문화',label:'조직 문화',sub:'Culture',layer:'coral',x:-1.4,y:2.5,r:34,
+   desc:'협업의 토양. 학습 조직(Learning Organization, Peter Senge)은 실험과 반성을 반복하며 집단 지능을 높인다. 다양성·포용성(DEI)은 서로 다른 관점이 충돌해 더 나은 해법을 만드는 인식론적 이점이 있다. 리더십 스타일은 서번트 리더십(구성원을 섬기는)과 코칭형 리더십이 협업 문화와 가장 잘 맞는다.',layer_label:'환경',
+   rels:['신뢰','의사결정','평가보상','환경']},
+  {id:'평가보상',label:'평가·보상 체계',sub:'Incentives',layer:'coral',x:0,y:2.7,r:34,
+   desc:'인센티브가 행동을 만든다. 개인 성과만 평가하면 협업이 사라진다. 팀 성과 반영, 기여 가시화, 비금전적 보상(인정·성장 기회)이 협업을 지속 가능하게 한다. 무임승차(Free-riding) 문제는 개인 기여가 보이지 않을 때 발생하므로, 기여를 가시화하는 설계가 핵심이다.',layer_label:'환경',
+   rels:['상호의존','목표설계','조직문화','환경']},
+  {id:'환경',label:'물리·디지털 환경',sub:'Environment',layer:'coral',x:1.4,y:2.5,r:34,
+   desc:'협업이 일어나는 공간과 도구의 설계. 사무 공간은 개방형(협업 촉진)과 집중형(몰입 보호)의 균형이 필요하다. 원격·하이브리드 환경은 비동기 신뢰 구축, 카메라 온 문화, 의도적 체크인이 없으면 관계가 단절된다. Tool Overload는 Slack·메일·화상·문서 도구가 너무 많아 오히려 소통이 파편화되는 현상으로, 채널 가이드라인 설계가 해법이다.',layer_label:'환경',
+   rels:['소통체계','조직문화','평가보상']},
+];
+
+const LAYER_COLORS = {purple:'#7F77DD',teal:'#1D9E75',amber:'#BA7517',coral:'#D85A30',gray:'#888780'};
+const LAYER_LABELS = {purple:'개인 레이어',teal:'관계 레이어',amber:'구조 레이어',coral:'환경 레이어',gray:'중심'};
+
+const NODE_MAP = {};
+NODES.forEach(n => NODE_MAP[n.id] = n);
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+let W, H, scale, nodes2d = [], selectedId = null;
+
+function layout(){
+  const wrap = document.getElementById('wrap');
+  W = wrap.clientWidth;
+  H = Math.round(W * 0.78);
+  cv.width = W; cv.height = H;
+  cv.style.width = W+'px'; cv.style.height = H+'px';
+  const cx = W/2, cy = H/2;
+  scale = Math.min(W,H) / 5.8;
+  nodes2d = NODES.map(n => ({
+    ...n,
+    px: cx + n.x * scale,
+    py: cy + n.y * scale,
+    pr: n.r * (W < 500 ? 0.72 : 1),
+  }));
+}
+
+function isDark(){
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const dark = isDark();
+
+  // Cross-layer neural connections (thin, low opacity)
+  const crossLinks = [
+    ['역량','신뢰'],['역량','목표설계'],
+    ['태도','신뢰'],['태도','갈등'],['태도','소통스킬'],
+    ['소통스킬','갈등'],['소통스킬','소통체계'],
+    ['신뢰','갈등'],['신뢰','상호의존'],['신뢰','조직문화'],
+    ['갈등','의사결정'],
+    ['상호의존','목표설계'],['상호의존','평가보상'],
+    ['목표설계','의사결정'],['목표설계','소통체계'],['목표설계','평가보상'],
+    ['의사결정','조직문화'],['의사결정','소통체계'],
+    ['소통체계','환경'],
+    ['조직문화','환경'],['조직문화','평가보상'],
+    ['평가보상','환경'],
+  ];
+
+  crossLinks.forEach(([a,b]) => {
+    const na = nodes2d.find(n=>n.id===a);
+    const nb = nodes2d.find(n=>n.id===b);
+    if(!na||!nb) return;
+    const isActive = selectedId && (selectedId===a||selectedId===b);
+    ctx.beginPath();
+    const mx = (na.px+nb.px)/2 + (Math.random()-0.5)*0;
+    const my = (na.py+nb.py)/2;
+    ctx.moveTo(na.px,na.py);
+    ctx.quadraticCurveTo(mx,my,nb.px,nb.py);
+    ctx.strokeStyle = isActive
+      ? (dark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.22)')
+      : (dark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)');
+    ctx.lineWidth = isActive ? 1.2 : 0.6;
+    ctx.stroke();
+  });
+
+  // Center spokes
+  const center = nodes2d.find(n=>n.id==='center');
+  nodes2d.filter(n=>n.id!=='center').forEach(n=>{
+    const isActive = selectedId && (selectedId===n.id || selectedId==='center');
+    ctx.beginPath();
+    ctx.moveTo(center.px,center.py);
+    ctx.lineTo(n.px,n.py);
+    ctx.strokeStyle = isActive
+      ? LAYER_COLORS[n.layer]+'bb'
+      : LAYER_COLORS[n.layer]+(dark?'44':'33');
+    ctx.lineWidth = isActive ? 1.5 : 0.8;
+    ctx.stroke();
+  });
+
+  // Draw nodes
+  nodes2d.forEach(n=>{
+    const isSelected = selectedId === n.id;
+    const isRelated = selectedId && NODE_MAP[selectedId]?.rels?.includes(n.id);
+    const isDim = selectedId && !isSelected && !isRelated && n.id !== 'center';
+
+    const c = COLORS[n.layer];
+    const r = n.pr;
+
+    // glow ring for selected
+    if(isSelected){
+      ctx.beginPath();
+      ctx.arc(n.px,n.py,r+6,0,Math.PI*2);
+      ctx.fillStyle = LAYER_COLORS[n.layer]+'33';
+      ctx.fill();
+    }
+
+    // fill
+    ctx.beginPath();
+    ctx.arc(n.px,n.py,r,0,Math.PI*2);
+    if(dark){
+      ctx.fillStyle = isDim ? '#2a2a28' : LAYER_COLORS[n.layer]+'44';
+    } else {
+      ctx.fillStyle = isDim ? '#f5f5f0' : c.fill;
+    }
+    ctx.fill();
+
+    // stroke
+    ctx.beginPath();
+    ctx.arc(n.px,n.py,r,0,Math.PI*2);
+    ctx.strokeStyle = isDim
+      ? (dark?'#444':'#ddd')
+      : (isSelected ? LAYER_COLORS[n.layer] : LAYER_COLORS[n.layer]+'99');
+    ctx.lineWidth = isSelected ? 2 : 0.8;
+    ctx.stroke();
+
+    // label
+    const textColor = isDim
+      ? (dark?'#555':'#bbb')
+      : (dark ? '#e8e6e0' : c.text);
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const fs = n.id==='center' ? (W<500?13:16) : (W<500?10:12);
+    ctx.font = `500 ${fs}px var(--font-sans,sans-serif)`;
+    if(n.sub){
+      ctx.fillText(n.label, n.px, n.py - fs*0.6);
+      ctx.font = `400 ${Math.round(fs*0.82)}px var(--font-sans,sans-serif)`;
+      ctx.fillStyle = isDim ? textColor : (dark?'#9a9890':c.stroke+'cc');
+      ctx.fillText(n.sub, n.px, n.py + fs*0.7);
+    } else {
+      ctx.fillText(n.label, n.px, n.py);
+    }
+  });
+}
+
+function hitTest(mx,my){
+  for(let i=nodes2d.length-1;i>=0;i--){
+    const n=nodes2d[i];
+    const dx=mx-n.px, dy=my-n.py;
+    if(dx*dx+dy*dy <= n.pr*n.pr) return n;
+  }
+  return null;
+}
+
+function openPanel(n){
+  selectedId = n.id;
+  draw();
+  const panel = document.getElementById('panel');
+  panel.style.display='block';
+  const c = COLORS[n.layer];
+  const tag = document.getElementById('panel-tag');
+  tag.textContent = LAYER_LABELS[n.layer];
+  tag.style.background = c.tag;
+  tag.style.color = c.tagText;
+  document.getElementById('panel-title').textContent = n.label + (n.sub ? ' ('+n.sub+')' : '');
+  document.getElementById('panel-body').textContent = n.desc;
+  const relDiv = document.getElementById('panel-rel');
+  if(n.rels && n.rels.length){
+    relDiv.innerHTML = '<span style="color:var(--color-text-tertiary);margin-right:4px">연결된 개념:</span>';
+    n.rels.forEach(rid=>{
+      const rn = NODE_MAP[rid];
+      if(!rn) return;
+      const s = document.createElement('span');
+      s.textContent = rn.label;
+      s.style.borderColor = LAYER_COLORS[rn.layer]+'88';
+      s.onclick = ()=>openPanel(rn);
+      relDiv.appendChild(s);
+    });
+  } else {
+    relDiv.innerHTML='';
+  }
+}
+
+function closePanel(){
+  selectedId = null;
+  document.getElementById('panel').style.display='none';
+  draw();
+}
+
+cv.addEventListener('click',e=>{
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  const n=hitTest(mx,my);
+  if(n){ openPanel(n); }
+  else { closePanel(); }
+});
+
+cv.addEventListener('mousemove',e=>{
+  const rect=cv.getBoundingClientRect();
+  const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+  cv.style.cursor = hitTest(mx,my) ? 'pointer' : 'default';
+});
+
+window.addEventListener('resize',()=>{ layout(); draw(); });
+
+layout(); draw();
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>draw());
+</script>
