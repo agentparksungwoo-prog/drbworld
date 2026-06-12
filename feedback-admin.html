@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>의견 게시판 · DRB 재무팀</title>
+<title>마음의 소리 · DRB 재무팀</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,6 +12,7 @@
   --border:#e5e5e5; --border-strong:#c8c8c8;
   --text:#111111; --muted:#666666; --faint:#aaaaaa;
   --danger:#c0392b; --danger-bg:#fdf5f5;
+  --adopted:#1a6b3a; --adopted-bg:#edf7f1; --adopted-border:#b2dfc4;
   --radius:8px;
 }
 html { font-size: 14px; }
@@ -23,7 +24,7 @@ body {
 
 /* 헤더 */
 .header {
-  border-bottom: 1px solid var(--border); padding: 0 32px; height: 56px;
+  border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 100; background: var(--bg);
 }
@@ -36,8 +37,8 @@ body {
 .live-dot { width:6px; height:6px; border-radius:50%; background:#2a7a4f; animation:blink 2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* 메인 */
-.main { max-width: 960px; margin: 0 auto; padding: 32px 32px 60px; }
+/* 메인 — 헤더와 동일한 24px */
+.main { max-width: 960px; margin: 0 auto; padding: 32px 24px 60px; }
 
 /* 툴바 */
 .toolbar {
@@ -47,12 +48,13 @@ body {
 .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
 .pill {
   font-size: 12px; font-weight: 500; font-family: inherit; border-radius: 999px;
-  padding: 6px 16px; cursor: pointer; transition: all 0.12s;
+  padding: 6px 14px; cursor: pointer; transition: all 0.12s;
   border: 1px solid var(--border); background: var(--bg); color: var(--muted);
 }
 .pill:hover { border-color: var(--border-strong); color: var(--text); }
 .pill.active { background: #111; border-color: #111; color: #fff; }
-.count-label { font-size: 12px; color: var(--faint); }
+.pill-count { font-weight: 400; opacity: 0.75; margin-left: 2px; }
+.count-label { font-size: 12px; color: var(--faint); white-space: nowrap; }
 .count-label strong { color: var(--text); font-weight: 600; }
 
 /* 테이블 */
@@ -65,11 +67,11 @@ thead th {
   color: var(--faint); padding: 0 12px 10px;
 }
 thead th.th-title { text-align: left; }
+thead th:first-child { padding-left: 0; }
 
 tbody tr {
   border-bottom: 1px solid var(--border);
   transition: background 0.1s; cursor: pointer;
-  position: relative;
 }
 tbody tr:hover { background: var(--surface); }
 tbody tr.selected { background: #f0f0f0; }
@@ -78,29 +80,40 @@ tbody tr:last-child { border-bottom: none; }
 td {
   padding: 13px 12px; font-size: 13px; vertical-align: middle; text-align: center;
 }
+td:first-child { padding-left: 0; }
 td.td-title { text-align: left; }
 
-.col-date { width: 120px; color: var(--faint); font-size: 12px; }
+.col-date { width: 110px; color: var(--faint); font-size: 12px; }
 .col-cat  { width: 110px; }
-.col-act  { width: 130px; }  /* 보기+삭제 버튼 영역 */
+.col-act  { width: 120px; }
 
 .cat-badge {
   display: inline-block; font-size: 11px; font-weight: 500; border-radius: 4px;
-  padding: 3px 8px; background: var(--surface); border: 1px solid var(--border);
-  color: var(--muted); white-space: nowrap;
+  padding: 3px 8px; white-space: nowrap;
 }
+/* 노션 스타일 — 채도 낮은 파스텔 */
+.cat-애로고충 { background: #fce8e8; color: #b94040; border: 1px solid #f5c6c6; }
+.cat-건의제안 { background: #e8f0fe; color: #3a5fb0; border: 1px solid #c3d3f7; }
+.cat-자유의견 { background: #e9f5ee; color: #2d7a50; border: 1px solid #b8dfc8; }
+
+/* 제목 + 채택 뱃지 */
+.title-wrap { display: flex; align-items: center; gap: 8px; }
 .title-text { font-size: 13px; font-weight: 500; color: var(--text); }
-
-/* 행 액션 버튼 — 선택된 행에만 표시 */
-.row-actions {
-  display: none;
-  gap: 6px; align-items: center; justify-content: center;
+.adopted-badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.2px;
+  color: var(--adopted); background: var(--adopted-bg);
+  border: 1px solid var(--adopted-border);
+  border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0;
 }
-tr.selected .row-actions { display: flex; }
+.adopted-badge::before { content: '✓'; font-size: 10px; }
 
+/* 행 액션 버튼 */
+.row-actions { display: none; gap: 6px; align-items: center; justify-content: center; }
+tr.selected .row-actions { display: flex; }
 .act-btn {
   font-size: 11px; font-weight: 600; font-family: inherit;
-  border-radius: 999px; padding: 5px 13px; cursor: pointer; transition: all 0.12s;
+  border-radius: 999px; padding: 5px 12px; cursor: pointer; transition: all 0.12s;
   white-space: nowrap; border: 1px solid var(--border); background: var(--bg); color: var(--text);
 }
 .act-btn:hover { border-color: var(--border-strong); }
@@ -122,12 +135,42 @@ tr.selected .row-actions { display: flex; }
   box-shadow: 0 8px 32px rgba(0,0,0,0.12); animation: fadeUp 0.18s ease;
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+
 .modal-head { padding: 24px 24px 16px; border-bottom: 1px solid var(--border); }
-.modal-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+.modal-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
 .modal-date { font-size: 11px; color: var(--faint); }
 .modal-title { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; line-height: 1.4; }
-.modal-body-wrap { padding: 20px 24px 24px; }
+
+.modal-body-wrap { padding: 20px 24px 20px; }
 .modal-body { font-size: 14px; line-height: 1.85; color: var(--muted); white-space: pre-wrap; word-break: keep-all; }
+
+/* 채택 영역 */
+.modal-adopt {
+  margin: 0 24px 20px;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.modal-adopt.is-adopted {
+  background: var(--adopted-bg); border-color: var(--adopted-border);
+}
+.adopt-label { font-size: 13px; font-weight: 500; }
+.modal-adopt.is-adopted .adopt-label { color: var(--adopted); }
+.btn-adopt {
+  font-size: 12px; font-weight: 600; font-family: inherit;
+  border-radius: 999px; padding: 6px 16px; cursor: pointer; transition: all 0.15s;
+  border: 1px solid var(--border); background: var(--bg); color: var(--text);
+  white-space: nowrap; flex-shrink: 0;
+}
+.btn-adopt:hover { border-color: var(--adopted); color: var(--adopted); background: var(--adopted-bg); }
+.modal-adopt.is-adopted .btn-adopt {
+  border-color: var(--adopted-border); color: var(--adopted); background: var(--adopted-bg);
+}
+.modal-adopt.is-adopted .btn-adopt:hover {
+  border-color: var(--danger); color: var(--danger); background: var(--danger-bg);
+}
+
 .modal-footer { padding: 0 24px 20px; display: flex; justify-content: flex-end; }
 .btn-close {
   font-size: 13px; font-family: inherit; font-weight: 500;
@@ -160,7 +203,7 @@ tr.selected .row-actions { display: flex; }
 
 <header class="header">
   <div>
-    <div class="header-title">의견 게시판</div>
+    <div class="header-title">마음의 소리</div>
     <div class="header-sub">DRB 재무팀 · 관리자</div>
   </div>
   <div class="live-badge"><span class="live-dot"></span>실시간 연동</div>
@@ -169,10 +212,10 @@ tr.selected .row-actions { display: flex; }
 <main class="main">
   <div class="toolbar">
     <div class="filter-group">
-      <button class="pill active" data-cat="전체">전체</button>
-      <button class="pill" data-cat="애로·고충">애로·고충</button>
-      <button class="pill" data-cat="건의·제안">건의·제안</button>
-      <button class="pill" data-cat="자유의견">자유의견</button>
+      <button class="pill active" data-cat="전체">전체<span class="pill-count" id="pc-전체"></span></button>
+      <button class="pill" data-cat="애로·고충">애로·고충<span class="pill-count" id="pc-애로고충"></span></button>
+      <button class="pill" data-cat="건의·제안">건의·제안<span class="pill-count" id="pc-건의제안"></span></button>
+      <button class="pill" data-cat="자유의견">자유의견<span class="pill-count" id="pc-자유의견"></span></button>
     </div>
     <div class="count-label">총 <strong id="count-label">0</strong>건</div>
   </div>
@@ -195,7 +238,7 @@ tr.selected .row-actions { display: flex; }
 
 <!-- 삭제 확인 토스트 -->
 <div class="toast" id="toast">
-  <span id="toast-msg"></span>
+  <span>이 의견을 삭제하시겠습니까?</span>
   <div class="toast-btns">
     <button class="t-btn cancel" id="t-cancel">취소</button>
     <button class="t-btn ok"     id="t-ok">삭제</button>
@@ -209,11 +252,17 @@ tr.selected .row-actions { display: flex; }
       <div class="modal-meta">
         <span class="cat-badge" id="m-cat"></span>
         <span class="modal-date" id="m-date"></span>
+        <span class="adopted-badge" id="m-adopted-badge" style="display:none">채택됨</span>
       </div>
       <div class="modal-title" id="m-title"></div>
     </div>
     <div class="modal-body-wrap">
       <div class="modal-body" id="m-body"></div>
+    </div>
+    <!-- 채택 영역 -->
+    <div class="modal-adopt" id="modal-adopt">
+      <span class="adopt-label" id="adopt-label">이 의견을 채택하시겠습니까?</span>
+      <button class="btn-adopt" id="btn-adopt">채택하기</button>
     </div>
     <div class="modal-footer">
       <button class="btn-close" id="btn-close">닫기</button>
@@ -222,8 +271,8 @@ tr.selected .row-actions { display: flex; }
 </div>
 
 <script type="module">
-import { initializeApp }        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const cfg = {
   apiKey: "AIzaSyA5da127Wmh6cbDIk0gTr2uwtj5zP-9v08",
@@ -234,31 +283,45 @@ const cfg = {
   messagingSenderId: "692323820655",
   appId: "1:692323820655:web:d38af1a32ddc01001c999a"
 };
-
 const app = initializeApp(cfg);
 const db  = getDatabase(app);
 
-let allPosts       = [];
-let currentFilter  = '전체';
-let selectedId     = null;   // 현재 선택(하이라이트)된 행 ID
-let pendingDelId   = null;   // 삭제 대기 중인 ID
+let allPosts      = [];
+let currentFilter = '전체';
+let selectedId    = null;
+let pendingDelId  = null;
+let modalId       = null;
 
 // ── 실시간 수신 ──
 onValue(ref(db, 'feedback'), snap => {
   const data = snap.val();
   allPosts = data
-    ? Object.entries(data)
-        .map(([id, v]) => ({ id, ...v }))
-        .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
+    ? Object.entries(data).map(([id,v]) => ({id,...v}))
+        .sort((a,b) => (b.timestamp||0)-(a.timestamp||0))
     : [];
+  updateCounts();
   render();
+  // 모달 열려있으면 채택 상태 갱신
+  if (modalId) refreshModal(modalId);
 });
+
+// ── 카운트 업데이트 ──
+function updateCounts() {
+  const total = allPosts.length;
+  const cats  = ['애로·고충','건의·제안','자유의견'];
+  document.getElementById('pc-전체').textContent = total ? `(${total})` : '';
+  cats.forEach(cat => {
+    const key = cat.replace(/[·\-\s]/g,'');
+    const n   = allPosts.filter(p => p.category === cat).length;
+    document.getElementById(`pc-${key}`).textContent = n ? `(${n})` : '';
+  });
+}
 
 // ── 필터 ──
 document.querySelectorAll('.pill').forEach(btn => {
   btn.addEventListener('click', () => {
     currentFilter = btn.dataset.cat;
-    document.querySelectorAll('.pill').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.pill').forEach(b => b.classList.toggle('active', b===btn));
     selectedId = null;
     render();
   });
@@ -266,8 +329,8 @@ document.querySelectorAll('.pill').forEach(btn => {
 
 // ── 렌더링 ──
 function render() {
-  const tbody = document.getElementById('tbody');
-  const empty = document.getElementById('empty');
+  const tbody  = document.getElementById('tbody');
+  const empty  = document.getElementById('empty');
   const filtered = currentFilter === '전체'
     ? allPosts
     : allPosts.filter(p => p.category === currentFilter);
@@ -280,13 +343,19 @@ function render() {
   empty.style.display = 'none';
 
   tbody.innerHTML = filtered.map(p => {
-    const date = p.timestamp
-      ? new Date(p.timestamp).toISOString().slice(0, 10) : '—';
+    const date = p.timestamp ? new Date(p.timestamp).toISOString().slice(0,10) : '—';
     const sel  = selectedId === p.id ? ' selected' : '';
+    const adoptedBadge = p.adopted
+      ? `<span class="adopted-badge">채택됨</span>` : '';
     return `<tr data-id="${p.id}" class="${sel}">
       <td class="col-date">${date}</td>
-      <td class="col-cat"><span class="cat-badge">${esc(p.category||'—')}</span></td>
-      <td class="td-title"><span class="title-text">${esc(p.title)}</span></td>
+      <td class="col-cat"><span class="cat-badge ${catClass(p.category||'')}">${esc(p.category||'—')}</span></td>
+      <td class="td-title">
+        <div class="title-wrap">
+          <span class="title-text">${esc(p.title)}</span>
+          ${adoptedBadge}
+        </div>
+      </td>
       <td class="col-act">
         <div class="row-actions">
           <button class="act-btn view" data-id="${p.id}">보기</button>
@@ -296,57 +365,78 @@ function render() {
     </tr>`;
   }).join('');
 
-  // 행 클릭 → 선택 토글
   tbody.querySelectorAll('tr').forEach(row => {
     row.addEventListener('click', e => {
-      // 버튼 클릭은 행 선택과 분리
       if (e.target.classList.contains('act-btn')) return;
       const id = row.dataset.id;
       selectedId = selectedId === id ? null : id;
       render();
     });
   });
-
-  // 보기 버튼
-  tbody.querySelectorAll('.act-btn.view').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      openModal(btn.dataset.id);
-    });
-  });
-
-  // 삭제 버튼
-  tbody.querySelectorAll('.act-btn.del').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      requestDelete(btn.dataset.id);
-    });
-  });
+  tbody.querySelectorAll('.act-btn.view').forEach(btn =>
+    btn.addEventListener('click', e => { e.stopPropagation(); openModal(btn.dataset.id); })
+  );
+  tbody.querySelectorAll('.act-btn.del').forEach(btn =>
+    btn.addEventListener('click', e => { e.stopPropagation(); requestDelete(btn.dataset.id); })
+  );
 }
 
 // ── 모달 ──
 function openModal(id) {
+  modalId = id;
+  refreshModal(id);
+  document.getElementById('overlay').classList.add('open');
+}
+
+function refreshModal(id) {
   const p = allPosts.find(x => x.id === id);
   if (!p) return;
-  const date = p.timestamp ? new Date(p.timestamp).toISOString().slice(0, 10) : '—';
+  const date = p.timestamp ? new Date(p.timestamp).toISOString().slice(0,10) : '—';
   document.getElementById('m-cat').textContent   = p.category || '—';
+  document.getElementById('m-cat').className      = `cat-badge ${catClass(p.category||'')}`;
   document.getElementById('m-date').textContent  = date;
   document.getElementById('m-title').textContent = p.title;
   document.getElementById('m-body').textContent  = p.body;
-  document.getElementById('overlay').classList.add('open');
+
+  const adoptBadge  = document.getElementById('m-adopted-badge');
+  const adoptArea   = document.getElementById('modal-adopt');
+  const adoptLabel  = document.getElementById('adopt-label');
+  const adoptBtn    = document.getElementById('btn-adopt');
+
+  if (p.adopted) {
+    adoptBadge.style.display = 'inline-flex';
+    adoptArea.classList.add('is-adopted');
+    adoptLabel.textContent = '채택된 의견입니다';
+    adoptBtn.textContent   = '채택 취소';
+  } else {
+    adoptBadge.style.display = 'none';
+    adoptArea.classList.remove('is-adopted');
+    adoptLabel.textContent = '이 의견을 채택하시겠습니까?';
+    adoptBtn.textContent   = '채택하기';
+  }
 }
-document.getElementById('btn-close').addEventListener('click', () =>
-  document.getElementById('overlay').classList.remove('open')
-);
-document.getElementById('overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('overlay'))
-    document.getElementById('overlay').classList.remove('open');
+
+document.getElementById('btn-adopt').addEventListener('click', async () => {
+  if (!modalId) return;
+  const p = allPosts.find(x => x.id === modalId);
+  if (!p) return;
+  await update(ref(db, `feedback/${modalId}`), { adopted: !p.adopted });
 });
 
-// ── 삭제 확인 토스트 ──
+document.getElementById('btn-close').addEventListener('click', () => {
+  document.getElementById('overlay').classList.remove('open');
+  modalId = null;
+});
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay')) {
+    document.getElementById('overlay').classList.remove('open');
+    modalId = null;
+  }
+});
+
+// ── 삭제 ──
 function requestDelete(id) {
   pendingDelId = id;
-  document.getElementById('toast-msg').textContent = '이 의견을 삭제하시겠습니까?';
   document.getElementById('toast').classList.add('visible');
 }
 document.getElementById('t-cancel').addEventListener('click', () => {
@@ -360,6 +450,13 @@ document.getElementById('t-ok').addEventListener('click', async () => {
   pendingDelId = null;
   document.getElementById('toast').classList.remove('visible');
 });
+
+function catClass(cat) {
+  if (cat === '애로·고충') return 'cat-애로고충';
+  if (cat === '건의·제안') return 'cat-건의제안';
+  if (cat === '자유의견')  return 'cat-자유의견';
+  return '';
+}
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
