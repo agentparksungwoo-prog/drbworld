@@ -8,16 +8,11 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #ffffff;
-  --surface: #f6f6f6;
-  --border: #e5e5e5;
-  --border-strong: #c8c8c8;
-  --text: #111111;
-  --muted: #666666;
-  --faint: #aaaaaa;
-  --danger: #c0392b;
-  --danger-bg: #fdf2f2;
-  --radius: 8px;
+  --bg:#ffffff; --surface:#f6f6f6;
+  --border:#e5e5e5; --border-strong:#c8c8c8;
+  --text:#111111; --muted:#666666; --faint:#aaaaaa;
+  --danger:#c0392b; --danger-bg:#fdf5f5;
+  --radius:8px;
 }
 html { font-size: 14px; }
 body {
@@ -28,22 +23,17 @@ body {
 
 /* 헤더 */
 .header {
-  border-bottom: 1px solid var(--border);
-  padding: 0 32px; height: 56px;
+  border-bottom: 1px solid var(--border); padding: 0 32px; height: 56px;
   display: flex; align-items: center; justify-content: space-between;
   position: sticky; top: 0; z-index: 100; background: var(--bg);
 }
 .header-title { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
 .header-sub { font-size: 12px; color: var(--faint); margin-top: 1px; }
 .live-badge {
-  display: flex; align-items: center; gap: 5px;
-  font-size: 11px; color: var(--faint);
+  display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--faint);
   border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px;
 }
-.live-dot {
-  width: 6px; height: 6px; border-radius: 50%; background: #2a7a4f;
-  animation: blink 2s infinite;
-}
+.live-dot { width:6px; height:6px; border-radius:50%; background:#2a7a4f; animation:blink 2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
 /* 메인 */
@@ -54,28 +44,15 @@ body {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
 }
-.toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
 .pill {
-  font-size: 12px; font-weight: 500; font-family: inherit;
-  border-radius: 999px; padding: 6px 16px; cursor: pointer;
-  transition: all 0.12s; border: 1px solid var(--border);
-  background: var(--bg); color: var(--muted);
+  font-size: 12px; font-weight: 500; font-family: inherit; border-radius: 999px;
+  padding: 6px 16px; cursor: pointer; transition: all 0.12s;
+  border: 1px solid var(--border); background: var(--bg); color: var(--muted);
 }
 .pill:hover { border-color: var(--border-strong); color: var(--text); }
 .pill.active { background: #111; border-color: #111; color: #fff; }
-
-/* 삭제 버튼 (툴바) */
-.btn-delete-selected {
-  font-size: 12px; font-weight: 500; font-family: inherit;
-  border-radius: 999px; padding: 6px 16px; cursor: pointer;
-  border: 1px solid var(--border); background: var(--bg);
-  color: var(--danger); transition: all 0.12s; display: none;
-}
-.btn-delete-selected:hover { border-color: var(--danger); background: var(--danger-bg); }
-.btn-delete-selected.visible { display: inline-block; }
-
-.count-label { font-size: 12px; color: var(--faint); white-space: nowrap; }
+.count-label { font-size: 12px; color: var(--faint); }
 .count-label strong { color: var(--text); font-weight: 600; }
 
 /* 테이블 */
@@ -83,65 +60,56 @@ body {
 table { width: 100%; border-collapse: collapse; }
 thead tr { border-bottom: 1px solid var(--border-strong); }
 thead th {
-  text-align: left; font-size: 11px; font-weight: 600;
-  letter-spacing: 0.5px; text-transform: uppercase;
+  text-align: center;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
   color: var(--faint); padding: 0 12px 10px;
 }
-thead th:first-child { padding-left: 0; width: 36px; }
-tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
-tbody tr:hover { background: var(--surface); }
-tbody tr:last-child { border-bottom: none; }
-tbody tr.checked { background: #fafafa; }
-td { padding: 13px 12px; font-size: 13px; vertical-align: middle; }
-td:first-child { padding-left: 0; }
+thead th.th-title { text-align: left; }
 
-/* 체크박스 */
-.cb-cell { width: 36px; }
-input[type="checkbox"] {
-  width: 15px; height: 15px; cursor: pointer;
-  accent-color: #111; border-radius: 3px;
+tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s; cursor: pointer;
+  position: relative;
 }
+tbody tr:hover { background: var(--surface); }
+tbody tr.selected { background: #f0f0f0; }
+tbody tr:last-child { border-bottom: none; }
 
-.col-date { width: 110px; color: var(--faint); font-size: 12px; }
-.col-cat  { width: 100px; }
+td {
+  padding: 13px 12px; font-size: 13px; vertical-align: middle; text-align: center;
+}
+td.td-title { text-align: left; }
+
+.col-date { width: 120px; color: var(--faint); font-size: 12px; }
+.col-cat  { width: 110px; }
+.col-act  { width: 130px; }  /* 보기+삭제 버튼 영역 */
 
 .cat-badge {
-  display: inline-block; font-size: 11px; font-weight: 500;
-  border-radius: 4px; padding: 3px 8px;
-  background: var(--surface); border: 1px solid var(--border);
+  display: inline-block; font-size: 11px; font-weight: 500; border-radius: 4px;
+  padding: 3px 8px; background: var(--surface); border: 1px solid var(--border);
   color: var(--muted); white-space: nowrap;
 }
-.title-btn {
-  background: none; border: none; font-family: inherit;
-  font-size: 13px; font-weight: 500; color: var(--text);
-  cursor: pointer; padding: 0; text-align: left;
-  text-decoration: underline; text-decoration-color: transparent;
-  transition: text-decoration-color 0.12s;
+.title-text { font-size: 13px; font-weight: 500; color: var(--text); }
+
+/* 행 액션 버튼 — 선택된 행에만 표시 */
+.row-actions {
+  display: none;
+  gap: 6px; align-items: center; justify-content: center;
 }
-.title-btn:hover { text-decoration-color: var(--border-strong); }
+tr.selected .row-actions { display: flex; }
+
+.act-btn {
+  font-size: 11px; font-weight: 600; font-family: inherit;
+  border-radius: 999px; padding: 5px 13px; cursor: pointer; transition: all 0.12s;
+  white-space: nowrap; border: 1px solid var(--border); background: var(--bg); color: var(--text);
+}
+.act-btn:hover { border-color: var(--border-strong); }
+.act-btn.del { color: var(--danger); }
+.act-btn.del:hover { border-color: var(--danger); background: var(--danger-bg); }
 
 .empty { text-align: center; padding: 72px 0; color: var(--faint); font-size: 13px; }
 
-/* 삭제 확인 토스트 */
-.confirm-bar {
-  display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-  background: #111; color: #fff; border-radius: 999px;
-  padding: 12px 20px; font-size: 13px; font-weight: 500;
-  align-items: center; gap: 14px; white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.18); z-index: 300;
-}
-.confirm-bar.visible { display: flex; }
-.confirm-bar-btns { display: flex; gap: 8px; }
-.cb-btn {
-  font-size: 12px; font-family: inherit; font-weight: 600;
-  border-radius: 999px; padding: 5px 14px; cursor: pointer; border: none;
-}
-.cb-btn.cancel { background: rgba(255,255,255,0.15); color: #fff; }
-.cb-btn.cancel:hover { background: rgba(255,255,255,0.25); }
-.cb-btn.confirm { background: #e74c3c; color: #fff; }
-.cb-btn.confirm:hover { background: #c0392b; }
-
-/* 모달 */
+/* 상세 모달 */
 .overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,0.28); z-index: 200;
@@ -149,17 +117,16 @@ input[type="checkbox"] {
 }
 .overlay.open { display: flex; }
 .modal {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: 12px; width: 100%; max-width: 560px; max-height: 80vh;
-  overflow-y: auto; box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-  animation: fadeUp 0.18s ease;
+  background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+  width: 100%; max-width: 560px; max-height: 82vh; overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12); animation: fadeUp 0.18s ease;
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 .modal-head { padding: 24px 24px 16px; border-bottom: 1px solid var(--border); }
 .modal-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 .modal-date { font-size: 11px; color: var(--faint); }
 .modal-title { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; line-height: 1.4; }
-.modal-body-wrap { padding: 20px 24px 28px; }
+.modal-body-wrap { padding: 20px 24px 24px; }
 .modal-body { font-size: 14px; line-height: 1.85; color: var(--muted); white-space: pre-wrap; word-break: keep-all; }
 .modal-footer { padding: 0 24px 20px; display: flex; justify-content: flex-end; }
 .btn-close {
@@ -168,6 +135,25 @@ input[type="checkbox"] {
   background: none; color: var(--muted); cursor: pointer; transition: all 0.12s;
 }
 .btn-close:hover { border-color: #111; color: #111; }
+
+/* 삭제 확인 토스트 */
+.toast {
+  display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  background: #111; color: #fff; border-radius: 999px;
+  padding: 12px 20px; font-size: 13px; font-weight: 500;
+  align-items: center; gap: 14px; white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18); z-index: 300;
+}
+.toast.visible { display: flex; }
+.toast-btns { display: flex; gap: 8px; }
+.t-btn {
+  font-size: 12px; font-family: inherit; font-weight: 600;
+  border-radius: 999px; padding: 5px 14px; cursor: pointer; border: none;
+}
+.t-btn.cancel { background: rgba(255,255,255,0.15); color: #fff; }
+.t-btn.cancel:hover { background: rgba(255,255,255,0.25); }
+.t-btn.ok { background: #e74c3c; color: #fff; }
+.t-btn.ok:hover { background: var(--danger); }
 </style>
 </head>
 <body>
@@ -177,23 +163,16 @@ input[type="checkbox"] {
     <div class="header-title">의견 게시판</div>
     <div class="header-sub">DRB 재무팀 · 관리자</div>
   </div>
-  <div class="live-badge">
-    <span class="live-dot"></span>실시간 연동
-  </div>
+  <div class="live-badge"><span class="live-dot"></span>실시간 연동</div>
 </header>
 
 <main class="main">
   <div class="toolbar">
-    <div class="toolbar-left">
-      <div class="filter-group">
-        <button class="pill active" onclick="setFilter('전체')">전체</button>
-        <button class="pill" onclick="setFilter('애로·고충')">애로·고충</button>
-        <button class="pill" onclick="setFilter('건의·제안')">건의·제안</button>
-        <button class="pill" onclick="setFilter('자유의견')">자유의견</button>
-      </div>
-      <button class="btn-delete-selected" id="btn-del" onclick="requestDelete()">
-        선택 삭제
-      </button>
+    <div class="filter-group">
+      <button class="pill active" data-cat="전체">전체</button>
+      <button class="pill" data-cat="애로·고충">애로·고충</button>
+      <button class="pill" data-cat="건의·제안">건의·제안</button>
+      <button class="pill" data-cat="자유의견">자유의견</button>
     </div>
     <div class="count-label">총 <strong id="count-label">0</strong>건</div>
   </div>
@@ -202,10 +181,10 @@ input[type="checkbox"] {
     <table>
       <thead>
         <tr>
-          <th class="cb-cell"><input type="checkbox" id="chk-all" onchange="toggleAll(this)"></th>
           <th class="col-date">게시일</th>
           <th class="col-cat">분류</th>
-          <th>제목</th>
+          <th class="th-title">제목</th>
+          <th class="col-act"></th>
         </tr>
       </thead>
       <tbody id="tbody"></tbody>
@@ -214,17 +193,17 @@ input[type="checkbox"] {
   </div>
 </main>
 
-<!-- 삭제 확인 바 -->
-<div class="confirm-bar" id="confirm-bar">
-  <span id="confirm-msg"></span>
-  <div class="confirm-bar-btns">
-    <button class="cb-btn cancel" onclick="cancelDelete()">취소</button>
-    <button class="cb-btn confirm" onclick="doDelete()">삭제</button>
+<!-- 삭제 확인 토스트 -->
+<div class="toast" id="toast">
+  <span id="toast-msg"></span>
+  <div class="toast-btns">
+    <button class="t-btn cancel" id="t-cancel">취소</button>
+    <button class="t-btn ok"     id="t-ok">삭제</button>
   </div>
 </div>
 
 <!-- 상세 모달 -->
-<div class="overlay" id="overlay" onclick="closeModal(event)">
+<div class="overlay" id="overlay">
   <div class="modal">
     <div class="modal-head">
       <div class="modal-meta">
@@ -237,13 +216,13 @@ input[type="checkbox"] {
       <div class="modal-body" id="m-body"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn-close" onclick="document.getElementById('overlay').classList.remove('open')">닫기</button>
+      <button class="btn-close" id="btn-close">닫기</button>
     </div>
   </div>
 </div>
 
 <script type="module">
-import { initializeApp }     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp }        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const cfg = {
@@ -255,14 +234,16 @@ const cfg = {
   messagingSenderId: "692323820655",
   appId: "1:692323820655:web:d38af1a32ddc01001c999a"
 };
+
 const app = initializeApp(cfg);
 const db  = getDatabase(app);
 
-let allPosts = [];
-let currentFilter = '전체';
-let pendingDelete = [];
+let allPosts       = [];
+let currentFilter  = '전체';
+let selectedId     = null;   // 현재 선택(하이라이트)된 행 ID
+let pendingDelId   = null;   // 삭제 대기 중인 ID
 
-// 실시간 수신
+// ── 실시간 수신 ──
 onValue(ref(db, 'feedback'), snap => {
   const data = snap.val();
   allPosts = data
@@ -273,17 +254,17 @@ onValue(ref(db, 'feedback'), snap => {
   render();
 });
 
-// 필터
-window.setFilter = cat => {
-  currentFilter = cat;
-  document.querySelectorAll('.pill').forEach(el =>
-    el.classList.toggle('active', el.textContent.trim() === cat)
-  );
-  clearSelection();
-  render();
-};
+// ── 필터 ──
+document.querySelectorAll('.pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    currentFilter = btn.dataset.cat;
+    document.querySelectorAll('.pill').forEach(b => b.classList.toggle('active', b === btn));
+    selectedId = null;
+    render();
+  });
+});
 
-// 렌더링
+// ── 렌더링 ──
 function render() {
   const tbody = document.getElementById('tbody');
   const empty = document.getElementById('empty');
@@ -292,97 +273,93 @@ function render() {
     : allPosts.filter(p => p.category === currentFilter);
 
   document.getElementById('count-label').textContent = filtered.length;
-  document.getElementById('chk-all').checked = false;
 
   if (!filtered.length) {
-    tbody.innerHTML = '';
-    empty.style.display = 'block';
-    return;
+    tbody.innerHTML = ''; empty.style.display = 'block'; return;
   }
   empty.style.display = 'none';
 
   tbody.innerHTML = filtered.map(p => {
     const date = p.timestamp
-      ? new Date(p.timestamp).toISOString().slice(0, 10)
-      : '—';
-    return `<tr id="row-${p.id}">
-      <td class="cb-cell">
-        <input type="checkbox" class="row-chk" value="${p.id}" onchange="onCheckChange()">
-      </td>
+      ? new Date(p.timestamp).toISOString().slice(0, 10) : '—';
+    const sel  = selectedId === p.id ? ' selected' : '';
+    return `<tr data-id="${p.id}" class="${sel}">
       <td class="col-date">${date}</td>
-      <td class="col-cat"><span class="cat-badge">${esc(p.category || '—')}</span></td>
-      <td><button class="title-btn" onclick="openModal('${p.id}')">${esc(p.title)}</button></td>
+      <td class="col-cat"><span class="cat-badge">${esc(p.category||'—')}</span></td>
+      <td class="td-title"><span class="title-text">${esc(p.title)}</span></td>
+      <td class="col-act">
+        <div class="row-actions">
+          <button class="act-btn view" data-id="${p.id}">보기</button>
+          <button class="act-btn del"  data-id="${p.id}">삭제</button>
+        </div>
+      </td>
     </tr>`;
   }).join('');
+
+  // 행 클릭 → 선택 토글
+  tbody.querySelectorAll('tr').forEach(row => {
+    row.addEventListener('click', e => {
+      // 버튼 클릭은 행 선택과 분리
+      if (e.target.classList.contains('act-btn')) return;
+      const id = row.dataset.id;
+      selectedId = selectedId === id ? null : id;
+      render();
+    });
+  });
+
+  // 보기 버튼
+  tbody.querySelectorAll('.act-btn.view').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      openModal(btn.dataset.id);
+    });
+  });
+
+  // 삭제 버튼
+  tbody.querySelectorAll('.act-btn.del').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      requestDelete(btn.dataset.id);
+    });
+  });
 }
 
-// 전체 선택
-window.toggleAll = chk => {
-  document.querySelectorAll('.row-chk').forEach(el => el.checked = chk.checked);
-  onCheckChange();
-};
-
-window.onCheckChange = () => {
-  const checked = [...document.querySelectorAll('.row-chk:checked')];
-  const btn = document.getElementById('btn-del');
-  if (checked.length > 0) {
-    btn.textContent = `선택 삭제 (${checked.length})`;
-    btn.classList.add('visible');
-  } else {
-    btn.classList.remove('visible');
-  }
-  // 전체 체크 동기화
-  const all = document.querySelectorAll('.row-chk');
-  document.getElementById('chk-all').checked = all.length > 0 && checked.length === all.length;
-};
-
-// 삭제 요청
-window.requestDelete = () => {
-  pendingDelete = [...document.querySelectorAll('.row-chk:checked')].map(el => el.value);
-  if (!pendingDelete.length) return;
-  document.getElementById('confirm-msg').textContent =
-    `${pendingDelete.length}건을 삭제하시겠습니까?`;
-  document.getElementById('confirm-bar').classList.add('visible');
-};
-
-window.cancelDelete = () => {
-  pendingDelete = [];
-  document.getElementById('confirm-bar').classList.remove('visible');
-};
-
-window.doDelete = async () => {
-  for (const id of pendingDelete) {
-    await remove(ref(db, `feedback/${id}`));
-  }
-  pendingDelete = [];
-  document.getElementById('confirm-bar').classList.remove('visible');
-  clearSelection();
-};
-
-function clearSelection() {
-  document.querySelectorAll('.row-chk').forEach(el => el.checked = false);
-  document.getElementById('chk-all').checked = false;
-  document.getElementById('btn-del').classList.remove('visible');
-  pendingDelete = [];
-}
-
-// 모달
-window.openModal = id => {
+// ── 모달 ──
+function openModal(id) {
   const p = allPosts.find(x => x.id === id);
   if (!p) return;
-  const date = p.timestamp
-    ? new Date(p.timestamp).toISOString().slice(0, 10) : '—';
+  const date = p.timestamp ? new Date(p.timestamp).toISOString().slice(0, 10) : '—';
   document.getElementById('m-cat').textContent   = p.category || '—';
   document.getElementById('m-date').textContent  = date;
   document.getElementById('m-title').textContent = p.title;
   document.getElementById('m-body').textContent  = p.body;
   document.getElementById('overlay').classList.add('open');
-};
-
-window.closeModal = e => {
+}
+document.getElementById('btn-close').addEventListener('click', () =>
+  document.getElementById('overlay').classList.remove('open')
+);
+document.getElementById('overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('overlay'))
     document.getElementById('overlay').classList.remove('open');
-};
+});
+
+// ── 삭제 확인 토스트 ──
+function requestDelete(id) {
+  pendingDelId = id;
+  document.getElementById('toast-msg').textContent = '이 의견을 삭제하시겠습니까?';
+  document.getElementById('toast').classList.add('visible');
+}
+document.getElementById('t-cancel').addEventListener('click', () => {
+  pendingDelId = null;
+  document.getElementById('toast').classList.remove('visible');
+});
+document.getElementById('t-ok').addEventListener('click', async () => {
+  if (!pendingDelId) return;
+  await remove(ref(db, `feedback/${pendingDelId}`));
+  if (selectedId === pendingDelId) selectedId = null;
+  pendingDelId = null;
+  document.getElementById('toast').classList.remove('visible');
+});
 
 function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');

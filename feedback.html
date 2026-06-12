@@ -8,87 +8,64 @@
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #ffffff;
-  --surface: #f6f6f6;
-  --border: #e5e5e5;
-  --border-strong: #c8c8c8;
-  --text: #111111;
-  --muted: #666666;
-  --faint: #aaaaaa;
-  --radius: 8px;
+  --bg:#ffffff; --surface:#f6f6f6;
+  --border:#e5e5e5; --border-strong:#c8c8c8;
+  --text:#111111; --muted:#666666; --faint:#aaaaaa;
+  --radius:8px;
 }
 html { font-size: 15px; }
 body {
   font-family: 'Noto Sans KR', -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  -webkit-font-smoothing: antialiased;
+  background: var(--bg); color: var(--text);
+  min-height: 100vh; -webkit-font-smoothing: antialiased;
 }
-.wrap {
-  max-width: 460px;
-  margin: 0 auto;
-  padding: 48px 24px 72px;
-}
+.wrap { max-width: 460px; margin: 0 auto; padding: 48px 24px 72px; }
 .header { margin-bottom: 40px; }
 .header-eyebrow {
-  font-size: 11px; font-weight: 600;
-  letter-spacing: 0.8px; text-transform: uppercase;
-  color: var(--faint); margin-bottom: 10px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--faint); margin-bottom: 10px;
 }
-.header h1 {
-  font-size: 22px; font-weight: 600;
-  letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 10px;
-}
+.header h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.4px; line-height: 1.35; margin-bottom: 10px; }
 .header p { font-size: 13px; color: var(--muted); line-height: 1.7; }
 hr { border: none; border-top: 1px solid var(--border); margin: 28px 0; }
 .field { margin-bottom: 20px; }
-.field label {
-  display: block; font-size: 12px; font-weight: 600;
-  letter-spacing: 0.1px; color: var(--muted); margin-bottom: 7px;
-}
+.field label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 7px; }
 .field label .req { color: #111; margin-left: 2px; }
 select, input[type="text"], textarea {
-  width: 100%; font-family: inherit; font-size: 14px;
-  color: var(--text); background: var(--bg);
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 10px 13px; outline: none; -webkit-appearance: none;
-  transition: border-color 0.15s;
+  width: 100%; font-family: inherit; font-size: 14px; color: var(--text);
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 10px 13px; outline: none; -webkit-appearance: none; transition: border-color 0.15s;
 }
 select:focus, input[type="text"]:focus, textarea:focus { border-color: #111; }
 select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23aaa' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 12px center;
-  padding-right: 32px; cursor: pointer;
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; cursor: pointer;
 }
 textarea { height: 150px; resize: vertical; line-height: 1.7; }
 input::placeholder, textarea::placeholder { color: var(--faint); }
 .char-hint { text-align: right; font-size: 11px; color: var(--faint); margin-top: 5px; }
 .btn-submit {
-  display: flex; align-items: center; justify-content: center;
-  width: 100%; background: #111; color: #fff; border: none;
-  border-radius: 999px; padding: 13px 0;
-  font-size: 14px; font-weight: 600; font-family: inherit;
+  display: flex; align-items: center; justify-content: center; width: 100%;
+  background: #111; color: #fff; border: none; border-radius: 999px;
+  padding: 13px 0; font-size: 14px; font-weight: 600; font-family: inherit;
   cursor: pointer; transition: opacity 0.15s; margin-top: 4px;
 }
 .btn-submit:hover { opacity: 0.82; }
 .btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
 .result { text-align: center; font-size: 13px; margin-top: 14px; display: none; }
 .result.fail { color: #c0392b; }
-.done-view { display: none; text-align: center; padding: 72px 0 40px; }
-.done-icon { font-size: 40px; margin-bottom: 18px; }
-.done-view h2 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 10px; }
-.done-view p { font-size: 13px; color: var(--muted); line-height: 1.7; margin-bottom: 28px; }
-.btn-again {
-  display: inline-block; font-size: 13px; font-family: inherit; font-weight: 500;
-  color: var(--muted); background: none; border: 1px solid var(--border);
-  border-radius: 999px; padding: 9px 22px; cursor: pointer; transition: all 0.12s;
-}
-.btn-again:hover { border-color: #111; color: #111; }
+
+/* 완료 화면 — 버튼 없이 메시지만 */
+.done-view { display: none; text-align: center; padding: 80px 0 40px; }
+.done-icon { font-size: 44px; margin-bottom: 20px; }
+.done-view h2 { font-size: 19px; font-weight: 600; letter-spacing: -0.3px; margin-bottom: 12px; }
+.done-view p { font-size: 14px; color: var(--muted); line-height: 1.8; }
 </style>
 </head>
 <body>
 <div class="wrap">
+
+  <!-- 폼 -->
   <div id="form-view">
     <div class="header">
       <div class="header-eyebrow">DRB 재무팀 · 익명 보장</div>
@@ -116,19 +93,22 @@ input::placeholder, textarea::placeholder { color: var(--faint); }
         oninput="upCount(this,'cc2',1000)"></textarea>
       <div class="char-hint" id="cc2">0 / 1000</div>
     </div>
-    <button class="btn-submit" id="btn-sub" onclick="submitPost()">제출하기</button>
+    <!-- onclick 제거 — addEventListener로만 연결 -->
+    <button class="btn-submit" id="btn-sub">제출하기</button>
     <div class="result" id="result-msg"></div>
   </div>
+
+  <!-- 완료 — 버튼 없음 -->
   <div class="done-view" id="done-view">
     <div class="done-icon">✓</div>
-    <h2>의견이 접수되었습니다</h2>
-    <p>소중한 의견 감사합니다.<br>더 나은 재무팀을 만드는 데 활용하겠습니다.</p>
-    <button class="btn-again" onclick="resetForm()">추가 의견 남기기</button>
+    <h2>의견을 주셔서 감사합니다</h2>
+    <p>소중한 의견은 더 나은 재무팀을<br>만드는 데 활용하겠습니다.</p>
   </div>
+
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const cfg = {
@@ -140,19 +120,25 @@ const cfg = {
   messagingSenderId: "692323820655",
   appId: "1:692323820655:web:d38af1a32ddc01001c999a"
 };
-const app = initializeApp(cfg);
-const db  = getDatabase(app);
+
+const app  = initializeApp(cfg);
+const db   = getDatabase(app);
 const FEED = ref(db, 'feedback');
 
-window.submitPost = async () => {
+document.getElementById('btn-sub').addEventListener('click', async () => {
   const title = document.getElementById('f-title').value.trim();
   const body  = document.getElementById('f-body').value.trim();
   const cat   = document.getElementById('f-cat').value;
   const btn   = document.getElementById('btn-sub');
   const msg   = document.getElementById('result-msg');
+
   if (!title) { alert('제목을 입력해주세요.'); return; }
   if (!body)  { alert('내용을 입력해주세요.'); return; }
-  btn.disabled = true; btn.textContent = '제출 중…'; msg.style.display = 'none';
+
+  btn.disabled = true;
+  btn.textContent = '제출 중…';
+  msg.style.display = 'none';
+
   try {
     await push(FEED, { title, body, category: cat, timestamp: serverTimestamp() });
     document.getElementById('form-view').style.display = 'none';
@@ -161,18 +147,12 @@ window.submitPost = async () => {
     msg.className = 'result fail';
     msg.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
     msg.style.display = 'block';
-    btn.disabled = false; btn.textContent = '제출하기';
+    btn.disabled = false;
+    btn.textContent = '제출하기';
   }
-};
-
-window.resetForm = () => {
-  ['f-title','f-body'].forEach(id => document.getElementById(id).value = '');
-  document.getElementById('cc1').textContent = '0 / 30';
-  document.getElementById('cc2').textContent = '0 / 1000';
-  document.getElementById('done-view').style.display = 'none';
-  document.getElementById('form-view').style.display = 'block';
-};
+});
 </script>
+
 <script>
 window.upCount = (el, id, max) =>
   document.getElementById(id).textContent = `${el.value.length} / ${max}`;
