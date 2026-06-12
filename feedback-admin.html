@@ -4,117 +4,140 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>마음의 소리 · DRB 재무팀</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg:#ffffff; --surface:#f6f6f6;
-  --border:#e5e5e5; --border-strong:#c8c8c8;
-  --text:#111111; --muted:#666666; --faint:#aaaaaa;
-  --danger:#c0392b; --danger-bg:#fdf5f5;
-  --adopted:#1a6b3a; --adopted-bg:#edf7f1; --adopted-border:#b2dfc4;
-  --radius:8px;
+  --green-deep:   #2e5c30;
+  --green-mid:    #4a8c4c;
+  --green-soft:   #6aaa6c;
+  --green-pale:   #e8f5e8;
+  --border:       rgba(80,130,80,0.22);
+  --border-strong:rgba(60,100,60,0.40);
+  --text:         #1e3a1e;
+  --muted:        #4a6e4a;
+  --faint:        #7a9e7a;
+  --glass:        rgba(255,255,255,0.78);
+  --glass-strong: rgba(255,255,255,0.92);
+  --surface:      rgba(255,255,255,0.55);
+  --danger:       #c0392b;
+  --danger-bg:    rgba(253,245,245,0.9);
+  --adopted:      #2a6e3a;
+  --adopted-bg:   rgba(232,248,236,0.9);
+  --adopted-border:rgba(140,200,150,0.6);
+  --radius:       10px;
 }
 html { font-size: 14px; }
 body {
   font-family: 'Noto Sans KR', -apple-system, sans-serif;
-  background: var(--bg); color: var(--text);
-  min-height: 100vh; -webkit-font-smoothing: antialiased;
+  color: var(--text); min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  position: relative;
 }
+
+/* GIF 배경 */
+.bg { position: fixed; inset: 0; z-index: 0; background: url('bamboo.gif') center center / cover no-repeat; }
+.bg-overlay { position: fixed; inset: 0; z-index: 1; background: rgba(235,248,230,0.42); backdrop-filter: blur(1px); }
 
 /* 헤더 */
 .header {
-  border-bottom: 1px solid var(--border); height: 72px;
-  position: sticky; top: 0; z-index: 100; background: var(--bg);
+  position: sticky; top: 0; z-index: 100; height: 72px;
+  background: rgba(255,255,255,0.82);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
 }
 .header-inner {
   max-width: 960px; margin: 0 auto; padding: 0 24px; height: 72px;
   display: flex; align-items: center; justify-content: space-between;
 }
-.header-title { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
-.header-sub { font-size: 12px; color: var(--faint); margin-top: 2px; }
+.header-left { display: flex; flex-direction: column; gap: 2px; }
+.header-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--green-soft); }
+.header-title { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
 .live-badge {
-  display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--faint);
-  border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px;
+  display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--muted);
+  border: 1px solid var(--border); border-radius: 999px; padding: 5px 14px;
+  background: rgba(255,255,255,0.7);
 }
-.live-dot { width:6px; height:6px; border-radius:50%; background:#2a7a4f; animation:blink 2s infinite; }
+.live-dot { width:6px; height:6px; border-radius:50%; background:#3a8a3c; animation:blink 2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* 메인 — 헤더와 동일한 24px */
-.main { max-width: 960px; margin: 0 auto; padding: 32px 24px 60px; }
+/* 메인 */
+.main { max-width: 960px; margin: 0 auto; padding: 28px 24px 60px; position: relative; z-index: 2; }
 
 /* 툴바 */
 .toolbar {
   display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 20px; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 16px; gap: 12px; flex-wrap: wrap;
 }
 .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
 .pill {
-  font-size: 12px; font-weight: 500; font-family: inherit; border-radius: 999px;
-  padding: 6px 14px; cursor: pointer; transition: all 0.12s;
-  border: 1px solid var(--border); background: var(--bg); color: var(--muted);
+  font-size: 12px; font-weight: 600; font-family: inherit; border-radius: 999px;
+  padding: 6px 14px; cursor: pointer; transition: all 0.15s;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.7); color: var(--muted);
+  backdrop-filter: blur(8px);
 }
-.pill:hover { border-color: var(--border-strong); color: var(--text); }
-.pill.active { background: #111; border-color: #111; color: #fff; }
-.pill-count { font-weight: 400; opacity: 0.75; margin-left: 2px; }
-.count-label { font-size: 12px; color: var(--faint); white-space: nowrap; }
-.count-label strong { color: var(--text); font-weight: 600; }
+.pill:hover { border-color: var(--green-mid); color: var(--green-deep); background: rgba(255,255,255,0.88); }
+.pill.active { background: var(--green-deep); border-color: var(--green-deep); color: #fff; }
+.pill-count { font-weight: 400; opacity: 0.8; margin-left: 2px; }
+.count-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.count-label strong { color: var(--text); font-weight: 700; }
 
-/* 테이블 */
+/* 테이블 래퍼 */
+.table-glass {
+  background: var(--glass);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.65);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(40,80,40,0.10);
+}
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
-thead tr { border-bottom: 1px solid var(--border-strong); }
+thead tr { border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.5); }
 thead th {
   text-align: center;
-  font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
-  color: var(--faint); padding: 0 12px 10px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--faint); padding: 12px 12px;
 }
+thead th:first-child { padding-left: 20px; }
 thead th.th-title { text-align: left; }
-thead th:first-child { padding-left: 0; }
 
-tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: background 0.1s; cursor: pointer;
-}
-tbody tr:hover { background: #f5fbf6; }
-tbody tr.selected { background: #e8f5ea; }
+tbody tr { border-bottom: 1px solid var(--border); transition: background 0.12s; cursor: pointer; }
+tbody tr:hover { background: rgba(255,255,255,0.6); }
+tbody tr.selected { background: rgba(180,230,180,0.35); }
 tbody tr:last-child { border-bottom: none; }
 
-td {
-  padding: 13px 12px; font-size: 13px; vertical-align: middle; text-align: center;
-}
-td:first-child { padding-left: 0; }
+td { padding: 13px 12px; font-size: 13px; vertical-align: middle; text-align: center; }
+td:first-child { padding-left: 20px; }
 td.td-title { text-align: left; }
 
 .col-date { width: 110px; color: var(--faint); font-size: 12px; }
 .col-cat  { width: 110px; }
 .col-act  { width: 120px; }
 
+/* 분류 뱃지 */
 .cat-badge {
-  display: inline-block; font-size: 11px; font-weight: 500; border-radius: 4px;
+  display: inline-block; font-size: 11px; font-weight: 600; border-radius: 5px;
   padding: 3px 8px; white-space: nowrap;
 }
-/* 노션 스타일 — 채도 낮은 파스텔 */
 .cat-애로고충 { background: #fff0f0; color: #c06060; border: 1px solid #f5d5d5; }
-.cat-건의제안 { background: #e8f0fe; color: #3a5fb0; border: 1px solid #c3d3f7; }
-.cat-자유의견 { background: #e9f5ee; color: #2d7a50; border: 1px solid #b8dfc8; }
+.cat-건의제안 { background: #edf3ff; color: #4a72b8; border: 1px solid #c8d8f5; }
+.cat-자유의견 { background: #edf7ee; color: #3a7a40; border: 1px solid #b8dfc0; }
 
-/* 제목 + 채택 뱃지 */
+/* 제목 + 채택 */
 .title-wrap { display: flex; align-items: center; gap: 8px; }
-.title-text { font-size: 13px; font-weight: 500; color: var(--text); }
-.adopted-badge {
-  display: inline-flex; align-items: center;
-  font-size: 16px;
-  border-radius: 4px; padding: 1px 4px; white-space: nowrap; flex-shrink: 0;
-}
+.title-text  { font-size: 13px; font-weight: 500; color: var(--text); }
+.adopted-badge { display: inline-flex; align-items: center; font-size: 15px; flex-shrink: 0; }
 
-/* 행 액션 버튼 */
+/* 행 액션 */
 .row-actions { display: none; gap: 6px; align-items: center; justify-content: center; }
 tr.selected .row-actions { display: flex; }
 .act-btn {
-  font-size: 11px; font-weight: 600; font-family: inherit;
-  border-radius: 999px; padding: 5px 12px; cursor: pointer; transition: all 0.12s;
-  white-space: nowrap; border: 1px solid var(--border); background: var(--bg); color: var(--text);
+  font-size: 11px; font-weight: 600; font-family: inherit; border-radius: 999px;
+  padding: 5px 12px; cursor: pointer; transition: all 0.12s;
+  white-space: nowrap; border: 1px solid var(--border);
+  background: rgba(255,255,255,0.8); color: var(--text);
 }
 .act-btn:hover { border-color: var(--border-strong); }
 .act-btn.del { color: var(--danger); }
@@ -122,74 +145,66 @@ tr.selected .row-actions { display: flex; }
 
 .empty { text-align: center; padding: 72px 0; color: var(--faint); font-size: 13px; }
 
-/* 상세 모달 */
+/* 모달 */
 .overlay {
   display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.28); z-index: 200;
+  background: rgba(20,50,20,0.35); z-index: 200;
   align-items: center; justify-content: center; padding: 24px;
+  backdrop-filter: blur(3px);
 }
 .overlay.open { display: flex; }
 .modal {
-  background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
-  width: 100%; max-width: 560px;
-  height: 640px;                      /* 고정 높이 */
+  background: var(--glass-strong);
+  backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 16px; width: 100%; max-width: 560px; height: 640px;
   display: flex; flex-direction: column;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.12); animation: fadeUp 0.18s ease;
-  overflow: hidden;
+  box-shadow: 0 12px 48px rgba(30,70,30,0.18);
+  animation: fadeUp 0.18s ease; overflow: hidden;
 }
-@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
 
 .modal-head { padding: 24px 24px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .modal-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
 .modal-date { font-size: 11px; color: var(--faint); }
-.modal-title { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; line-height: 1.4; }
+.modal-title { font-size: 17px; font-weight: 700; letter-spacing: -0.4px; line-height: 1.4; color: var(--text); }
 
-/* 본문 — 남은 공간 모두 차지, 스크롤 */
 .modal-body-wrap {
-  flex: 1;
-  padding: 20px 24px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: transparent transparent;
+  flex: 1; padding: 20px 24px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: transparent transparent;
 }
-.modal-body-wrap:hover {
-  scrollbar-color: rgba(0,0,0,0.15) transparent;
-}
+.modal-body-wrap:hover { scrollbar-color: rgba(80,140,80,0.25) transparent; }
 .modal-body-wrap::-webkit-scrollbar { width: 4px; }
 .modal-body-wrap::-webkit-scrollbar-track { background: transparent; }
 .modal-body-wrap::-webkit-scrollbar-thumb { background: transparent; border-radius: 2px; }
-.modal-body-wrap:hover::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+.modal-body-wrap:hover::-webkit-scrollbar-thumb { background: rgba(80,140,80,0.25); }
 .modal-body { font-size: 14px; line-height: 1.85; color: var(--muted); white-space: pre-wrap; word-break: keep-all; }
 
-/* 채택 버튼 — 닫기와 동일 베이스 */
 .modal-footer {
   padding: 16px 24px 20px; display: flex; justify-content: flex-end; gap: 8px;
   border-top: 1px solid var(--border); flex-shrink: 0;
 }
 .btn-close, .btn-adopt {
-  font-size: 13px; font-family: inherit; font-weight: 500;
+  font-size: 13px; font-family: inherit; font-weight: 600;
   border: 1px solid var(--border); border-radius: 999px; padding: 8px 20px;
-  background: none; color: var(--muted); cursor: pointer; transition: all 0.12s;
+  background: rgba(255,255,255,0.7); color: var(--muted); cursor: pointer; transition: all 0.12s;
 }
-.btn-close:hover { border-color: #111; color: #111; }
+.btn-close:hover { border-color: var(--green-mid); color: var(--green-deep); background: rgba(255,255,255,0.9); }
 .btn-adopt:hover { border-color: var(--adopted); color: var(--adopted); background: var(--adopted-bg); }
 .btn-adopt.is-adopted { border-color: var(--adopted-border); color: var(--adopted); background: var(--adopted-bg); }
 .btn-adopt.is-adopted:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
 
-/* 삭제 확인 토스트 */
+/* 토스트 */
 .toast {
   display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-  background: #111; color: #fff; border-radius: 999px;
-  padding: 12px 20px; font-size: 13px; font-weight: 500;
-  align-items: center; gap: 14px; white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.18); z-index: 300;
+  background: rgba(30,58,30,0.92); backdrop-filter: blur(12px);
+  color: #fff; border-radius: 999px; padding: 12px 20px;
+  font-size: 13px; font-weight: 500; align-items: center; gap: 14px;
+  white-space: nowrap; box-shadow: 0 4px 20px rgba(30,70,30,0.25); z-index: 300;
 }
 .toast.visible { display: flex; }
 .toast-btns { display: flex; gap: 8px; }
-.t-btn {
-  font-size: 12px; font-family: inherit; font-weight: 600;
-  border-radius: 999px; padding: 5px 14px; cursor: pointer; border: none;
-}
+.t-btn { font-size: 12px; font-family: inherit; font-weight: 700; border-radius: 999px; padding: 5px 14px; cursor: pointer; border: none; }
 .t-btn.cancel { background: rgba(255,255,255,0.15); color: #fff; }
 .t-btn.cancel:hover { background: rgba(255,255,255,0.25); }
 .t-btn.ok { background: #e74c3c; color: #fff; }
@@ -198,11 +213,14 @@ tr.selected .row-actions { display: flex; }
 </head>
 <body>
 
+<div class="bg"></div>
+<div class="bg-overlay"></div>
+
 <header class="header">
   <div class="header-inner">
-    <div>
-      <div class="header-title">마음의 소리</div>
-      <div class="header-sub">DRB 재무팀 · 관리자</div>
+    <div class="header-left">
+      <span class="header-eyebrow">DRB 재무팀 대나무 숲</span>
+      <span class="header-title">마음의 소리</span>
     </div>
     <div class="live-badge"><span class="live-dot"></span>실시간 연동</div>
   </div>
@@ -219,23 +237,25 @@ tr.selected .row-actions { display: flex; }
     <div class="count-label">총 <strong id="count-label">0</strong>건</div>
   </div>
 
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th class="col-date">게시일</th>
-          <th class="col-cat">분류</th>
-          <th class="th-title">제목</th>
-          <th class="col-act"></th>
-        </tr>
-      </thead>
-      <tbody id="tbody"></tbody>
-    </table>
-    <div class="empty" id="empty" style="display:none">등록된 의견이 없습니다.</div>
+  <div class="table-glass">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-date">게시일</th>
+            <th class="col-cat">분류</th>
+            <th class="th-title">제목</th>
+            <th class="col-act"></th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="empty" style="display:none">등록된 의견이 없습니다.</div>
+    </div>
   </div>
 </main>
 
-<!-- 삭제 확인 토스트 -->
+<!-- 삭제 토스트 -->
 <div class="toast" id="toast">
   <span>이 의견을 삭제하시겠습니까?</span>
   <div class="toast-btns">
@@ -251,7 +271,7 @@ tr.selected .row-actions { display: flex; }
       <div class="modal-meta">
         <span class="cat-badge" id="m-cat"></span>
         <span class="modal-date" id="m-date"></span>
-        <span class="adopted-badge" id="m-adopted-badge" style="display:none" title="채택됨">👍</span>
+        <span class="adopted-badge" id="m-adopted-badge" style="display:none">👍</span>
       </div>
       <div class="modal-title" id="m-title"></div>
     </div>
@@ -273,84 +293,58 @@ const cfg = {
   apiKey: "AIzaSyA5da127Wmh6cbDIk0gTr2uwtj5zP-9v08",
   authDomain: "drbworld.firebaseapp.com",
   databaseURL: "https://drbworld-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "drbworld",
-  storageBucket: "drbworld.firebasestorage.app",
-  messagingSenderId: "692323820655",
-  appId: "1:692323820655:web:d38af1a32ddc01001c999a"
+  projectId: "drbworld", storageBucket: "drbworld.firebasestorage.app",
+  messagingSenderId: "692323820655", appId: "1:692323820655:web:d38af1a32ddc01001c999a"
 };
 const app = initializeApp(cfg);
 const db  = getDatabase(app);
 
-let allPosts      = [];
-let currentFilter = '전체';
-let selectedId    = null;
-let pendingDelId  = null;
-let modalId       = null;
+let allPosts = [], currentFilter = '전체', selectedId = null, pendingDelId = null, modalId = null;
 
-// ── 실시간 수신 ──
-onValue(ref(db, 'feedback'), snap => {
+onValue(ref(db,'feedback'), snap => {
   const data = snap.val();
   allPosts = data
-    ? Object.entries(data).map(([id,v]) => ({id,...v}))
-        .sort((a,b) => (b.timestamp||0)-(a.timestamp||0))
+    ? Object.entries(data).map(([id,v])=>({id,...v})).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0))
     : [];
-  updateCounts();
-  render();
-  // 모달 열려있으면 채택 상태 갱신
+  updateCounts(); render();
   if (modalId) refreshModal(modalId);
 });
 
-// ── 카운트 업데이트 ──
 function updateCounts() {
   const total = allPosts.length;
-  const cats  = ['애로·고충','건의·제안','자유의견'];
   document.getElementById('pc-전체').textContent = total ? `(${total})` : '';
-  cats.forEach(cat => {
+  ['애로·고충','건의·제안','자유의견'].forEach(cat => {
     const key = cat.replace(/[·\-\s]/g,'');
-    const n   = allPosts.filter(p => p.category === cat).length;
+    const n = allPosts.filter(p=>p.category===cat).length;
     document.getElementById(`pc-${key}`).textContent = n ? `(${n})` : '';
   });
 }
 
-// ── 필터 ──
 document.querySelectorAll('.pill').forEach(btn => {
   btn.addEventListener('click', () => {
     currentFilter = btn.dataset.cat;
-    document.querySelectorAll('.pill').forEach(b => b.classList.toggle('active', b===btn));
-    selectedId = null;
-    render();
+    document.querySelectorAll('.pill').forEach(b=>b.classList.toggle('active',b===btn));
+    selectedId = null; render();
   });
 });
 
-// ── 렌더링 ──
 function render() {
-  const tbody  = document.getElementById('tbody');
-  const empty  = document.getElementById('empty');
-  const filtered = currentFilter === '전체'
-    ? allPosts
-    : allPosts.filter(p => p.category === currentFilter);
-
+  const tbody = document.getElementById('tbody');
+  const empty = document.getElementById('empty');
+  const filtered = currentFilter==='전체' ? allPosts : allPosts.filter(p=>p.category===currentFilter);
   document.getElementById('count-label').textContent = filtered.length;
-
-  if (!filtered.length) {
-    tbody.innerHTML = ''; empty.style.display = 'block'; return;
-  }
+  if (!filtered.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
   empty.style.display = 'none';
 
   tbody.innerHTML = filtered.map(p => {
     const date = p.timestamp ? new Date(p.timestamp).toISOString().slice(0,10) : '—';
-    const sel  = selectedId === p.id ? ' selected' : '';
-    const adoptedBadge = p.adopted
-      ? `<span class="adopted-badge" title="채택됨">👍</span>` : '';
+    const sel  = selectedId===p.id ? ' selected' : '';
+    const ck   = catClass(p.category||'');
+    const adoptedBadge = p.adopted ? `<span class="adopted-badge">👍</span>` : '';
     return `<tr data-id="${p.id}" class="${sel}">
       <td class="col-date">${date}</td>
-      <td class="col-cat"><span class="cat-badge ${catClass(p.category||'')}">${esc(p.category||'—')}</span></td>
-      <td class="td-title">
-        <div class="title-wrap">
-          <span class="title-text">${esc(p.title)}</span>
-          ${adoptedBadge}
-        </div>
-      </td>
+      <td class="col-cat"><span class="cat-badge ${ck}">${esc(p.category||'—')}</span></td>
+      <td class="td-title"><div class="title-wrap"><span class="title-text">${esc(p.title)}</span>${adoptedBadge}</div></td>
       <td class="col-act">
         <div class="row-actions">
           <button class="act-btn view" data-id="${p.id}">보기</button>
@@ -363,8 +357,7 @@ function render() {
   tbody.querySelectorAll('tr').forEach(row => {
     row.addEventListener('click', e => {
       if (e.target.classList.contains('act-btn')) return;
-      const id = row.dataset.id;
-      selectedId = selectedId === id ? null : id;
+      selectedId = selectedId===row.dataset.id ? null : row.dataset.id;
       render();
     });
   });
@@ -376,82 +369,56 @@ function render() {
   );
 }
 
-// ── 모달 ──
-function openModal(id) {
-  modalId = id;
-  refreshModal(id);
-  document.getElementById('overlay').classList.add('open');
-}
+function openModal(id) { modalId=id; refreshModal(id); document.getElementById('overlay').classList.add('open'); }
 
 function refreshModal(id) {
-  const p = allPosts.find(x => x.id === id);
-  if (!p) return;
+  const p = allPosts.find(x=>x.id===id); if (!p) return;
   const date = p.timestamp ? new Date(p.timestamp).toISOString().slice(0,10) : '—';
-  document.getElementById('m-cat').textContent   = p.category || '—';
-  document.getElementById('m-cat').className      = `cat-badge ${catClass(p.category||'')}`;
+  const ck = catClass(p.category||'');
+  document.getElementById('m-cat').textContent = p.category||'—';
+  document.getElementById('m-cat').className   = `cat-badge ${ck}`;
   document.getElementById('m-date').textContent  = date;
   document.getElementById('m-title').textContent = p.title;
   document.getElementById('m-body').textContent  = p.body;
-
   const adoptBadge = document.getElementById('m-adopted-badge');
   const adoptBtn   = document.getElementById('btn-adopt');
-
   if (p.adopted) {
-    adoptBadge.style.display = 'inline-flex';
-    adoptBtn.classList.add('is-adopted');
-    adoptBtn.textContent = '👍 좋아요';
+    adoptBadge.style.display='inline-flex';
+    adoptBtn.classList.add('is-adopted'); adoptBtn.textContent='👍 좋아요';
   } else {
-    adoptBadge.style.display = 'none';
-    adoptBtn.classList.remove('is-adopted');
-    adoptBtn.textContent = '👍 좋아요';
+    adoptBadge.style.display='none';
+    adoptBtn.classList.remove('is-adopted'); adoptBtn.textContent='👍 좋아요';
   }
 }
 
 document.getElementById('btn-adopt').addEventListener('click', async () => {
   if (!modalId) return;
-  const p = allPosts.find(x => x.id === modalId);
-  if (!p) return;
-  await update(ref(db, `feedback/${modalId}`), { adopted: !p.adopted });
+  const p = allPosts.find(x=>x.id===modalId); if (!p) return;
+  await update(ref(db,`feedback/${modalId}`), { adopted: !p.adopted });
 });
-
 document.getElementById('btn-close').addEventListener('click', () => {
-  document.getElementById('overlay').classList.remove('open');
-  modalId = null;
+  document.getElementById('overlay').classList.remove('open'); modalId=null;
 });
 document.getElementById('overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('overlay')) {
-    document.getElementById('overlay').classList.remove('open');
-    modalId = null;
-  }
+  if (e.target===document.getElementById('overlay')) { document.getElementById('overlay').classList.remove('open'); modalId=null; }
 });
 
-// ── 삭제 ──
-function requestDelete(id) {
-  pendingDelId = id;
-  document.getElementById('toast').classList.add('visible');
-}
-document.getElementById('t-cancel').addEventListener('click', () => {
-  pendingDelId = null;
-  document.getElementById('toast').classList.remove('visible');
-});
+function requestDelete(id) { pendingDelId=id; document.getElementById('toast').classList.add('visible'); }
+document.getElementById('t-cancel').addEventListener('click', () => { pendingDelId=null; document.getElementById('toast').classList.remove('visible'); });
 document.getElementById('t-ok').addEventListener('click', async () => {
   if (!pendingDelId) return;
-  await remove(ref(db, `feedback/${pendingDelId}`));
-  if (selectedId === pendingDelId) selectedId = null;
-  pendingDelId = null;
-  document.getElementById('toast').classList.remove('visible');
+  await remove(ref(db,`feedback/${pendingDelId}`));
+  if (selectedId===pendingDelId) selectedId=null;
+  pendingDelId=null; document.getElementById('toast').classList.remove('visible');
 });
 
 function catClass(cat) {
-  if (cat === '애로·고충') return 'cat-애로고충';
-  if (cat === '건의·제안') return 'cat-건의제안';
-  if (cat === '자유의견')  return 'cat-자유의견';
+  if (cat==='애로·고충') return 'cat-애로고충';
+  if (cat==='건의·제안') return 'cat-건의제안';
+  if (cat==='자유의견')  return 'cat-자유의견';
   return '';
 }
-
-function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
 </body>
 </html>
