@@ -24,12 +24,15 @@ body {
 
 /* 헤더 */
 .header {
-  border-bottom: 1px solid var(--border); padding: 0 24px; height: 56px;
-  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border); height: 72px;
   position: sticky; top: 0; z-index: 100; background: var(--bg);
 }
-.header-title { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
-.header-sub { font-size: 12px; color: var(--faint); margin-top: 1px; }
+.header-inner {
+  max-width: 960px; margin: 0 auto; padding: 0 24px; height: 72px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-title { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+.header-sub { font-size: 12px; color: var(--faint); margin-top: 2px; }
 .live-badge {
   display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--faint);
   border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px;
@@ -73,8 +76,8 @@ tbody tr {
   border-bottom: 1px solid var(--border);
   transition: background 0.1s; cursor: pointer;
 }
-tbody tr:hover { background: var(--surface); }
-tbody tr.selected { background: #f0f0f0; }
+tbody tr:hover { background: #f5fbf6; }
+tbody tr.selected { background: #e8f5ea; }
 tbody tr:last-child { border-bottom: none; }
 
 td {
@@ -92,7 +95,7 @@ td.td-title { text-align: left; }
   padding: 3px 8px; white-space: nowrap;
 }
 /* 노션 스타일 — 채도 낮은 파스텔 */
-.cat-애로고충 { background: #fce8e8; color: #b94040; border: 1px solid #f5c6c6; }
+.cat-애로고충 { background: #fff0f0; color: #c06060; border: 1px solid #f5d5d5; }
 .cat-건의제안 { background: #e8f0fe; color: #3a5fb0; border: 1px solid #c3d3f7; }
 .cat-자유의견 { background: #e9f5ee; color: #2d7a50; border: 1px solid #b8dfc8; }
 
@@ -100,13 +103,10 @@ td.td-title { text-align: left; }
 .title-wrap { display: flex; align-items: center; gap: 8px; }
 .title-text { font-size: 13px; font-weight: 500; color: var(--text); }
 .adopted-badge {
-  display: inline-flex; align-items: center; gap: 3px;
-  font-size: 10px; font-weight: 700; letter-spacing: 0.2px;
-  color: var(--adopted); background: var(--adopted-bg);
-  border: 1px solid var(--adopted-border);
-  border-radius: 4px; padding: 2px 7px; white-space: nowrap; flex-shrink: 0;
+  display: inline-flex; align-items: center;
+  font-size: 16px;
+  border-radius: 4px; padding: 1px 4px; white-space: nowrap; flex-shrink: 0;
 }
-.adopted-badge::before { content: '✓'; font-size: 10px; }
 
 /* 행 액션 버튼 */
 .row-actions { display: none; gap: 6px; align-items: center; justify-content: center; }
@@ -131,53 +131,50 @@ tr.selected .row-actions { display: flex; }
 .overlay.open { display: flex; }
 .modal {
   background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
-  width: 100%; max-width: 560px; max-height: 82vh; overflow-y: auto;
+  width: 100%; max-width: 560px;
+  height: 640px;                      /* 고정 높이 */
+  display: flex; flex-direction: column;
   box-shadow: 0 8px 32px rgba(0,0,0,0.12); animation: fadeUp 0.18s ease;
+  overflow: hidden;
 }
 @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
 
-.modal-head { padding: 24px 24px 16px; border-bottom: 1px solid var(--border); }
+.modal-head { padding: 24px 24px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .modal-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
 .modal-date { font-size: 11px; color: var(--faint); }
 .modal-title { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; line-height: 1.4; }
 
-.modal-body-wrap { padding: 20px 24px 20px; }
+/* 본문 — 남은 공간 모두 차지, 스크롤 */
+.modal-body-wrap {
+  flex: 1;
+  padding: 20px 24px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.modal-body-wrap:hover {
+  scrollbar-color: rgba(0,0,0,0.15) transparent;
+}
+.modal-body-wrap::-webkit-scrollbar { width: 4px; }
+.modal-body-wrap::-webkit-scrollbar-track { background: transparent; }
+.modal-body-wrap::-webkit-scrollbar-thumb { background: transparent; border-radius: 2px; }
+.modal-body-wrap:hover::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
 .modal-body { font-size: 14px; line-height: 1.85; color: var(--muted); white-space: pre-wrap; word-break: keep-all; }
 
-/* 채택 영역 */
-.modal-adopt {
-  margin: 0 24px 20px;
-  padding: 14px 16px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+/* 채택 버튼 — 닫기와 동일 베이스 */
+.modal-footer {
+  padding: 16px 24px 20px; display: flex; justify-content: flex-end; gap: 8px;
+  border-top: 1px solid var(--border); flex-shrink: 0;
 }
-.modal-adopt.is-adopted {
-  background: var(--adopted-bg); border-color: var(--adopted-border);
-}
-.adopt-label { font-size: 13px; font-weight: 500; }
-.modal-adopt.is-adopted .adopt-label { color: var(--adopted); }
-.btn-adopt {
-  font-size: 12px; font-weight: 600; font-family: inherit;
-  border-radius: 999px; padding: 6px 16px; cursor: pointer; transition: all 0.15s;
-  border: 1px solid var(--border); background: var(--bg); color: var(--text);
-  white-space: nowrap; flex-shrink: 0;
-}
-.btn-adopt:hover { border-color: var(--adopted); color: var(--adopted); background: var(--adopted-bg); }
-.modal-adopt.is-adopted .btn-adopt {
-  border-color: var(--adopted-border); color: var(--adopted); background: var(--adopted-bg);
-}
-.modal-adopt.is-adopted .btn-adopt:hover {
-  border-color: var(--danger); color: var(--danger); background: var(--danger-bg);
-}
-
-.modal-footer { padding: 0 24px 20px; display: flex; justify-content: flex-end; }
-.btn-close {
+.btn-close, .btn-adopt {
   font-size: 13px; font-family: inherit; font-weight: 500;
   border: 1px solid var(--border); border-radius: 999px; padding: 8px 20px;
   background: none; color: var(--muted); cursor: pointer; transition: all 0.12s;
 }
 .btn-close:hover { border-color: #111; color: #111; }
+.btn-adopt:hover { border-color: var(--adopted); color: var(--adopted); background: var(--adopted-bg); }
+.btn-adopt.is-adopted { border-color: var(--adopted-border); color: var(--adopted); background: var(--adopted-bg); }
+.btn-adopt.is-adopted:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-bg); }
 
 /* 삭제 확인 토스트 */
 .toast {
@@ -202,11 +199,13 @@ tr.selected .row-actions { display: flex; }
 <body>
 
 <header class="header">
-  <div>
-    <div class="header-title">마음의 소리</div>
-    <div class="header-sub">DRB 재무팀 · 관리자</div>
+  <div class="header-inner">
+    <div>
+      <div class="header-title">마음의 소리</div>
+      <div class="header-sub">DRB 재무팀 · 관리자</div>
+    </div>
+    <div class="live-badge"><span class="live-dot"></span>실시간 연동</div>
   </div>
-  <div class="live-badge"><span class="live-dot"></span>실시간 연동</div>
 </header>
 
 <main class="main">
@@ -252,19 +251,15 @@ tr.selected .row-actions { display: flex; }
       <div class="modal-meta">
         <span class="cat-badge" id="m-cat"></span>
         <span class="modal-date" id="m-date"></span>
-        <span class="adopted-badge" id="m-adopted-badge" style="display:none">채택됨</span>
+        <span class="adopted-badge" id="m-adopted-badge" style="display:none" title="채택됨">👍</span>
       </div>
       <div class="modal-title" id="m-title"></div>
     </div>
     <div class="modal-body-wrap">
       <div class="modal-body" id="m-body"></div>
     </div>
-    <!-- 채택 영역 -->
-    <div class="modal-adopt" id="modal-adopt">
-      <span class="adopt-label" id="adopt-label">이 의견을 채택하시겠습니까?</span>
-      <button class="btn-adopt" id="btn-adopt">채택하기</button>
-    </div>
     <div class="modal-footer">
+      <button class="btn-adopt" id="btn-adopt">👍 좋아요</button>
       <button class="btn-close" id="btn-close">닫기</button>
     </div>
   </div>
@@ -346,7 +341,7 @@ function render() {
     const date = p.timestamp ? new Date(p.timestamp).toISOString().slice(0,10) : '—';
     const sel  = selectedId === p.id ? ' selected' : '';
     const adoptedBadge = p.adopted
-      ? `<span class="adopted-badge">채택됨</span>` : '';
+      ? `<span class="adopted-badge" title="채택됨">👍</span>` : '';
     return `<tr data-id="${p.id}" class="${sel}">
       <td class="col-date">${date}</td>
       <td class="col-cat"><span class="cat-badge ${catClass(p.category||'')}">${esc(p.category||'—')}</span></td>
@@ -398,21 +393,17 @@ function refreshModal(id) {
   document.getElementById('m-title').textContent = p.title;
   document.getElementById('m-body').textContent  = p.body;
 
-  const adoptBadge  = document.getElementById('m-adopted-badge');
-  const adoptArea   = document.getElementById('modal-adopt');
-  const adoptLabel  = document.getElementById('adopt-label');
-  const adoptBtn    = document.getElementById('btn-adopt');
+  const adoptBadge = document.getElementById('m-adopted-badge');
+  const adoptBtn   = document.getElementById('btn-adopt');
 
   if (p.adopted) {
     adoptBadge.style.display = 'inline-flex';
-    adoptArea.classList.add('is-adopted');
-    adoptLabel.textContent = '채택된 의견입니다';
-    adoptBtn.textContent   = '채택 취소';
+    adoptBtn.classList.add('is-adopted');
+    adoptBtn.textContent = '👍 좋아요';
   } else {
     adoptBadge.style.display = 'none';
-    adoptArea.classList.remove('is-adopted');
-    adoptLabel.textContent = '이 의견을 채택하시겠습니까?';
-    adoptBtn.textContent   = '채택하기';
+    adoptBtn.classList.remove('is-adopted');
+    adoptBtn.textContent = '👍 좋아요';
   }
 }
 
