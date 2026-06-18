@@ -42,35 +42,36 @@
     border-bottom: 2px dashed var(--border);
     height: 60px;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
+    grid-template-columns: 48px 1fr auto;
     align-items: center;
-    padding: 0 16px;
+    padding: 0 12px;
   }
 
   .logo {
     grid-column: 2;
     font-family: var(--font);
     font-weight: 700;
-    font-size: 20px;
+    font-size: 16px;
     color: var(--ink);
     text-decoration: none;
     white-space: nowrap;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
+    justify-content: center;
   }
 
   .upload-link {
     grid-column: 3;
     justify-self: end;
-    font-size: 13px;
+    font-size: 12px;
     font-family: var(--font);
     font-weight: 700;
     color: var(--white);
     background: var(--accent);
     text-decoration: none;
     white-space: nowrap;
-    padding: 5px 14px;
+    padding: 4px 10px;
     border-radius: 999px;
     border: 2px solid #ff6b9d;
     box-shadow: 0 2px 0 #e05580;
@@ -99,18 +100,7 @@
     position: relative;
   }
 
-  /* 프레임 상단 테이프 장식 */
-  .frame::before {
-    content: '';
-    position: absolute;
-    top: -2px; left: 50%;
-    transform: translateX(-50%);
-    width: 48px; height: 18px;
-    background: rgba(255,179,71,0.55);
-    border-radius: 0 0 6px 6px;
-    z-index: 2;
-    border: 1px solid rgba(255,160,40,0.4);
-  }
+
 
   .photo-wrap {
     width: 100%;
