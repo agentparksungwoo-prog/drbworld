@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사진 올리기 · DRB 갤러리</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #f8f8f6;
+    --surface: #ffffff;
+    --border: #e4e4e0;
+    --text-primary: #111110;
+    --text-secondary: #6b6b67;
+    --text-muted: #a8a8a4;
+    --accent: #111110;
+    --font: 'Segoe UI', 'Malgun Gothic', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: var(--font);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 40px 20px 60px;
+  }
+
+  .back-link {
+    align-self: flex-start;
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+  }
+
+  .back-link:hover { color: var(--text-primary); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 40px;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .card-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  /* Drop Zone */
+  .drop-zone {
+    border: 1.5px dashed var(--border);
+    border-radius: 8px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .drop-zone.dragover {
+    border-color: var(--accent);
+    background: #f0f0ee;
+  }
+
+  .drop-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .drop-icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.4;
+  }
+
+  .drop-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .drop-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* Preview */
+  .preview-wrap {
+    display: none;
+    margin-bottom: 24px;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .preview-wrap img {
+    width: 100%;
+    max-height: 280px;
+    object-fit: cover;
+    display: block;
+  }
+
+  .preview-reset {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-family: var(--font);
+    cursor: pointer;
+  }
+
+  /* Form fields */
+  .field {
+    margin-bottom: 16px;
+  }
+
+  .field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: var(--font);
+    color: var(--text-primary);
+    background: var(--bg);
+    transition: border-color 0.15s;
+    outline: none;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  .field textarea {
+    resize: none;
+    height: 80px;
+    line-height: 1.5;
+  }
+
+  /* Submit button */
+  .submit-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font);
+    cursor: pointer;
+    transition: opacity 0.15s;
+    margin-top: 8px;
+  }
+
+  .submit-btn:hover { opacity: 0.85; }
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Progress */
+  .progress-wrap {
+    display: none;
+    margin-top: 16px;
+  }
+
+  .progress-bar-bg {
+    height: 3px;
+    background: var(--border);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+    transition: width 0.2s;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  /* Success / Error */
+  .result-box {
+    display: none;
+    padding: 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-top: 16px;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  .result-box.success {
+    background: #edf7ed;
+    color: #2d6a30;
+    border: 1px solid #c3e6c4;
+  }
+
+  .result-box.error {
+    background: #fdf0f0;
+    color: #9b2222;
+    border: 1px solid #f5c6c6;
+  }
+
+  .result-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+  }
+
+  @media (max-width: 480px) {
+    body { padding: 24px 16px 48px; }
+    .card { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<a href="gallery.html" class="back-link">
+  ← 갤러리로 돌아가기
+</a>
+
+<div class="card">
+  <div class="card-eyebrow">Photo Upload</div>
+  <div class="card-title">사진 올리기</div>
+  <div class="card-desc">업로드한 사진은 관리자 검토 후 갤러리에 게시됩니다.</div>
+
+  <!-- Drop Zone -->
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept="image/*" capture="environment">
+    <div class="drop-icon">📷</div>
+    <div class="drop-label">사진을 선택하거나 여기에 끌어다 놓으세요</div>
+    <div class="drop-hint">JPG, PNG, HEIC · 최대 10MB</div>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview-wrap" id="previewWrap">
+    <img id="previewImg" src="" alt="미리보기">
+    <button class="preview-reset" onclick="resetFile()">다시 선택</button>
+  </div>
+
+  <!-- Fields -->
+  <div class="field">
+    <label>카테고리</label>
+    <select id="category">
+      <option value="행사">행사</option>
+      <option value="일상">일상</option>
+      <option value="기타">기타</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>사진 설명 <span style="font-weight:400;color:var(--text-muted)">(선택)</span></label>
+    <textarea id="caption" placeholder="사진에 대한 간단한 설명을 입력하세요"></textarea>
+  </div>
+
+  <div class="field">
+    <label>이름 <span style="font-weight:400;color:var(--text-muted)">(선택)</span></label>
+    <input type="text" id="uploader" placeholder="홍길동">
+  </div>
+
+  <button class="submit-btn" id="submitBtn" onclick="uploadPhoto()">갤러리에 제출하기</button>
+
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">업로드 중…</div>
+  </div>
+
+  <div class="result-box" id="resultBox"></div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref as dbRef, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBpVYwXbGYxjD5qQkIkUdlDVSisLPYzvR8",
+    authDomain: "gallery-228e7.firebaseapp.com",
+    databaseURL: "https://gallery-228e7-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "gallery-228e7",
+    storageBucket: "gallery-228e7.firebasestorage.app",
+    messagingSenderId: "606056829643",
+    appId: "1:606056829643:web:f78986e93d0dbb14c1814e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const storage = getStorage(app);
+
+  let selectedFile = null;
+
+  const fileInput = document.getElementById('fileInput');
+  const dropZone = document.getElementById('dropZone');
+  const previewWrap = document.getElementById('previewWrap');
+  const previewImg = document.getElementById('previewImg');
+
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files[0]) handleFile(e.target.files[0]);
+  });
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  function handleFile(file) {
+    if (!file.type.startsWith('image/')) {
+      showResult('error', '이미지 파일만 업로드할 수 있습니다.');
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      showResult('error', '파일 크기가 10MB를 초과합니다.');
+      return;
+    }
+    selectedFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      previewImg.src = e.target.result;
+      dropZone.style.display = 'none';
+      previewWrap.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+    document.getElementById('resultBox').style.display = 'none';
+  }
+
+  window.resetFile = function() {
+    selectedFile = null;
+    fileInput.value = '';
+    previewImg.src = '';
+    previewWrap.style.display = 'none';
+    dropZone.style.display = 'block';
+  };
+
+  // 이미지 압축 (최대 1200px, 품질 0.82)
+  function compressImage(file) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const MAX = 1200;
+        let w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        canvas.toBlob((blob) => {
+          URL.revokeObjectURL(url);
+          resolve(blob);
+        }, 'image/jpeg', 0.82);
+      };
+      img.src = url;
+    });
+  }
+
+  window.uploadPhoto = async function() {
+    if (!selectedFile) {
+      showResult('error', '사진을 먼저 선택해주세요.');
+      return;
+    }
+
+    const submitBtn = document.getElementById('submitBtn');
+    const progressWrap = document.getElementById('progressWrap');
+    const progressFill = document.getElementById('progressFill');
+    const progressLabel = document.getElementById('progressLabel');
+
+    submitBtn.disabled = true;
+    progressWrap.style.display = 'block';
+    progressLabel.textContent = '이미지 압축 중…';
+    progressFill.style.width = '5%';
+
+    try {
+      const compressed = await compressImage(selectedFile);
+      const filename = `photos/${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+      const sRef = storageRef(storage, filename);
+      const task = uploadBytesResumable(sRef, compressed);
+
+      task.on('state_changed',
+        (snapshot) => {
+          const pct = Math.round(snapshot.bytesTransferred / snapshot.totalBytes * 90) + 5;
+          progressFill.style.width = pct + '%';
+          progressLabel.textContent = `업로드 중… ${pct}%`;
+        },
+        (err) => {
+          console.error(err);
+          showResult('error', '업로드 중 오류가 발생했습니다. 다시 시도해주세요.');
+          submitBtn.disabled = false;
+          progressWrap.style.display = 'none';
+        },
+        async () => {
+          const url = await getDownloadURL(task.snapshot.ref);
+          const newRef = push(dbRef(db, 'photos'));
+          await set(newRef, {
+            imageUrl: url,
+            category: document.getElementById('category').value,
+            caption: document.getElementById('caption').value.trim(),
+            uploader: document.getElementById('uploader').value.trim() || '익명',
+            status: 'pending',
+            uploadedAt: Date.now()
+          });
+
+          progressFill.style.width = '100%';
+          progressLabel.textContent = '완료';
+
+          setTimeout(() => {
+            progressWrap.style.display = 'none';
+            showResult('success', '✓ 제출이 완료됐습니다.<br>관리자 검토 후 갤러리에 게시됩니다.');
+            submitBtn.disabled = false;
+            window.resetFile();
+            document.getElementById('caption').value = '';
+            document.getElementById('uploader').value = '';
+          }, 600);
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      showResult('error', '오류가 발생했습니다. 다시 시도해주세요.');
+      submitBtn.disabled = false;
+      progressWrap.style.display = 'none';
+    }
+  };
+
+  function showResult(type, msg) {
+    const box = document.getElementById('resultBox');
+    box.className = 'result-box ' + type;
+    box.innerHTML = msg;
+    box.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
