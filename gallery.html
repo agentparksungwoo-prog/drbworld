@@ -6,23 +6,28 @@
 <title>Haisley Gallery</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   :root {
+    --bg: #fff9f0;
     --white: #ffffff;
-    --ink: #0a0a0a;
-    --ink-soft: #888;
-    --ink-faint: #c0c0c0;
-    --border: #ebebeb;
+    --ink: #3a2d1e;
+    --ink-soft: #9a8878;
+    --border: #f0e0cc;
+    --accent: #ff8fab;
+    --accent2: #ffb347;
+    --accent3: #7ec8e3;
+    --accent4: #b5ead7;
+    --font: 'Gaegu', 'Nanum Gothic', cursive;
   }
 
   html, body {
-    background: var(--white);
+    background: var(--bg);
     color: var(--ink);
     min-height: 100vh;
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font);
     overscroll-behavior: none;
   }
 
@@ -31,11 +36,11 @@
     position: fixed;
     top: 0; left: 0; right: 0;
     z-index: 100;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    height: 56px;
+    background: rgba(255,249,240,0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 2px dashed var(--border);
+    height: 60px;
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     align-items: center;
@@ -44,64 +49,73 @@
 
   .logo {
     grid-column: 2;
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: 18px;
-    letter-spacing: 4px;
-    text-transform: uppercase;
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: 20px;
     color: var(--ink);
     text-decoration: none;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
   }
-
-  .logo em { font-style: italic; }
 
   .upload-link {
     grid-column: 3;
     justify-self: end;
-    font-size: 10px;
-    font-weight: 400;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--ink-soft);
+    font-size: 13px;
+    font-family: var(--font);
+    font-weight: 700;
+    color: var(--white);
+    background: var(--accent);
     text-decoration: none;
     white-space: nowrap;
-    padding: 4px 0;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 2px solid #ff6b9d;
+    box-shadow: 0 2px 0 #e05580;
   }
 
-  /* ── Feed (single column, scroll) ── */
+  /* ── Feed ── */
   .feed {
-    padding-top: 56px;
+    padding-top: 68px;
     padding-bottom: 60px;
-    background: #f0ede8;
   }
 
-  /* 액자 프레임 */
+  /* 액자 스타일 */
   .feed-item {
     cursor: pointer;
-    background: #f0ede8;
-    padding: 28px 20px;
-    border-bottom: none;
+    padding: 16px;
     -webkit-user-select: none;
     user-select: none;
   }
 
   .frame {
-    background: #fff;
-    padding: 12px 12px 0 12px;
-    box-shadow:
-      0 2px 4px rgba(0,0,0,0.08),
-      0 8px 24px rgba(0,0,0,0.10),
-      0 1px 0 #d8d2c8 inset;
+    background: var(--white);
+    border-radius: 16px;
+    border: 3px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 4px 0 #e8cdb0, 0 6px 16px rgba(0,0,0,0.07);
     position: relative;
   }
 
-  /* Photo */
+  /* 프레임 상단 테이프 장식 */
+  .frame::before {
+    content: '';
+    position: absolute;
+    top: -2px; left: 50%;
+    transform: translateX(-50%);
+    width: 48px; height: 18px;
+    background: rgba(255,179,71,0.55);
+    border-radius: 0 0 6px 6px;
+    z-index: 2;
+    border: 1px solid rgba(255,160,40,0.4);
+  }
+
   .photo-wrap {
     width: 100%;
-    background: #e8e4de;
+    background: #f5ede0;
     overflow: hidden;
-    position: relative;
   }
 
   .photo-wrap img {
@@ -114,68 +128,45 @@
 
   .photo-wrap img.loaded { opacity: 1; }
 
-  /* Caption below photo — inside frame white mat */
+  /* 캡션 영역 */
   .caption-row {
-    padding: 12px 4px 14px;
+    padding: 12px 16px 14px;
+    background: var(--white);
+    border-top: 2px dashed var(--border);
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 8px;
+  }
+
+  .caption-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1;
   }
 
   .caption-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: 15px;
-    letter-spacing: 0.3px;
-    color: #333;
-    line-height: 1.3;
-    flex: 1;
-    min-width: 0;
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--ink);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
   .caption-date {
-    font-size: 10px;
-    font-weight: 300;
-    letter-spacing: 0.8px;
-    color: var(--ink-faint);
+    font-size: 12px;
+    font-family: var(--font);
+    color: var(--ink-soft);
     white-space: nowrap;
+  }
+
+  .caption-heart {
+    font-size: 20px;
     flex-shrink: 0;
-  }
-
-  /* Skeleton */
-  @keyframes shimmer {
-    0%   { background-position: -600px 0; }
-    100% { background-position:  600px 0; }
-  }
-
-  .skeleton-item {
-    border-bottom: 1px solid var(--border);
-  }
-
-  .skeleton-img {
-    width: 100%;
-    background: linear-gradient(90deg, #f5f5f5 25%, #ececec 50%, #f5f5f5 75%);
-    background-size: 600px 100%;
-    animation: shimmer 1.6s infinite;
-  }
-
-  .skeleton-caption {
-    padding: 14px 20px 16px;
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .skeleton-line {
-    height: 12px;
-    border-radius: 6px;
-    background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
-    background-size: 600px 100%;
-    animation: shimmer 1.6s infinite;
   }
 
   /* ── Empty ── */
@@ -187,115 +178,108 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
+    text-align: center;
   }
-
   .empty.show { display: flex; }
+  .empty-icon { font-size: 56px; }
+  .empty-title { font-size: 22px; font-weight: 700; color: var(--ink-soft); }
+  .empty-hint { font-size: 14px; color: var(--ink-soft); }
+  .empty-hint a { color: var(--accent); text-decoration: none; font-weight: 700; }
 
-  .empty-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 24px;
-    font-weight: 300;
-    color: var(--ink-faint);
+  /* ── Skeleton ── */
+  @keyframes shimmer {
+    0% { background-position: -400px 0; }
+    100% { background-position: 400px 0; }
   }
 
-  .empty-hint {
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--ink-faint);
+  .skeleton-frame {
+    background: var(--white);
+    border-radius: 16px;
+    border: 3px solid var(--border);
+    overflow: hidden;
+    box-shadow: 0 4px 0 #e8cdb0;
+    margin: 16px;
   }
 
-  .empty-hint a { color: inherit; text-decoration: none; }
+  .skeleton-img {
+    background: linear-gradient(90deg, #f5ede0 25%, #ede0cc 50%, #f5ede0 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.6s infinite;
+  }
 
-  /* ── Fullscreen Lightbox ── */
+  .skeleton-cap {
+    padding: 12px 16px 14px;
+    border-top: 2px dashed var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  .skeleton-line {
+    height: 14px; border-radius: 8px;
+    background: linear-gradient(90deg, #f0e0cc 25%, #e8d0b8 50%, #f0e0cc 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.6s infinite;
+  }
+
+  /* ── Lightbox ── */
   .lightbox {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
+    background: rgba(58,45,30,0.95);
     z-index: 500;
-    background: #000;
     display: none;
     flex-direction: column;
     overscroll-behavior: contain;
   }
-
   .lightbox.open { display: flex; }
 
-  /* swipe container */
-  .lb-img-wrap {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .lb-img-wrap img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    transition: opacity 0.2s ease;
-    pointer-events: none;
-  }
-
-  /* top bar */
   .lb-topbar {
     position: absolute;
     top: 0; left: 0; right: 0;
-    z-index: 10;
-    height: 60px;
-    display: flex;
-    align-items: center;
+    z-index: 10; height: 60px;
+    display: flex; align-items: center;
     justify-content: space-between;
     padding: 0 20px;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+    background: linear-gradient(to bottom, rgba(58,45,30,0.7), transparent);
   }
 
   .lb-counter {
-    font-size: 11px;
-    font-weight: 300;
-    letter-spacing: 1px;
-    color: rgba(255,255,255,0.7);
+    font-size: 13px; font-family: var(--font);
+    color: rgba(255,249,240,0.8);
   }
 
   .lb-close-btn {
-    background: none;
-    border: none;
-    color: rgba(255,255,255,0.85);
-    font-size: 11px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 400;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    padding: 8px;
+    background: var(--accent); border: 2px solid #ff6b9d;
+    color: #fff; font-size: 13px; font-family: var(--font);
+    font-weight: 700; padding: 5px 16px; border-radius: 999px;
+    cursor: pointer; box-shadow: 0 2px 0 #e05580;
   }
 
-  /* bottom bar */
+  .lb-img-wrap {
+    flex: 1; display: flex; align-items: center;
+    justify-content: center; overflow: hidden;
+  }
+
+  .lb-img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: contain; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
   .lb-bottombar {
     padding: 16px 24px calc(16px + env(safe-area-inset-bottom));
-    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(58,45,30,0.8), transparent);
+    position: absolute; bottom: 0; left: 0; right: 0;
   }
 
   .lb-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: 20px;
-    letter-spacing: 0.3px;
-    color: rgba(255,255,255,0.92);
-    margin-bottom: 4px;
+    font-family: var(--font); font-weight: 700;
+    font-size: 18px; color: #fff9f0; margin-bottom: 4px;
   }
 
   .lb-date {
-    font-size: 10px;
-    font-weight: 300;
-    letter-spacing: 1px;
-    color: rgba(255,255,255,0.45);
+    font-size: 12px; font-family: var(--font);
+    color: rgba(255,249,240,0.6);
   }
 </style>
 </head>
@@ -303,47 +287,42 @@
 
 <header>
   <span></span>
-  <a class="logo" href="#">Haisley <em>Gallery</em></a>
-  <a class="upload-link" href="upload.html">Upload</a>
+  <a class="logo" href="#">🌸 Haisley Gallery</a>
+  <a class="upload-link" href="upload.html">✚ 올리기</a>
 </header>
 
 <div class="feed" id="feed">
-  <div class="feed-item">
-    <div class="frame">
-      <div class="skeleton-img" style="height:60vw"></div>
-      <div class="skeleton-caption">
-        <div class="skeleton-line" style="width:40%;"></div>
-        <div class="skeleton-line" style="width:20%;margin-left:auto;"></div>
-      </div>
+  <div class="skeleton-frame">
+    <div class="skeleton-img" style="height:60vw"></div>
+    <div class="skeleton-cap">
+      <div class="skeleton-line" style="width:45%;"></div>
+      <div class="skeleton-line" style="width:25%;margin-left:auto;"></div>
     </div>
   </div>
-  <div class="feed-item">
-    <div class="frame">
-      <div class="skeleton-img" style="height:72vw"></div>
-      <div class="skeleton-caption">
-        <div class="skeleton-line" style="width:55%;"></div>
-        <div class="skeleton-line" style="width:18%;margin-left:auto;"></div>
-      </div>
+  <div class="skeleton-frame">
+    <div class="skeleton-img" style="height:72vw"></div>
+    <div class="skeleton-cap">
+      <div class="skeleton-line" style="width:55%;"></div>
+      <div class="skeleton-line" style="width:20%;margin-left:auto;"></div>
     </div>
   </div>
 </div>
 
 <div class="empty" id="empty">
-  <div class="empty-title">No photographs yet</div>
-  <div class="empty-hint"><a href="upload.html">Upload the first one →</a></div>
+  <div class="empty-icon">📷</div>
+  <div class="empty-title">아직 사진이 없어요!</div>
+  <div class="empty-hint"><a href="upload.html">첫 번째 사진을 올려봐요 →</a></div>
 </div>
 
-<!-- Fullscreen Lightbox -->
+<!-- Lightbox -->
 <div class="lightbox" id="lightbox">
   <div class="lb-topbar">
     <span class="lb-counter" id="lbCounter"></span>
-    <button class="lb-close-btn" onclick="closeLb()">Close</button>
+    <button class="lb-close-btn" onclick="closeLb()">✕ 닫기</button>
   </div>
-
   <div class="lb-img-wrap" id="lbImgWrap">
     <img id="lbImg" src="" alt="">
   </div>
-
   <div class="lb-bottombar">
     <div class="lb-title" id="lbTitle"></div>
     <div class="lb-date" id="lbDate"></div>
@@ -366,12 +345,10 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-
-  let photos = [];
-  let lbIndex = 0;
-
+  let photos = [], lbIndex = 0;
   const feed = document.getElementById('feed');
   const empty = document.getElementById('empty');
+  const hearts = ['🌸','⭐','🌈','🍭','🎀','💛','🐣','🍓'];
 
   onValue(ref(db, 'photos'), (snapshot) => {
     photos = [];
@@ -387,10 +364,7 @@
 
   function render() {
     feed.innerHTML = '';
-    if (photos.length === 0) {
-      empty.classList.add('show');
-      return;
-    }
+    if (photos.length === 0) { empty.classList.add('show'); return; }
     empty.classList.remove('show');
 
     photos.forEach((photo, i) => {
@@ -408,25 +382,26 @@
       img.alt = photo.caption || '';
       img.loading = 'lazy';
       img.onload = () => img.classList.add('loaded');
-
       wrap.appendChild(img);
 
-      const captionRow = document.createElement('div');
-      captionRow.className = 'caption-row';
-      captionRow.innerHTML = `
-        <div class="caption-title">${photo.caption || '—'}</div>
-        <div class="caption-date">${formatDate(photo.uploadedAt)}</div>
+      const cap = document.createElement('div');
+      cap.className = 'caption-row';
+      cap.innerHTML = `
+        <div class="caption-left">
+          <div class="caption-title">${photo.caption || '제목 없음'}</div>
+          <div class="caption-date">📅 ${formatDate(photo.uploadedAt)}</div>
+        </div>
+        <div class="caption-heart">${hearts[i % hearts.length]}</div>
       `;
 
       frame.appendChild(wrap);
-      frame.appendChild(captionRow);
+      frame.appendChild(cap);
       item.appendChild(frame);
       item.addEventListener('click', () => openLb(i));
       feed.appendChild(item);
     });
   }
 
-  /* ── Lightbox ── */
   window.openLb = function(i) {
     lbIndex = i;
     updateLb();
@@ -440,40 +415,28 @@
   };
 
   function updateLb() {
-    const photo = photos[lbIndex];
+    const p = photos[lbIndex];
     const img = document.getElementById('lbImg');
     img.style.opacity = '0';
-    img.src = photo.imageUrl;
+    img.src = p.imageUrl;
     img.onload = () => { img.style.opacity = '1'; };
-    document.getElementById('lbTitle').textContent = photo.caption || '—';
-    document.getElementById('lbDate').textContent = formatDate(photo.uploadedAt);
+    document.getElementById('lbTitle').textContent = p.caption || '제목 없음';
+    document.getElementById('lbDate').textContent = '📅 ' + formatDate(p.uploadedAt);
     document.getElementById('lbCounter').textContent = `${lbIndex + 1} / ${photos.length}`;
   }
 
-  /* swipe */
-  let touchStartX = 0;
-  let touchStartY = 0;
-
+  let touchStartX = 0, touchStartY = 0;
   const lbWrap = document.getElementById('lbImgWrap');
-
-  lbWrap.addEventListener('touchstart', e => {
-    touchStartX = e.touches[0].clientX;
-    touchStartY = e.touches[0].clientY;
-  }, { passive: true });
-
+  lbWrap.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; touchStartY = e.touches[0].clientY; }, { passive: true });
   lbWrap.addEventListener('touchend', e => {
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      if (dx < 0) lbIndex = (lbIndex + 1) % photos.length;
-      else lbIndex = (lbIndex - 1 + photos.length) % photos.length;
+      lbIndex = dx < 0 ? (lbIndex + 1) % photos.length : (lbIndex - 1 + photos.length) % photos.length;
       updateLb();
-    } else if (Math.abs(dy) > 80 && Math.abs(dy) > Math.abs(dx)) {
-      closeLb();
-    }
+    } else if (Math.abs(dy) > 80 && Math.abs(dy) > Math.abs(dx)) { closeLb(); }
   }, { passive: true });
 
-  /* keyboard */
   document.addEventListener('keydown', e => {
     if (!document.getElementById('lightbox').classList.contains('open')) return;
     if (e.key === 'Escape') closeLb();
@@ -487,6 +450,5 @@
     return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
   }
 </script>
-
 </body>
 </html>

@@ -6,22 +6,24 @@
 <title>사진 올리기 · Haisley Gallery</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Nanum+Gothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   :root {
+    --bg: #fff9f0;
     --white: #ffffff;
-    --ink: #0a0a0a;
-    --ink-soft: #888;
-    --ink-faint: #c0c0c0;
-    --border: #ebebeb;
-    --bg: #f9f9f9;
-    --font: 'Inter', sans-serif;
+    --ink: #3a2d1e;
+    --ink-soft: #9a8878;
+    --border: #f0e0cc;
+    --accent: #ff8fab;
+    --accent2: #ffb347;
+    --accent3: #7ec8e3;
+    --font: 'Gaegu', 'Nanum Gothic', cursive;
   }
 
   body {
-    background: var(--white);
+    background: var(--bg);
     font-family: var(--font);
     color: var(--ink);
     min-height: 100vh;
@@ -35,236 +37,177 @@
   header {
     width: 100%;
     height: 60px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
+    border-bottom: 2px dashed var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    margin-bottom: 40px;
+    padding: 0 16px;
+    margin-bottom: 32px;
+    background: rgba(255,249,240,0.95);
+  }
+
+  .back-link {
+    grid-column: 1;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-decoration: none;
+    white-space: nowrap;
   }
 
   .logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
-    font-size: 20px;
-    letter-spacing: 5px;
-    text-transform: uppercase;
+    grid-column: 2;
+    font-family: var(--font);
+    font-weight: 700;
+    font-size: 18px;
     color: var(--ink);
     text-decoration: none;
-  }
-
-  .logo em { font-style: italic; }
-
-  .back-link {
-    position: absolute;
-    left: 20px;
-    font-size: 11px;
-    font-weight: 400;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    text-decoration: none;
+    white-space: nowrap;
+    text-align: center;
   }
 
   /* Card */
   .card {
     width: 100%;
-    max-width: 440px;
-    padding: 0 24px;
+    max-width: 420px;
+    padding: 0 20px;
   }
 
   .card-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 300;
     font-size: 26px;
-    letter-spacing: 0.5px;
-    margin-bottom: 6px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--ink);
   }
 
   .card-desc {
-    font-size: 12px;
-    font-weight: 300;
+    font-size: 14px;
     color: var(--ink-soft);
-    margin-bottom: 32px;
+    margin-bottom: 28px;
     line-height: 1.6;
-    letter-spacing: 0.3px;
   }
 
   /* Drop Zone */
   .drop-zone {
-    border: 1.5px dashed var(--border);
-    border-radius: 4px;
-    padding: 48px 20px;
+    border: 3px dashed var(--accent);
+    border-radius: 20px;
+    padding: 44px 20px;
     text-align: center;
     cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    margin-bottom: 24px;
-    background: var(--bg);
+    background: #fff0f5;
+    margin-bottom: 20px;
+    transition: background 0.2s;
   }
 
-  .drop-icon {
-    font-size: 28px;
-    margin-bottom: 14px;
-    opacity: 0.25;
-  }
+  .drop-zone:active { background: #ffe0ec; }
 
-  .drop-label {
-    font-size: 13px;
-    font-weight: 400;
-    color: var(--ink-soft);
-    margin-bottom: 4px;
-  }
-
-  .drop-hint {
-    font-size: 11px;
-    color: var(--ink-faint);
-    letter-spacing: 0.5px;
-  }
+  .drop-icon { font-size: 48px; margin-bottom: 12px; }
+  .drop-label { font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .drop-hint { font-size: 13px; color: var(--ink-soft); }
 
   /* Preview */
   .preview-wrap {
     display: none;
-    margin-bottom: 24px;
-    border-radius: 4px;
+    margin-bottom: 20px;
+    border-radius: 16px;
     overflow: hidden;
+    border: 3px solid var(--border);
     position: relative;
+    box-shadow: 0 4px 0 #e8cdb0;
   }
 
   .preview-wrap img {
-    width: 100%;
-    max-height: 320px;
-    object-fit: cover;
-    display: block;
+    width: 100%; max-height: 300px;
+    object-fit: cover; display: block;
   }
 
   .preview-reset {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: rgba(0,0,0,0.55);
-    color: #fff;
-    border: none;
-    border-radius: 999px;
-    padding: 5px 14px;
-    font-size: 11px;
-    font-family: var(--font);
-    letter-spacing: 0.5px;
-    cursor: pointer;
+    position: absolute; top: 10px; right: 10px;
+    background: var(--accent); color: #fff;
+    border: 2px solid #ff6b9d;
+    border-radius: 999px; padding: 5px 14px;
+    font-size: 13px; font-family: var(--font);
+    font-weight: 700; cursor: pointer;
+    box-shadow: 0 2px 0 #e05580;
   }
 
   /* Fields */
   .field { margin-bottom: 16px; }
 
   .field label {
-    display: block;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--ink-soft);
-    margin-bottom: 8px;
+    display: block; font-size: 15px;
+    font-weight: 700; color: var(--ink);
+    margin-bottom: 6px;
   }
 
-  .field input,
-  .field select,
-  .field textarea {
-    width: 100%;
-    padding: 11px 14px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    font-size: 14px;
-    font-family: var(--font);
-    color: var(--ink);
-    background: var(--white);
-    outline: none;
+  .field input {
+    width: 100%; padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px; font-size: 15px;
+    font-family: var(--font); color: var(--ink);
+    background: var(--white); outline: none;
     transition: border-color 0.15s;
-    appearance: none;
-    -webkit-appearance: none;
   }
 
-  .field input:focus,
-  .field select:focus,
-  .field textarea:focus {
-    border-color: var(--ink);
-  }
-
-  .field textarea {
-    resize: none;
-    height: 80px;
-    line-height: 1.6;
-  }
+  .field input:focus { border-color: var(--accent); }
 
   /* Submit */
   .submit-btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--ink);
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
-    font-family: var(--font);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: opacity 0.15s;
+    width: 100%; padding: 15px;
+    background: var(--accent2);
+    color: var(--white); border: 2px solid #e09030;
+    border-radius: 999px; font-size: 17px;
+    font-weight: 700; font-family: var(--font);
+    cursor: pointer; margin-top: 8px;
+    box-shadow: 0 4px 0 #c07820;
+    transition: transform 0.1s, box-shadow 0.1s;
   }
 
-  .submit-btn:hover { opacity: 0.8; }
-  .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .submit-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #c07820;
+  }
+
+  .submit-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
   /* Progress */
-  .progress-wrap {
-    display: none;
-    margin-top: 20px;
-  }
+  .progress-wrap { display: none; margin-top: 20px; }
 
   .progress-bar-bg {
-    height: 1px;
-    background: var(--border);
-    border-radius: 999px;
-    overflow: hidden;
-    margin-bottom: 10px;
+    height: 12px; background: #ffe0cc;
+    border-radius: 999px; overflow: hidden;
+    margin-bottom: 8px;
+    border: 2px solid var(--border);
   }
 
   .progress-bar-fill {
-    height: 100%;
-    background: var(--ink);
+    height: 100%; background: var(--accent);
     border-radius: 999px;
-    transition: width 0.3s ease;
-    width: 0%;
+    transition: width 0.3s ease; width: 0%;
   }
 
   .progress-label {
-    font-size: 11px;
-    color: var(--ink-faint);
+    font-size: 14px; color: var(--ink-soft);
     text-align: center;
-    letter-spacing: 0.5px;
   }
 
   /* Result */
   .result-box {
-    display: none;
-    padding: 16px;
-    border-radius: 4px;
-    font-size: 13px;
-    margin-top: 16px;
-    text-align: center;
-    line-height: 1.6;
+    display: none; padding: 16px;
+    border-radius: 16px; font-size: 15px;
+    margin-top: 16px; text-align: center;
+    line-height: 1.6; font-weight: 700;
+    border: 2px solid;
   }
 
   .result-box.success {
-    background: #f0f7f0;
-    color: #2a5c2a;
-    border: 1px solid #c8e0c8;
+    background: #f0fff4; color: #2a6a3a;
+    border-color: #b0e0c0;
   }
 
   .result-box.error {
-    background: #fdf0f0;
-    color: #9b2222;
-    border: 1px solid #f5c6c6;
+    background: #fff0f0; color: #9b2222;
+    border-color: #f5c6c6;
   }
 </style>
 </head>
@@ -272,20 +215,21 @@
 
 <header>
   <a class="back-link" href="gallery.html">← 갤러리</a>
-  <a class="logo" href="gallery.html">Haisley <em>Gallery</em></a>
+  <a class="logo" href="gallery.html">🌸 Haisley</a>
+  <span></span>
 </header>
 
 <div class="card">
-  <div class="card-title">사진 올리기</div>
-  <div class="card-desc">업로드한 사진은 관리자 검토 후 갤러리에 게시됩니다.</div>
+  <div class="card-title">📸 사진 올리기</div>
+  <div class="card-desc">사진을 올리면 선생님이 확인 후 갤러리에 올려줘요!</div>
 
-  <!-- input은 숨겨두고 버튼으로 프로그래밍 방식 클릭 -->
+  <!-- 숨긴 input, JS로 클릭 -->
   <input type="file" id="fileInput" accept="image/*" style="display:none">
 
   <div class="drop-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
     <div class="drop-icon">🖼️</div>
-    <div class="drop-label">사진을 선택하세요</div>
-    <div class="drop-hint">탭하여 갤러리에서 선택</div>
+    <div class="drop-label">여기를 눌러 사진 선택</div>
+    <div class="drop-hint">사진첩에서 골라요 📱</div>
   </div>
 
   <div class="preview-wrap" id="previewWrap">
@@ -294,17 +238,17 @@
   </div>
 
   <div class="field">
-    <label>제목 <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--ink-faint)">(선택)</span></label>
-    <input type="text" id="caption" placeholder="사진 제목을 입력하세요">
+    <label>📝 사진 제목 <span style="font-weight:400;font-size:13px;color:var(--ink-soft)">(선택)</span></label>
+    <input type="text" id="caption" placeholder="사진에 대해 한마디!">
   </div>
 
-  <button class="submit-btn" id="submitBtn" onclick="uploadPhoto()">제출하기</button>
+  <button class="submit-btn" id="submitBtn" onclick="uploadPhoto()">🚀 갤러리에 올리기!</button>
 
   <div class="progress-wrap" id="progressWrap">
     <div class="progress-bar-bg">
       <div class="progress-bar-fill" id="progressFill"></div>
     </div>
-    <div class="progress-label" id="progressLabel">업로드 중…</div>
+    <div class="progress-label" id="progressLabel">올리는 중…</div>
   </div>
 
   <div class="result-box" id="resultBox"></div>
@@ -324,34 +268,25 @@
     appId: "1:606056829643:web:f78986e93d0dbb14c1814e"
   };
 
-  const CLOUDINARY_CLOUD = 'dnegdhlrs';
+  const CLOUDINARY_CLOUD  = 'dnegdhlrs';
   const CLOUDINARY_PRESET = 'nqnwhcnn';
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-
   let selectedFile = null;
 
-  const fileInput = document.getElementById('fileInput');
-  const dropZone  = document.getElementById('dropZone');
+  const fileInput   = document.getElementById('fileInput');
   const previewWrap = document.getElementById('previewWrap');
   const previewImg  = document.getElementById('previewImg');
+  const dropZone    = document.getElementById('dropZone');
 
   fileInput.addEventListener('change', e => {
     if (e.target.files[0]) handleFile(e.target.files[0]);
   });
 
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-  dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('dragover');
-    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
-  });
-
   function handleFile(file) {
-    if (!file.type.startsWith('image/')) { showResult('error', '이미지 파일만 업로드할 수 있습니다.'); return; }
-    if (file.size > 10 * 1024 * 1024) { showResult('error', '파일 크기가 10MB를 초과합니다.'); return; }
+    if (!file.type.startsWith('image/')) { showResult('error', '이미지 파일만 올릴 수 있어요!'); return; }
+    if (file.size > 10 * 1024 * 1024) { showResult('error', '파일이 너무 커요! (10MB 이하)'); return; }
     selectedFile = file;
     const reader = new FileReader();
     reader.onload = e => {
@@ -371,7 +306,6 @@
     dropZone.style.display = 'block';
   };
 
-  // 이미지 압축
   function compressImage(file) {
     return new Promise(resolve => {
       const img = new Image();
@@ -393,25 +327,23 @@
   }
 
   window.uploadPhoto = async function() {
-    if (!selectedFile) { showResult('error', '사진을 먼저 선택해주세요.'); return; }
+    if (!selectedFile) { showResult('error', '사진을 먼저 선택해주세요! 📸'); return; }
 
-    const submitBtn    = document.getElementById('submitBtn');
-    const progressWrap = document.getElementById('progressWrap');
-    const progressFill = document.getElementById('progressFill');
-    const progressLabel= document.getElementById('progressLabel');
+    const submitBtn     = document.getElementById('submitBtn');
+    const progressWrap  = document.getElementById('progressWrap');
+    const progressFill  = document.getElementById('progressFill');
+    const progressLabel = document.getElementById('progressLabel');
 
     submitBtn.disabled = true;
     progressWrap.style.display = 'block';
-    progressLabel.textContent = '이미지 압축 중…';
+    progressLabel.textContent = '사진 준비 중… 🎨';
     progressFill.style.width = '10%';
 
     try {
-      // 1. 압축
       const compressed = await compressImage(selectedFile);
       progressFill.style.width = '20%';
-      progressLabel.textContent = 'Cloudinary 업로드 중…';
+      progressLabel.textContent = '사진 올리는 중… 🚀';
 
-      // 2. Cloudinary 업로드 (XMLHttpRequest — 진행률 표시)
       const formData = new FormData();
       formData.append('file', compressed);
       formData.append('upload_preset', CLOUDINARY_PRESET);
@@ -420,54 +352,43 @@
       const imageUrl = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`);
-
         xhr.upload.onprogress = e => {
           if (e.lengthComputable) {
             const pct = Math.round(e.loaded / e.total * 70) + 20;
             progressFill.style.width = pct + '%';
-            progressLabel.textContent = `업로드 중… ${pct}%`;
+            progressLabel.textContent = `올리는 중… ${pct}% 🌈`;
           }
         };
-
         xhr.onload = () => {
-          if (xhr.status === 200) {
-            const res = JSON.parse(xhr.responseText);
-            resolve(res.secure_url);
-          } else {
-            reject(new Error('Cloudinary 업로드 실패: ' + xhr.responseText));
-          }
+          if (xhr.status === 200) resolve(JSON.parse(xhr.responseText).secure_url);
+          else reject(new Error('업로드 실패'));
         };
-
         xhr.onerror = () => reject(new Error('네트워크 오류'));
         xhr.send(formData);
       });
 
       progressFill.style.width = '90%';
-      progressLabel.textContent = '갤러리에 등록 중…';
+      progressLabel.textContent = '거의 다 됐어요… ⭐';
 
-      // 3. Firebase DB에 메타데이터 저장
       const newRef = push(ref(db, 'photos'));
       await set(newRef, {
         imageUrl,
-        caption:    document.getElementById('caption').value.trim(),
-        status:     'pending',
+        caption: document.getElementById('caption').value.trim(),
+        status: 'pending',
         uploadedAt: Date.now()
       });
 
       progressFill.style.width = '100%';
-      progressLabel.textContent = '완료';
-
       setTimeout(() => {
         progressWrap.style.display = 'none';
-        showResult('success', '제출이 완료됐습니다.<br>관리자 검토 후 갤러리에 게시됩니다.');
+        showResult('success', '🎉 완료! 선생님이 확인 후 갤러리에 올려줄 거예요!');
         submitBtn.disabled = false;
         window.resetFile();
         document.getElementById('caption').value = '';
       }, 500);
 
     } catch (err) {
-      console.error(err);
-      showResult('error', '오류가 발생했습니다. 다시 시도해주세요.<br><small>' + err.message + '</small>');
+      showResult('error', '앗, 오류가 났어요. 다시 시도해봐요! 😢');
       submitBtn.disabled = false;
       document.getElementById('progressWrap').style.display = 'none';
     }
@@ -480,6 +401,5 @@
     box.style.display = 'block';
   }
 </script>
-
 </body>
 </html>
